@@ -3,7 +3,9 @@ import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const ProfileImageWithEditIcon = ({ imageUri, onEditPress }) => {
-  const imageSource = typeof imageUri === 'number' ? imageUri : { uri: imageUri };
+  const imageSource = imageUri ? { uri: imageUri } : { uri: 'https://via.placeholder.com/150' }; // Fallback image if imageUri is null
+
+  console.log('imageUri: ', imageSource);
 
   return (
     <View style={styles.imageContainer}>

@@ -17,6 +17,7 @@ export const getUserProfile = async (userId) => {
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
+      return null;
     }
   };
 
@@ -48,6 +49,9 @@ export const getUserProfile = async (userId) => {
 
   // This will create the proifl eif it does not exist.
 export const updateUserProfile = async (userId, updatedProfileData) => {
+    console.log('Profile update for userId', userId );
+    console.log('Updated profile is: ', JSON.stringify(updatedProfileData));
+    
   const token = await SecureStore.getItemAsync('token');
     try {
       const response = await fetch(`http://192.168.86.49:3000/userProfile/${userId}`, {

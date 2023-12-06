@@ -25,7 +25,7 @@ const MyProfile = ({ navigation }) => {
     userName: ''
   });
   const [userProfileDetails, setUserProfileDetails] = useState({
-    profileImage: '',
+    profilePicture: '',
     aboutMe: '',
   });
   const [isUserAuthDetailsChanged, setIsUserAuthDetailsChanged] = useState(false);
@@ -39,6 +39,8 @@ const MyProfile = ({ navigation }) => {
     const fetchUserProfile = async () => {
       setIsLoading(true);
       try {
+        console.log('Logging user id in MyProfile: ', user._id)
+
         const userAuthProfile = await getUser(user._id);
         console.log('User Auth Profile:', userAuthProfile); // Debug log
 
@@ -53,12 +55,12 @@ const MyProfile = ({ navigation }) => {
         if (userProfile) {
           setUserProfileDetails({
             aboutMe: userProfile.aboutMe || '', 
-            profileImage: userProfile.profileImage || DEFAULT_IMAGE_URI
+            profilePicture: userProfile.profilePicture || 'https://via.placeholder.com/150'
           })
         } else {
           setUserProfileDetails({
             aboutMe : '',
-            profileImage : DEFAULT_IMAGE_URI
+            profilePicture : 'https://via.placeholder.com/150'
           })
         }
         
@@ -123,9 +125,12 @@ const MyProfile = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.imageSection}>
         <ProfileImageWithEditIcon
-        imageUri={userProfileDetails.profileImage}
+        imageUri={userProfileDetails.profilePicture}
         onEditPress={() => {
-            navigation.navigate(ChangeProfilePicture)}}
+          console.log('Navigating with profile picture:', userProfileDetails.profilePicture);
+            navigation.navigate('ChangeProfilePicture', {
+              profilePicture: userProfileDetails.profilePicture, // Add a key here
+            })}}
         />
         <View style={styles.profileSection}>
             <Text>Member since April 2003</Text>
@@ -199,7 +204,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
     },
-    profileImage: {
+    profilePicture: {
       width: 150,
       height: 150,
       borderRadius: 75, // Makes it round
