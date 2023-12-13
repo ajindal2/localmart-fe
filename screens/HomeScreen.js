@@ -1,4 +1,3 @@
-// screens/HomeScreen.js
 import React, { useCallback, useEffect, useRef, useContext, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Alert, Button } from 'react-native';
 import { AuthContext } from '../AuthContext';
@@ -69,6 +68,7 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
+
   // TODO: will have to truncate long titles
   // TODO: check how a description with new lines etc is stored in mongo.
   // tODO: check complications of decimal prices
@@ -77,13 +77,17 @@ const HomeScreen = ({ navigation }) => {
     if (!item.title) {
       return <View style={styles.invisibleItem} />;
     }
+
+    const handlePress = () => {
+      navigation.navigate('ViewListing', { item });
+    };
   
     return (
-      <View style={styles.itemContainer}>
-        <Image source={{ uri: item.listingImageUrl }} style={styles.image} />
+      <TouchableOpacity onPress={handlePress} style={styles.itemContainer}>
+        <Image source={{ uri: item.imageUrls[0] }} style={styles.image} />
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.price}>${item.price}</Text>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -99,11 +103,10 @@ const HomeScreen = ({ navigation }) => {
       />
       <FlatList
          data={listings}
-         renderItem={({ item }) => <RenderItem item={item} />}
+         renderItem={({ item }) => <RenderItem item={item} navigation={navigation} />}
          keyExtractor={item => item._id ? item._id.toString() : Math.random().toString()}
          numColumns={2}
       />
-      {/* Footer Component */}
     </View>
   );
 };

@@ -88,10 +88,9 @@ const handleChoosePhoto = async () => {
   const handleConfirmPhoto = async () => {
     try {
       const result = await uploadProfileImage(user._id, image);
-      //console.log();
       Alert.alert('Profile Image Updated', 'Your profile image has been updated successfully.');
       // Navigate back or refresh the profile view if necessary
-      navigation.goBack();
+      navigation.navigate('MyProfile');
     } catch (error) {
       Alert.alert('Error', 'Could not update profile image: ' + error.message);
     }

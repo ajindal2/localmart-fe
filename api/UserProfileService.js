@@ -79,6 +79,8 @@ export const updateUserProfile = async (userId, updatedProfileData) => {
   export const uploadProfileImage = async (userId, imageUri) => {
     const token = await SecureStore.getItemAsync('token');
     const apiUrl = `http://192.168.86.49:3000/userProfile/${userId}/image`;
+
+    console.log('imageUri: ', imageUri);
   
     // Create the form data to send to the server
     let formData = new FormData();

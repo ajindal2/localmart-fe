@@ -76,7 +76,7 @@ const AccountScreen = ({ navigation }) => {
     separator: {
       height: 1,
       backgroundColor: '#e0e0e0',
-      marginLeft: 15,
+      //marginLeft: 15,
     },
     // ... Add styles for other components if needed
   });
