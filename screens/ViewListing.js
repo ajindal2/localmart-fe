@@ -1,10 +1,28 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useContext, useEffect, Fragment } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { AuthContext } from '../AuthContext';
+import { getUserProfile } from '../api/UserProfileService';
+import { getSellerRatings } from '../api/RatingsService';
 
 const ViewListing = ({ route, navigation }) => {
     const { item } = route.params;
     const screenWidth = Dimensions.get('window').width;
     const [currentIndex, setCurrentIndex] = useState(0);
+    const { user } = useContext(AuthContext);
+    const [userProfile, setUserProfile] = useState(null);
+    const [sellerRatings, setSellerRatings] = useState([]);
+    const [averageRating, setAverageRating] = useState(0); 
+
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+    ];
+
+    const formatDateToMonthYear = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const monthName = monthNames[date.getMonth()];
+    return `${monthName} ${year}`;
+    };
 
     const handleScroll = (event) => {
       const contentOffsetX = event.nativeEvent.contentOffset.x;
@@ -25,26 +43,43 @@ const ViewListing = ({ route, navigation }) => {
     };
 
     // Placeholder for seller details (replace with actual data)
-    const sellerDetails = {
+    /*const sellerDetails = {
         name: "John Doe",
         image: "https://via.placeholder.com/150", // Replace with actual seller image URL
-    };
+    };*/
 
-  // Dummy data for images and listings
-  const moreListings = [{ /*...listing data*/ }, { /*...*/ }];
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+          try {
+            const profile = await getUserProfile(user._id);
+            setUserProfile(profile);
+            console.log('userProfile name: ', profile.aboutMe);
+          } catch (error) {
+            console.error('Error fetching user profile', error);
+          }
+        };
+  
+        const fetchSellerRatings = async () => {
+            console.log('Inside fetchSellerRatings');
+          try {
+            const { averageRating, ratings } = await getSellerRatings(item.sellerId);
+            setSellerRatings(ratings);
+            setAverageRating(averageRating); 
+            console.log('Average rating in teh ViewListing screen: ', averageRating);
+          } catch (error) {
+            console.error('Error fetching seller ratings', error);
+          }
+        };
+  
+        if (user && user._id) {
+          fetchUserProfile();
+        }
+        
+        if (item && item.sellerId) {
+          fetchSellerRatings();
+        }
+      }, [user, item]);
 
-  // Render an individual image for horizontal scroll
-  const renderImage = (imageUrl) => (
-    <Image key={imageUrl} source={{ uri: imageUrl }} style={styles.listingImage} />
-  );
-
-  // Render a single item for "More listings like this"
-  const renderListingItem = ({ item }) => (
-    <View>
-      <Text>{item.title}</Text>
-      {/* Other listing details */}
-    </View>
-  );
 
   return (
     <View style={styles.screenContainer}>
@@ -71,11 +106,28 @@ const ViewListing = ({ route, navigation }) => {
       <View style={styles.separator} />
 
       {/* Section 2: Seller Details */}
-      <Text style={styles.sectionTitle}>Seller Details</Text>
-      <View style={styles.sellerDetails}>
-        <Image source={{ uri: sellerDetails.image }} style={styles.sellerImage} />
-        <Text style={styles.sellerName}>{sellerDetails.name}</Text>
-      </View>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Seller Details</Text>
+        {
+            userProfile ? (
+            <View>
+                <View style={styles.sellerDetails}>
+                <Image source={{ uri: userProfile.profilePicture }} style={styles.sellerImage} />
+                <Text style={styles.sellerName}>{user.userName}</Text>
+                <Text style={styles.sellerName}>{formatDateToMonthYear(user.date)}</Text>
+                </View>
+                {sellerRatings.length > 0 ? (
+                    <Text>Average Rating: {averageRating.toFixed(1)} ({sellerRatings.length})</Text>
+                ) : (
+                <Text>No ratings available.</Text>
+                )}
+            </View>
+            ) : (
+            <Text>Loading seller details...</Text>
+            )
+        }
+        </View>
+
       <View style={styles.separator} />
 
        {/* Section 3: Description */}
@@ -104,6 +156,9 @@ const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
   },
+  section: {
+    marginTop: 1,
+  },
   container: {
     flex: 1,
     marginBottom: 60, // Height of the button container
@@ -119,16 +174,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#E0E0E0',
   },
-  /*buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingBottom: 20,
-    backgroundColor: 'transparent',
-  },*/
   button: {
     alignItems: 'center',
     justifyContent: 'center',

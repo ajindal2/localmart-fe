@@ -13,7 +13,7 @@ export const getUserProfile = async (userId) => {
       } else {
         const errorData = await response.json();
         console.error('Error fetching user profile:', errorData);
-        throw new Error(errorData.message || 'Error creating user profile');
+        throw new Error(errorData.message || 'Error fetching user profile');
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);

@@ -1,0 +1,19 @@
+export const getSellerRatings = async (sellerId) => {
+    try {
+      console.log('Inside getSellerRatings');
+        // TODO: think if authorization is needed to fetch the ratings.
+      const response = await fetch(`http://192.168.86.49:3000/ratings/seller/${sellerId}`);
+      if (response.ok) {
+          const sellerRatings = await response.json();
+          console.log('ratings in the response: ', sellerRatings);
+          return sellerRatings;
+        } else {
+          const errorData = await response.json();
+          console.error('Failed to fetch ratings:', errorData);
+          throw new Error(errorData.message || 'Failed to fetch ratings');
+        }
+      } catch (error) {
+        console.error('Error fetching ratings:', error);
+        return []; // Return an empty array in case of an error indicating empty retings for this seller.
+      }
+    };

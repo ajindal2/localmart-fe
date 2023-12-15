@@ -32,11 +32,7 @@ export const createListing = async (userId, listingDetails) => {
     formData.append('description', listingDetails.description);
     formData.append('price', listingDetails.price);
 
-    console.log('Number of photos:', listingDetails.photos.length);
-
     listingDetails.photos.forEach((photoUri, index) => {
-      console.log(`Photo ${index}:`, photoUri);
-
       formData.append('images', { // Change this to 'images' to match server's expectation
         uri: photoUri,
         type: 'image/jpeg', // Adjust based on actual image type
