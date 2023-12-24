@@ -1,26 +1,48 @@
 import React from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../constants/colors';
 
-const StarRating = ({ rating, onRatingChange, maxStars = 5 }) => {
+const StarRating = ({ rating, onRatingChange, maxStars = 5, size = 20  }) => {
   const renderStars = () => {
     let stars = [];
+    const floorRating = Math.floor(rating);
+    const isHalfStar = rating % 1 !== 0;
+
     for (let i = 1; i <= maxStars; i++) {
-      stars.push(
-        <TouchableOpacity key={i} onPress={() => onRatingChange(i)}>
-          <Ionicons
-            name={i <= rating ? 'ios-star' : 'ios-star-outline'}
-            size={20}
-            color={i <= rating ? colors.primary : colors.greyColor}
-          />
-        </TouchableOpacity>
+      let starIconName = 'ios-star-outline';
+
+      if (i <= floorRating) {
+        starIconName = 'ios-star'; // Full star
+      } else if (isHalfStar && i === floorRating + 1) {
+        starIconName = 'ios-star-half'; // Half star
+      } else {
+        starIconName = 'ios-star-outline'; // Empty star
+      }
+
+      const star = (
+        <Ionicons
+          key={i}
+          name={starIconName}
+          size={size}
+          color={i <= rating ? colors.primary : colors.greyColor}
+        />
       );
+
+      if (onRatingChange) {
+        stars.push(
+          <TouchableOpacity key={i} onPress={() => onRatingChange(i)}>
+            {star}
+          </TouchableOpacity>
+        );
+      } else {
+        stars.push(star);
+      }
     }
     return stars;
   };
 
-  return <View style={{ flexDirection: 'row', padding: 10 }}>{renderStars()}</View>;
+  return <View style={{ flexDirection: 'row' }}>{renderStars()}</View>;
 };
 
 export default StarRating;

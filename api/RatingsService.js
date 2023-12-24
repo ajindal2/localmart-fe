@@ -1,11 +1,9 @@
 export const getSellerRatings = async (sellerId) => {
     try {
-      console.log('Inside getSellerRatings');
         // TODO: think if authorization is needed to fetch the ratings.
       const response = await fetch(`http://192.168.86.49:3000/ratings/seller/${sellerId}`);
       if (response.ok) {
           const sellerRatings = await response.json();
-          console.log('ratings in the response: ', sellerRatings);
           return sellerRatings;
         } else {
           const errorData = await response.json();

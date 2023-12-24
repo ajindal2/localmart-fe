@@ -2,7 +2,6 @@
 import * as SecureStore from 'expo-secure-store';
 
 export const getUser = async (userId) => {
-  console.log("Getting user for id: ", userId)
   try {
     const response = await fetch(`http://192.168.86.49:3000/users/${userId}`);
     if (!response.ok) {

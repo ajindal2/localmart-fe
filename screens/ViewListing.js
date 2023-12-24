@@ -1,16 +1,19 @@
 import React, { useState, useContext, useEffect, Fragment } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../AuthContext';
 import { getUserProfile } from '../api/UserProfileService';
 import { getSellerRatings } from '../api/RatingsService';
+import StarRating from '../components/StarRating';
+
 
 const ViewListing = ({ route, navigation }) => {
     const { item } = route.params;
     const screenWidth = Dimensions.get('window').width;
     const [currentIndex, setCurrentIndex] = useState(0);
     const { user } = useContext(AuthContext);
-    const [userProfile, setUserProfile] = useState(null);
-    const [sellerRatings, setSellerRatings] = useState([]);
+    const [sellerProfile, setSellerProfile] = useState(null);
+    const [ratingsWithProfile, setRatingsWithProfile] = useState([]);
     const [averageRating, setAverageRating] = useState(0); 
 
     const monthNames = ["January", "February", "March", "April", "May", "June",
@@ -18,10 +21,15 @@ const ViewListing = ({ route, navigation }) => {
     ];
 
     const formatDateToMonthYear = (dateString) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const monthName = monthNames[date.getMonth()];
-    return `${monthName} ${year}`;
+        console.log('Logging date joined: ', dateString);
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const monthName = monthNames[date.getMonth()];
+        return `${monthName} ${year}`;
+    };
+
+    const navigateToSellerDetails = () => {
+        navigation.navigate('SellerDetails', { sellerProfile, ratingsWithProfile, averageRating });
     };
 
     const handleScroll = (event) => {
@@ -42,40 +50,32 @@ const ViewListing = ({ route, navigation }) => {
       ));
     };
 
-    // Placeholder for seller details (replace with actual data)
-    /*const sellerDetails = {
-        name: "John Doe",
-        image: "https://via.placeholder.com/150", // Replace with actual seller image URL
-    };*/
-
     useEffect(() => {
-        const fetchUserProfile = async () => {
+        /*const fetchUserProfile = async () => {
           try {
             const profile = await getUserProfile(user._id);
             setUserProfile(profile);
-            console.log('userProfile name: ', profile.aboutMe);
           } catch (error) {
             console.error('Error fetching user profile', error);
           }
-        };
+        };*/
   
         const fetchSellerRatings = async () => {
-            console.log('Inside fetchSellerRatings');
           try {
-            const { averageRating, ratings } = await getSellerRatings(item.sellerId);
-            setSellerRatings(ratings);
+            const { averageRating, ratingsWithProfile, sellerProfile } = await getSellerRatings(item.seller);
+            setRatingsWithProfile(ratingsWithProfile);
             setAverageRating(averageRating); 
-            console.log('Average rating in teh ViewListing screen: ', averageRating);
+            setSellerProfile(sellerProfile);
           } catch (error) {
             console.error('Error fetching seller ratings', error);
           }
         };
   
-        if (user && user._id) {
+       /* if (user && user._id) {
           fetchUserProfile();
-        }
+        }*/
         
-        if (item && item.sellerId) {
+        if (item && item.seller) {
           fetchSellerRatings();
         }
       }, [user, item]);
@@ -109,19 +109,24 @@ const ViewListing = ({ route, navigation }) => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Seller Details</Text>
         {
-            userProfile ? (
-            <View>
-                <View style={styles.sellerDetails}>
-                <Image source={{ uri: userProfile.profilePicture }} style={styles.sellerImage} />
-                <Text style={styles.sellerName}>{user.userName}</Text>
-                <Text style={styles.sellerName}>{formatDateToMonthYear(user.date)}</Text>
-                </View>
-                {sellerRatings.length > 0 ? (
-                    <Text>Average Rating: {averageRating.toFixed(1)} ({sellerRatings.length})</Text>
-                ) : (
-                <Text>No ratings available.</Text>
-                )}
-            </View>
+            sellerProfile ? (
+                <View>
+                <TouchableOpacity onPress={navigateToSellerDetails} style={styles.sellerDetailsContainer}>
+                    <View style={styles.sellerDetails}>
+                    <Image source={{ uri: sellerProfile.profilePicture }} style={styles.sellerImage} />
+                    <View style={styles.sellerInfo}>
+                        <Text style={styles.sellerName}>{ratingsWithProfile[0].ratedUser.userName}</Text>
+                        <View style={styles.ratingContainer}>
+                        <StarRating
+                            rating={averageRating.toFixed(1)}
+                        />
+                        <Text style={styles.ratingCount}> {averageRating} ({ratingsWithProfile.length} Ratings)</Text>
+                        </View>
+                    </View>
+                    </View>
+                    <Ionicons name="chevron-forward" size={20} color="grey" />
+                </TouchableOpacity>
+              </View>
             ) : (
             <Text>Loading seller details...</Text>
             )
@@ -130,7 +135,7 @@ const ViewListing = ({ route, navigation }) => {
 
       <View style={styles.separator} />
 
-       {/* Section 3: Description */}
+       {/* Section 3: Listing Description */}
        <Text style={styles.sectionTitle}>Description</Text>
        <Text style={styles.description}>{item.description}</Text>
        <View style={styles.separator} />
@@ -242,20 +247,39 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 10,
   },
+  sellerDetailsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+  },
   sellerDetails: {
     flexDirection: 'row',
     alignItems: 'center',
-    //marginHorizontal: 10,
+  },
+  sellerInfo: {
+    //marginLeft: 10, // Adjust as needed
+  },
+  sellerName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 10, 
+    // other styling as needed
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 5, // Adjust as needed
+  },
+  ratingCount: {
+    fontSize: 14,
+    // other styling as needed
   },
   sellerImage: {
     width: 80,
     height: 80,
     borderRadius: 40,
     margin: 10,
-  },
-  sellerName: {
-    fontSize: 16,
-    marginLeft: 10,
   },
   dotContainer: {
     position: 'absolute',

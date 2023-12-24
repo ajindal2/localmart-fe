@@ -42,10 +42,7 @@ const MyProfile = ({ navigation }) => {
         console.log('Logging user id in MyProfile: ', user._id)
 
         const userAuthProfile = await getUser(user._id);
-        console.log('User Auth Profile:', userAuthProfile); // Debug log
-
         let userProfile = await getUserProfile(user._id);
-        console.log('User Profile:', userProfile); // Debug log
 
         setUserAuthDetails({
           emailAddress: userAuthProfile.emailAddress,
