@@ -15,7 +15,7 @@ const RegisterScreen = ({ navigation }) => {
         userName,
         emailAddress,
         password,*/
-        const response = await fetch('http://192.168.86.49:3000/auth/register', {
+        const response = await fetch('http://192.168.86.24:3000/auth/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

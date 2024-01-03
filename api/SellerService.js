@@ -1,6 +1,6 @@
 export const getSeller = async (sellerId) => {
     try {
-      const response = await fetch(`http://192.168.86.49:3000/seller/${sellerId}`);
+      const response = await fetch(`http://192.168.86.24:3000/seller/${sellerId}`);
       if (response.ok) {
           const seller = await response.json();
           return seller;

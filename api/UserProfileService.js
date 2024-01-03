@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 
 export const getUserProfile = async (userId) => {
   try {
-    const response = await fetch(`http://192.168.86.49:3000/userProfile/${userId}`);
+    const response = await fetch(`http://192.168.86.24:3000/userProfile/${userId}`);
     if (response.ok) {
         const profile = await response.json();
         return profile;
@@ -27,7 +27,7 @@ export const getUserProfile = async (userId) => {
         userId: userId,
         aboutMe: ''
       };
-      const response = await fetch('http://192.168.86.49:3000/userProfile/', {
+      const response = await fetch('http://192.168.86.24:3000/userProfile/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ export const updateUserProfile = async (userId, updatedProfileData) => {
     
   const token = await SecureStore.getItemAsync('token');
     try {
-      const response = await fetch(`http://192.168.86.49:3000/userProfile/${userId}`, {
+      const response = await fetch(`http://192.168.86.24:3000/userProfile/${userId}`, {
         method: 'PUT', // or 'PATCH' if you're updating partially
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ export const updateUserProfile = async (userId, updatedProfileData) => {
 
   export const uploadProfileImage = async (userId, imageUri) => {
     const token = await SecureStore.getItemAsync('token');
-    const apiUrl = `http://192.168.86.49:3000/userProfile/${userId}/image`;
+    const apiUrl = `http://192.168.86.24:3000/userProfile/${userId}/image`;
 
     console.log('imageUri: ', imageUri);
   

@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 
 export const getUser = async (userId) => {
   try {
-    const response = await fetch(`http://192.168.86.49:3000/users/${userId}`);
+    const response = await fetch(`http://192.168.86.24:3000/users/${userId}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -19,7 +19,7 @@ export const updateUser = async (userId, user) => {
   const token = await SecureStore.getItemAsync('token');
  
     try {
-      const response = await fetch(`http://192.168.86.49:3000/users/${userId}`, {
+      const response = await fetch(`http://192.168.86.24:3000/users/${userId}`, {
         method: 'PUT', // or 'PATCH' if you're updating partially
         headers: {
           'Content-Type': 'application/json',

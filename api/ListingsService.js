@@ -5,7 +5,7 @@ import * as SecureStore from 'expo-secure-store';
 
 export const getListings = async (searchKey) => {
   try {
-    let url = `http://192.168.86.49:3000/listings`; 
+    let url = `http://192.168.86.24:3000/listings`; 
     if (searchKey) {
       // Assuming your backend uses 'title' as a query param to filter listings
       url += `?title=${encodeURIComponent(searchKey)}`;
@@ -23,7 +23,7 @@ export const createListing = async (userId, listingDetails) => {
   try {
     //console.log('Inside createListing for userid: ', userId);
     const token = await SecureStore.getItemAsync('token');
-    const url = `http://192.168.86.49:3000/listings`;
+    const url = `http://192.168.86.24:3000/listings`;
 
     // Prepare the form data
     const formData = new FormData();

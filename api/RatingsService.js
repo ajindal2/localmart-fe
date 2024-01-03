@@ -1,7 +1,7 @@
 export const getSellerRatings = async (sellerId) => {
     try {
         // TODO: think if authorization is needed to fetch the ratings.
-      const response = await fetch(`http://192.168.86.49:3000/ratings/seller/${sellerId}`);
+      const response = await fetch(`http://192.168.86.24:3000/ratings/seller/${sellerId}`);
       if (response.ok) {
           const sellerRatings = await response.json();
           return sellerRatings;

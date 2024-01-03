@@ -10,7 +10,7 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://192.168.86.49:3000/auth/login', {
+      const response = await fetch('http://192.168.86.24:3000/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

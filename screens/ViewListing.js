@@ -5,6 +5,8 @@ import { AuthContext } from '../AuthContext';
 import { getUserProfile } from '../api/UserProfileService';
 import { getSellerRatings } from '../api/RatingsService';
 import StarRating from '../components/StarRating';
+import Toast from 'react-native-toast-message';
+import { createSavedListing, deleteSavedListing, checkSavedStatus } from '../api/SavedListingService';
 
 
 const ViewListing = ({ route, navigation }) => {
@@ -15,7 +17,9 @@ const ViewListing = ({ route, navigation }) => {
     const [sellerProfile, setSellerProfile] = useState(null);
     const [ratingsWithProfile, setRatingsWithProfile] = useState([]);
     const [averageRating, setAverageRating] = useState(0); 
-
+    const [isSaved, setIsSaved] = useState(false);
+    const [savedListingId, setSavedListingId] = useState(null);
+    
     const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
     ];
@@ -50,6 +54,69 @@ const ViewListing = ({ route, navigation }) => {
       ));
     };
 
+    // Handle save listing action
+    const handleSaveListing = async () => {
+        /*setIsSaved(!isSaved);
+        Toast.show({
+            type: 'success',
+            text1: isSaved ? 'Listing Saved' : 'Listing Unsaved',
+    
+            visibilityTime: 4000,
+            autoHide: true,
+            position: 'bottom',
+            topOffset: 30,
+            bottomOffset: 40,
+          }); */
+
+          const newSavedState = !isSaved;
+          setIsSaved(newSavedState);
+        
+          try {
+            if (newSavedState) {
+              const resp = await createSavedListing(user._id, item._id);
+              setSavedListingId(resp._id);
+              Toast.show({
+                type: 'success',
+                text1: 'Listing Saved',
+                visibilityTime: 4000,
+                autoHide: true,
+                position: 'bottom',
+                topOffset: 30,
+                bottomOffset: 40,
+              });
+            } else {
+              await deleteSavedListing(savedListingId);
+              setSavedListingId(null);
+              Toast.show({
+                type: 'success',
+                text1: 'Listing Unsaved',
+                visibilityTime: 4000,
+                autoHide: true,
+                position: 'bottom',
+                topOffset: 30,
+                bottomOffset: 40,
+              });
+            }
+          } catch (error) {
+            console.error('Error handling saved listing:', error);
+            Toast.show({
+              type: 'error',
+              text1: 'An error occurred',
+              visibilityTime: 4000,
+              autoHide: true,
+              position: 'bottom',
+              topOffset: 30,
+              bottomOffset: 40,
+            });
+          }
+    };
+
+    // Handle share listing action
+    const handleShareListing = () => {
+        // TODO: Add logic to share the listing
+        console.log('Share listing');
+    };
+
     useEffect(() => {
         /*const fetchUserProfile = async () => {
           try {
@@ -75,6 +142,18 @@ const ViewListing = ({ route, navigation }) => {
           fetchUserProfile();
         }*/
         
+        const checkIfSaved = async () => {
+          try {
+            const response = await checkSavedStatus(user._id, item._id);
+            setIsSaved(response.isSaved);
+            setSavedListingId(response.savedListingId);
+          } catch (error) {
+            console.error('Error checking saved status:', error);
+          }
+        };
+      
+        checkIfSaved();
+
         if (item && item.seller) {
           fetchSellerRatings();
         }
@@ -95,8 +174,18 @@ const ViewListing = ({ route, navigation }) => {
         //ref={scrollViewRef}
       >
        {item.imageUrls.map((url, index) => (
-          <Image key={index} source={{ uri: url }} style={[styles.image, { width: screenWidth }]} />
-        ))}
+              <View key={index} style={[styles.imageWrapper, { width: screenWidth }]}>
+                <Image source={{ uri: url }} style={styles.image} />
+                <View style={styles.iconsContainer}>
+                  <TouchableOpacity onPress={handleShareListing} style={styles.iconCircle}>
+                    <Ionicons name="share-social" size={24} color="white" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleSaveListing} style={styles.iconCircle}>
+                    <Ionicons name={isSaved ? "heart" : "heart-outline"} size={24} color={isSaved ? "orange" : "white"} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
       </ScrollView>
       <View style={styles.dotContainer}>{renderScrollDots()}</View>
       </View>
@@ -168,6 +257,22 @@ const styles = StyleSheet.create({
     flex: 1,
     marginBottom: 60, // Height of the button container
   },
+  imageWrapper: {
+    position: 'relative',
+  },
+  iconsContainer: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconCircle: {
+    backgroundColor: 'darkgrey',
+    borderRadius: 20,
+    padding: 5,
+    marginLeft: 5,
+  },
   buttonContainer: {
     position: 'absolute',
     bottom: 0,
@@ -212,9 +317,6 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     // other styles
-  },
-  description: {
-    // styling for description
   },
   image: {
     height: 250,
