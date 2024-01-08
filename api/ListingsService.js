@@ -19,6 +19,23 @@ export const getListings = async (searchKey) => {
   }
 };
 
+export const getListingFromId = async (listingId) => {
+  try {
+    const response = await fetch(`http://192.168.86.24:3000/listings/${listingId}`);
+    if (response.ok) {
+        const listing = await response.json();
+        return listing;
+      } else {
+        const errorData = await response.json();
+        console.error('Failed to fetch the listing:', errorData);
+        throw new Error(errorData.message || 'Failed to fetch listing');
+      }
+    } catch (error) {
+      console.error('Error fetching listing:', error);
+      // TODO think how to handle this error, return empty?
+    }
+};
+
 export const createListing = async (userId, listingDetails) => {
   try {
     //console.log('Inside createListing for userid: ', userId);

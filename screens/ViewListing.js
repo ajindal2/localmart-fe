@@ -2,15 +2,16 @@ import React, { useState, useContext, useEffect, Fragment } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../AuthContext';
-import { getUserProfile } from '../api/UserProfileService';
 import { getSellerRatings } from '../api/RatingsService';
 import StarRating from '../components/StarRating';
 import Toast from 'react-native-toast-message';
 import { createSavedListing, deleteSavedListing, checkSavedStatus } from '../api/SavedListingService';
+import { getListingFromId } from '../api/ListingsService';
+import shareListing from '../utils/ShareListing';
 
 
 const ViewListing = ({ route, navigation }) => {
-    const { item } = route.params;
+    //const { item } = route.params;
     const screenWidth = Dimensions.get('window').width;
     const [currentIndex, setCurrentIndex] = useState(0);
     const { user } = useContext(AuthContext);
@@ -19,6 +20,7 @@ const ViewListing = ({ route, navigation }) => {
     const [averageRating, setAverageRating] = useState(0); 
     const [isSaved, setIsSaved] = useState(false);
     const [savedListingId, setSavedListingId] = useState(null);
+    const [item, setItem] = useState(null);
     
     const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
@@ -56,52 +58,40 @@ const ViewListing = ({ route, navigation }) => {
 
     // Handle save listing action
     const handleSaveListing = async () => {
-        /*setIsSaved(!isSaved);
-        Toast.show({
-            type: 'success',
-            text1: isSaved ? 'Listing Saved' : 'Listing Unsaved',
-    
-            visibilityTime: 4000,
-            autoHide: true,
-            position: 'bottom',
-            topOffset: 30,
-            bottomOffset: 40,
-          }); */
+      /*setIsSaved(!isSaved);
+      Toast.show({
+          type: 'success',
+          text1: isSaved ? 'Listing Saved' : 'Listing Unsaved',
+  
+          visibilityTime: 4000,
+          autoHide: true,
+          position: 'bottom',
+          topOffset: 30,
+          bottomOffset: 40,
+        }); */
 
-          const newSavedState = !isSaved;
-          setIsSaved(newSavedState);
-        
-          try {
-            if (newSavedState) {
-              const resp = await createSavedListing(user._id, item._id);
-              setSavedListingId(resp._id);
-              Toast.show({
-                type: 'success',
-                text1: 'Listing Saved',
-                visibilityTime: 4000,
-                autoHide: true,
-                position: 'bottom',
-                topOffset: 30,
-                bottomOffset: 40,
-              });
-            } else {
-              await deleteSavedListing(savedListingId);
-              setSavedListingId(null);
-              Toast.show({
-                type: 'success',
-                text1: 'Listing Unsaved',
-                visibilityTime: 4000,
-                autoHide: true,
-                position: 'bottom',
-                topOffset: 30,
-                bottomOffset: 40,
-              });
-            }
-          } catch (error) {
-            console.error('Error handling saved listing:', error);
+        const newSavedState = !isSaved;
+        setIsSaved(newSavedState);
+      
+        try {
+          if (newSavedState) {
+            const resp = await createSavedListing(user._id, item._id);
+            setSavedListingId(resp._id);
             Toast.show({
-              type: 'error',
-              text1: 'An error occurred',
+              type: 'success',
+              text1: 'Listing Saved',
+              visibilityTime: 4000,
+              autoHide: true,
+              position: 'bottom',
+              topOffset: 30,
+              bottomOffset: 40,
+            });
+          } else {
+            await deleteSavedListing(savedListingId);
+            setSavedListingId(null);
+            Toast.show({
+              type: 'success',
+              text1: 'Listing Unsaved',
               visibilityTime: 4000,
               autoHide: true,
               position: 'bottom',
@@ -109,24 +99,32 @@ const ViewListing = ({ route, navigation }) => {
               bottomOffset: 40,
             });
           }
+        } catch (error) {
+          console.error('Error handling saved listing:', error);
+          Toast.show({
+            type: 'error',
+            text1: 'An error occurred',
+            visibilityTime: 4000,
+            autoHide: true,
+            position: 'bottom',
+            topOffset: 30,
+            bottomOffset: 40,
+          });
+        }
     };
 
     // Handle share listing action
     const handleShareListing = () => {
-        // TODO: Add logic to share the listing
-        console.log('Share listing');
+        const listingId = item._id; // Example listing ID
+        const listingTitle = 'Awesome Item for Sale!';
+        const listingUrl = getListingUrl(listingId);
+
+        shareListing(listingTitle, listingUrl);
     };
 
+    // TODO - can this code inside useEffect be optimized?
     useEffect(() => {
-        /*const fetchUserProfile = async () => {
-          try {
-            const profile = await getUserProfile(user._id);
-            setUserProfile(profile);
-          } catch (error) {
-            console.error('Error fetching user profile', error);
-          }
-        };*/
-  
+       
         const fetchSellerRatings = async () => {
           try {
             const { averageRating, ratingsWithProfile, sellerProfile } = await getSellerRatings(item.seller);
@@ -137,10 +135,6 @@ const ViewListing = ({ route, navigation }) => {
             console.error('Error fetching seller ratings', error);
           }
         };
-  
-       /* if (user && user._id) {
-          fetchUserProfile();
-        }*/
         
         const checkIfSaved = async () => {
           try {
@@ -151,13 +145,30 @@ const ViewListing = ({ route, navigation }) => {
             console.error('Error checking saved status:', error);
           }
         };
-      
-        checkIfSaved();
 
-        if (item && item.seller) {
-          fetchSellerRatings();
+        if (route.params?.item) {
+          // Navigated from within the app
+          setItem(route.params.item);
+        } else if (route.params?.listingId) {
+          console.log('Inside listingId');
+          // Navigated from a deep link
+          const listingId = route.params.listingId;
+          // Fetch the listing details from your backend using the listingId
+          getListingFromId(listingId).then(data => setItem(data));
         }
-      }, [user, item]);
+        
+        // TODO do I need to check if item exists
+        checkIfSaved();
+        if(item && item.seller) {
+          fetchSellerRatings();
+        }    
+       
+      }, [user, route.params]);
+
+      if (!item) {
+        // Render a loading indicator or null if no item data is available yet
+        return <Text>Loading...</Text>;
+    }
 
 
   return (
@@ -405,5 +416,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white', // Color for inactive dots
   },
 });
+
+const getListingUrl = (listingId) => {
+  return `https://www.localmart.com/listing/${listingId}`;
+};
 
 export default ViewListing;
