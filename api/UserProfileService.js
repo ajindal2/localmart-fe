@@ -21,6 +21,26 @@ export const getUserProfile = async (userId) => {
     }
   };
 
+export const getUserLocation = async (userId) => {
+  try {
+    const response = await fetch(`http://192.168.86.24:3000/userProfile/${userId}/location`);
+    if (response.ok) {
+        const profile = await response.json();
+        return profile;
+      } else if (response.status === 404) {
+        // Profile not found, return null or a specific message
+        return null;
+      } else {
+        const errorData = await response.json();
+        console.error('Error fetching user profile:', errorData);
+        throw new Error(errorData.message || 'Error fetching user profile');
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      return null;
+    }
+  };
+
  export const createUserProfile = async (userId) => {
     try {
       const newProfile = {
@@ -47,7 +67,7 @@ export const getUserProfile = async (userId) => {
     }
   };
 
-  // This will create the proifl eif it does not exist.
+  // This will create the profile if it does not exist.
 export const updateUserProfile = async (userId, updatedProfileData) => {
     console.log('Profile update for userId', userId );
     console.log('Updated profile is: ', JSON.stringify(updatedProfileData));

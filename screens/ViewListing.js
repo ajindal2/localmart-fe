@@ -122,7 +122,7 @@ const ViewListing = ({ route, navigation }) => {
         shareListing(listingTitle, listingUrl);
     };
 
-    // TODO - can this code inside useEffect be optimized?
+    // TODO - can this code inside useEffect be optimized? Should I use 2 separate useEffect?
     useEffect(() => {
        
         const fetchSellerRatings = async () => {

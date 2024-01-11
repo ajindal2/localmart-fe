@@ -1,9 +1,10 @@
 import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-
 import HomeAppStack from './HomeAppStack';
 import AuthStack from './AuthStack';
+import { LocationProvider } from './components/LocationProvider';
+
 
 import { AuthProvider, AuthContext } from './AuthContext';
 //import { Linking } from 'react-native';
@@ -52,7 +53,9 @@ return (
 export default function AppNavigator() {
   return (
     <AuthProvider>
-      <AppStack />
+      <LocationProvider>
+        <AppStack />
+      </LocationProvider>
     </AuthProvider>
   );
 }

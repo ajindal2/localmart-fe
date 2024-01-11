@@ -1,39 +1,19 @@
-import React, { useCallback, useEffect, useRef, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Alert, Button } from 'react-native';
 import { AuthContext } from '../AuthContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import MySearchBar from '../components/MySearchBar';
 import { getListings } from '../api/ListingsService';
 import colors from '../constants/colors';
+import { LocationContext } from '../components/LocationProvider';
+import LocationInfoDisplay from '../components/LocationInfoDisplay';
 
-/*const HomeScreen = ({ navigation }) => {
-  const { user, logout, setUser, setToken } = useContext(AuthContext);
-
-  const handleLogout = () => {
-    logout();
-  };
-
-  return (
-    <View>
-      <Text>Welcome, {user?.userName}!</Text>
-      <Button
-        title="Go to My Profile"
-        onPress={() => navigation.navigate('MyProfile')}
-      />
-      <Button
-        title="Logout"
-        onPress={handleLogout}
-      />
-    </View>
-    
-  );
-};*/
 
 const HomeScreen = ({ navigation }) => {
   const [listings, setListings] = useState([]);
   const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const { user, logout, setUser, setToken } = useContext(AuthContext);
+  const [debouncedSearch, setDebouncedSearch] = useState(''); 
+  const { user, logout} = useContext(AuthContext);
+  const { location } = useContext(LocationContext);
 
   const handleLogout = () => {
     logout();
@@ -68,7 +48,6 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-
   // TODO: will have to truncate long titles
   // TODO: check how a description with new lines etc is stored in mongo.
   // tODO: check complications of decimal prices
@@ -97,10 +76,21 @@ const HomeScreen = ({ navigation }) => {
         title="Logout"
         onPress={handleLogout}
       />
+      <View>
+    { /*location && (
+      <>
+        <Text>Coordinates: {location.coordinates.join(', ')}</Text>
+        <Text>City: {location.city}</Text>
+        <Text>Postal Code: {location.postalCode}</Text>
+      </>
+    ) */}
+  </View>
+      
       <MySearchBar
        value={search}
        onUpdate={(text) => setSearch(text)}
       />
+      <LocationInfoDisplay onPress={() => navigation.navigate('SearchLocationPreferenceScreen')} />
       <FlatList
          data={listings}
          renderItem={({ item }) => <RenderItem item={item} navigation={navigation} />}
@@ -141,7 +131,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     margin: 5,
     opacity: 0, // Make the item invisible
-  },
+  }
 });
 
 export default HomeScreen;

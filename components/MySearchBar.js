@@ -14,7 +14,7 @@ const MySearchBar =  ({ value, onUpdate }) => {
         backgroundColor: 'transparent',
         borderBottomColor: 'transparent',
         borderTopColor: 'transparent',
-        width: screenWidth - 80,
+        width: screenWidth - 60,
         alignSelf: 'center', // Centers the SearchBar in its parent container
         //marginHorizontal: 20, // Adds equal horizontal margin to both sides
         paddingTop: 0, // Reduces padding at the top of the container
