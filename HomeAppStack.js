@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SavedItems from './screens/SavedItems';
 import MyMessages from './screens/MyMessages';
 import CreateNewListingScreen from './screens/CreateNewListingScreen';
+import ListingStackNavigator from './ListingStackNavigator';
 import HomeStackNavigator from './HomeStackNavigator'
 import AccountStackNavigator from './AccountStackNavigator'
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -49,16 +50,16 @@ function HomeAppStack() {
         <Tab.Screen name="Home" component={HomeStackNavigator} options={{ headerShown: false }}/>
         <Tab.Screen name="SavedItems" component={SavedItems} />
         <Tab.Screen
-        name="Create New Listing"
-        component={CreateNewListingScreen} // Component to be rendered when the Camera tab is pressed
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons name={focused ? 'camera' : 'camera-outline'} size={size} color={color} />
-          ),
-          tabBarButton: (props) => <CameraButton {...props} />, // Custom component for the tab bar button
-          //headerShown: false,
-        }}
-      />
+          name="Create New Listing"
+          component={ListingStackNavigator} // Component to be rendered when the Camera tab is pressed
+          options={{
+            tabBarIcon: ({ focused, color, size }) => (
+              <Ionicons name={focused ? 'camera' : 'camera-outline'} size={size} color={color} />
+            ),
+            tabBarButton: (props) => <CameraButton {...props} />, // Custom component for the tab bar button
+            headerShown: false,
+          }}
+        />
         <Tab.Screen name="MyMessages" component={MyMessages} />
         <Tab.Screen name="Account" component={AccountStackNavigator} options={{ headerShown: false }} /> 
       </Tab.Navigator>

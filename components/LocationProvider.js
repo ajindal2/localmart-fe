@@ -50,10 +50,10 @@ export const LocationProvider = ({ children }) => {
             cityNameConst = response[0].city;
             postalCodeConst = response[0].postalCode;
           } 
+
           const updatedProfileData = {
             location: { 
-              type: "Point", 
-              coordinates: [expoLocation.coords.longitude, expoLocation.coords.latitude],
+              coordinates: [{ latitude: expoLocation.coords.latitude, longitude: expoLocation.coords.longitude }],
               city: cityNameConst,
               postalCode: postalCodeConst,
             }
@@ -77,9 +77,11 @@ export const LocationProvider = ({ children }) => {
 
   const updateLocation = async (newLocation) => {
     let updatedProfileData = {};
+    console.log('Inside updateLocation in Provider');
 
     if (newLocation.coords) {
         try {
+            console.log('calling reverseGeocodeAsync');
             let response = await Location.reverseGeocodeAsync({
                 latitude: newLocation.coords.latitude,
                 longitude: newLocation.coords.longitude,
@@ -95,8 +97,7 @@ export const LocationProvider = ({ children }) => {
 
             updatedProfileData = {
                 location: { 
-                    type: "Point", 
-                    coordinates: [newLocation.coords.longitude, newLocation.coords.latitude],
+                    coordinates: [{ latitude: newLocation.coords.latitude, longitude: newLocation.coords.longitude }],
                     city: cityNameConst,
                     postalCode: postalCodeConst,
                 }
@@ -108,7 +109,6 @@ export const LocationProvider = ({ children }) => {
     } else if (newLocation.postalCode) {
         updatedProfileData = {
             location: {
-                type: "ZipCode", 
                 postalCode: newLocation.postalCode,
             },
         };
@@ -116,7 +116,17 @@ export const LocationProvider = ({ children }) => {
 
     if (Object.keys(updatedProfileData).length > 0 && user._id) { 
         try {
-            await updateUserProfile(user._id, updatedProfileData);
+            let ret = await updateUserProfile(user._id, updatedProfileData);
+            // Set the complete details into the locatiobnContext using the response from update
+            if(!updatedProfileData.location.coordinates) {
+              updatedProfileData = {
+                location: {
+                  coordinates: [{ latitude: ret.location.coordinates[1], longitude: ret.location.coordinates[0] }],
+                    city: ret.location.city,
+                    postalCode: ret.location.postalCode,
+                }
+              }
+            }
             setLocation(updatedProfileData.location);
         } catch (error) {
             console.error('Error updating user profile:', error);

@@ -4,8 +4,8 @@ import { AuthContext } from '../AuthContext';
 import MySearchBar from '../components/MySearchBar';
 import { getListings } from '../api/ListingsService';
 import colors from '../constants/colors';
-import { LocationContext } from '../components/LocationProvider';
 import LocationInfoDisplay from '../components/LocationInfoDisplay';
+import { LocationContext } from '../components/LocationProvider';
 
 
 const HomeScreen = ({ navigation }) => {
@@ -13,7 +13,7 @@ const HomeScreen = ({ navigation }) => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState(''); 
   const { user, logout} = useContext(AuthContext);
-  const { location } = useContext(LocationContext);
+  const { setLocation } = useContext(LocationContext);
 
   const handleLogout = () => {
     logout();
@@ -90,7 +90,7 @@ const HomeScreen = ({ navigation }) => {
        value={search}
        onUpdate={(text) => setSearch(text)}
       />
-      <LocationInfoDisplay onPress={() => navigation.navigate('SearchLocationPreferenceScreen')} />
+     <LocationInfoDisplay onPress={() => navigation.navigate('SearchLocationPreferenceScreen')} />
       <FlatList
          data={listings}
          renderItem={({ item }) => <RenderItem item={item} navigation={navigation} />}
@@ -133,5 +133,9 @@ const styles = StyleSheet.create({
     opacity: 0, // Make the item invisible
   }
 });
+
+export const updateLocationInContext = (location, setLocation) => {
+  setLocation(location);
+};
 
 export default HomeScreen;

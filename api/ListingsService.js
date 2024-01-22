@@ -39,6 +39,7 @@ export const getListingFromId = async (listingId) => {
 export const createListing = async (userId, listingDetails) => {
   try {
     //console.log('Inside createListing for userid: ', userId);
+    console.log('listingDetails.location: ', listingDetails.location);
     const token = await SecureStore.getItemAsync('token');
     const url = `http://192.168.86.24:3000/listings`;
 
@@ -48,6 +49,9 @@ export const createListing = async (userId, listingDetails) => {
     formData.append('title', listingDetails.title);
     formData.append('description', listingDetails.description);
     formData.append('price', listingDetails.price);
+
+    const locationString = JSON.stringify(listingDetails.location);
+    formData.append('location', locationString);
 
     listingDetails.photos.forEach((photoUri, index) => {
       formData.append('images', { // Change this to 'images' to match server's expectation

@@ -2,22 +2,26 @@ import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
-import { LocationContext } from '../components/LocationProvider';
 
 
-const SearchLocationPreferenceScreen = ({ route }) => {
+const ListingLocationPreferenceScreen = ({ route, navigation }) => {
     const [zipCode, setZipCode] = useState('');
-    const { setLocation } = useContext(LocationContext);
     
+    // When the location is updated and the user is ready to navigate back, pass the updated location back as a navigation parameter
+    const updateLocation = (newLocation) => {
+      console.log('ListingLocationPreferenceScreen updateLocation: ', newLocation);
+      navigation.navigate('CreateNewListing', { updatedLocation: newLocation });
+    };
+
     const handleZipCodeChange = (text) => {
         if (/^\d{0,5}$/.test(text)) { // Regex for US ZIP code (0-5 digits)
-        setZipCode(text);
+            setZipCode(text);
         }
     };
 
     const updateLocationWithZipCode = async () => {
         if (/^\d{5}$/.test(zipCode)) {
-            setLocation({ postalCode: zipCode });
+            updateLocation({ postalCode: zipCode });
             Alert.alert('Location Updated', `Location set to ZIP code: ${zipCode}`);
         } else {
             Alert.alert('Invalid ZIP Code', 'Please enter a valid 5-digit ZIP code.');
@@ -46,7 +50,7 @@ const SearchLocationPreferenceScreen = ({ route }) => {
             );
         } else {
             const location = await Location.getCurrentPositionAsync({});
-            setLocation(location);
+            updateLocation(location);
         }
     };
 
@@ -58,13 +62,13 @@ const SearchLocationPreferenceScreen = ({ route }) => {
         }
 
         const location = await Location.getCurrentPositionAsync({});
-        setLocation(location);
+        updateLocation(location);
     };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Search Location Preference</Text>
-      <Text style={styles.subHeading}>Where are you searching?</Text>
+      <Text style={styles.heading}>Pickup Location Preference</Text>
+      <Text style={styles.subHeading}>Where is your item located?</Text>
 
       <TextInput
         style={styles.input}
@@ -111,4 +115,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SearchLocationPreferenceScreen;
+export default ListingLocationPreferenceScreen;

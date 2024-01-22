@@ -2,20 +2,23 @@ import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Switch, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { createListing } from '../api/ListingsService';
+import { getSellerLocation } from '../api/SellerService';
 import { AuthContext } from '../AuthContext';
 import colors from '../constants/colors';
 import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native'; 
 import { useFocusEffect } from '@react-navigation/native';
+import * as Location from 'expo-location';
 
 
-const CreatingNewListingScreen = ({ navigation }) => {
+const CreatingNewListingScreen = ({ navigation, route }) => {
   const { user } = useContext(AuthContext);
   const [photos, setPhotos] = useState([]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [isFree, setIsFree] = useState(false);
+  const [pickupLocation, setPickupLocation] = useState('');
   const [shouldCreateListing, setShouldCreateListing] = useState(false);
   const [titleError, setTitleError] = useState('');
   const [priceError, setPriceError] = useState('');
@@ -36,6 +39,72 @@ const CreatingNewListingScreen = ({ navigation }) => {
     });
   }, [navigation]); 
 
+  const updateLocation = async (newLocation) => {
+    let updatedProfileData = {};
+  
+    if (newLocation.coords) {
+        try {
+            let response = await Location.reverseGeocodeAsync({
+                latitude: newLocation.coords.latitude,
+                longitude: newLocation.coords.longitude,
+            });
+  
+            let cityNameConst = '';
+            let postalCodeConst = '';
+  
+            if (response.length > 0) {
+                cityNameConst = response[0].city || '';
+                postalCodeConst = response[0].postalCode || '';
+            }
+  
+            updatedProfileData = {
+                location: { 
+                    coordinates: [{ latitude: newLocation.coords.latitude, longitude: newLocation.coords.longitude }],
+                    city: cityNameConst,
+                    postalCode: postalCodeConst,
+                }
+            };
+        } catch (error) {
+            console.error('Failed to retrieve location details:', error);
+            // Handle error, e.g., show a user-friendly message or log the error
+        }
+    } else if (newLocation.postalCode) {
+        updatedProfileData = {
+            location: {
+                postalCode: newLocation.postalCode,
+            },
+        };
+    }
+  
+    if (Object.keys(updatedProfileData).length > 0 ) { 
+      setPickupLocation(updatedProfileData.location);
+    }
+  };  
+
+  useEffect(() => {
+    const fetchAndSetSellerLocation = async () => {
+      try {
+        const locationData = await  getSellerLocation(user._id);
+        if (locationData && locationData.city) {
+          setPickupLocation(locationData); 
+        }
+      } catch (error) {
+        console.error('Error fetching seller location:', error);
+      }
+    };
+  
+    if (route.params?.updatedLocation) {
+      const newLocation = route.params.updatedLocation;
+      updateLocation(newLocation);
+    } else {
+      fetchAndSetSellerLocation();
+    }
+  
+    return () => {
+      // Cleanup or reset route params if needed
+    };
+  }, [navigation, route.params?.updatedLocation, user._id]);
+  
   const handleCancelListing = () => {
     Alert.alert(
       "Discard Listing",
@@ -46,20 +115,42 @@ const CreatingNewListingScreen = ({ navigation }) => {
           style: "cancel"
         },
         { 
-          text: "OK", 
+          text: "OK",
           onPress: () => {
-            // Clear state and navigate to home page
-            setTitle('');
-            setDescription('');
-            setPrice('');
-            setPhotos([]);
-            setIsFree(false);
-            navigation.navigate('HomeScreen'); // Replace 'HomeScreen' with your actual home screen name
+            // Define an async function inside the onPress callback
+            const resetListing = async () => {
+              // Clear state
+              setTitle('');
+              setDescription('');
+              setPrice('');
+              setPhotos([]);
+              setIsFree(false);
+  
+              // Refetch and reset the seller's original location
+              try {
+                const locationData = await getSellerLocation(user._id);
+                if (locationData && locationData.city) {
+                  setPickupLocation(locationData);
+                } else {
+                  setPickupLocation({}); // Reset to an empty object or a default value
+                }
+              } catch (error) {
+                console.error('Error refetching seller location:', error);
+                setPickupLocation({}); // Reset in case of error
+              }
+  
+              // Navigate to home page
+              navigation.navigate('HomeScreen');
+            };
+  
+            // Call the async function
+            resetListing();
           }
         }
       ]
     );
   };
+  
 
   // TODO add logic to use camera for photos
   const handleAddPhoto = async () => {
@@ -117,7 +208,8 @@ const CreatingNewListingScreen = ({ navigation }) => {
             title,
             description,
             price: isFree ? '0' : price,
-            photos
+            photos,
+            location: pickupLocation
           };
           const listing = await createListing(user._id, listingDetails);
           // Handle success
@@ -159,7 +251,7 @@ const CreatingNewListingScreen = ({ navigation }) => {
       return () => {
         // Optional: Any cleanup logic goes here
       };
-    }, [])
+    }, [user._id])
   );
 
   const renderPhotoSlots = () => {
@@ -241,20 +333,42 @@ const CreatingNewListingScreen = ({ navigation }) => {
             }}
           />
         </View>
+        <View style={styles.separator} />
       </View>
+
+      <View style={styles.section}>
+      <Text style={styles.sectionTitle}>PickUp Location</Text>
+      <Text>
+        {pickupLocation.city || pickupLocation.postalCode || 'Loading location...'}
+      </Text>
+      <TouchableOpacity 
+        style={styles.editButton} 
+        //TODO
+            // 1. location will contain either only zipcode or the exppo location. 
+            // 2. Duplication the logic in LocationProvider update and set the newpickupLocation to updatedProfileData.location
+            // 3. newpickupLocation is what will be sent to BE when creating a new listing to store location.
+            // 4. Use pickupLocation to display on the page. It'll either be city if available or zipcode. 
+            // 5. Add logic in BE similar to UP service to call google API when only zipcode is present.
+          
+            onPress={() => navigation.navigate('ListingLocationPreferenceScreen')}
+      >
+        <Text>Edit</Text>
+      </TouchableOpacity>
+    </View>
+
       <View style={styles.separator} />
         <TouchableOpacity 
           style={styles.nextButton} 
           onPress={() => {
-            setShouldCreateListing(true); // Set the state as needed
-            
+            setShouldCreateListing(true); // Set the state as needed 
           }}
-            > 
-            <Text style={styles.nextButtonText}>Create</Text>
-          </TouchableOpacity>
+        > 
+        <Text style={styles.nextButtonText}>Create</Text>
+        </TouchableOpacity>
     </ScrollView>
   );
 };
+
 
 const styles = StyleSheet.create({
   // Add your styles here
@@ -362,6 +476,14 @@ const styles = StyleSheet.create({
   },
   deleteIconImage: {
     color: 'white', // White color for the icon
+  },
+  editButton: {
+    marginTop: 10,
+    backgroundColor: 'lightgrey',
+    padding: 10,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   separator: {
     height: 2,

@@ -90,6 +90,7 @@ export const updateUserProfile = async (userId, updatedProfileData) => {
       }
   
       const data = await response.json();
+      console.log('returned updated profile: ', data);
       return data; // Return the updated user data
     } catch (error) {
         console.error('Error updating user profile:', error);
