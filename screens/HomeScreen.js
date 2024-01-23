@@ -13,7 +13,7 @@ const HomeScreen = ({ navigation }) => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState(''); 
   const { user, logout} = useContext(AuthContext);
-  const { setLocation } = useContext(LocationContext);
+  const { location, setLocation } = useContext(LocationContext);
 
   const handleLogout = () => {
     logout();
@@ -31,6 +31,20 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     fetchListings(debouncedSearch);
   }, [debouncedSearch]);
+
+  useEffect(() => {
+    if (location) {
+      getListings(null, {
+        latitude: location.coordinates.latitude,
+        longitude: location.coordinates.longitude,
+        maxDistance: 5000 // 500 meters TODO adjust
+      }).then(data => {
+        setListings(data);
+      }).catch(error => {
+        console.error('Error fetching listings:', error);
+      });
+    }
+  }, [location]);
 
   const fetchListings = async (searchKey = '') => {
     try {
