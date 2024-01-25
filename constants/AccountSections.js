@@ -15,7 +15,7 @@ const sections = [
     },
     {
       data: [
-        { key: 'my_listings', text: 'My Listings' },
+        { key: 'ViewMyListingStackNavigator', text: 'My Listings' },
         { key: 'my_calendar', text: 'My Calendar' },
         { key: 'pickup_location', text: 'Pickup Location' },
       ],

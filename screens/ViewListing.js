@@ -127,7 +127,7 @@ const ViewListing = ({ route, navigation }) => {
        
         const fetchSellerRatings = async () => {
           try {
-            const { averageRating, ratingsWithProfile, sellerProfile } = await getSellerRatings(item.seller);
+            const { averageRating, ratingsWithProfile, sellerProfile } = await getSellerRatings(item.sellerId);
             setRatingsWithProfile(ratingsWithProfile);
             setAverageRating(averageRating); 
             setSellerProfile(sellerProfile);
@@ -150,20 +150,20 @@ const ViewListing = ({ route, navigation }) => {
           // Navigated from within the app
           setItem(route.params.item);
         } else if (route.params?.listingId) {
-          console.log('Inside listingId');
           // Navigated from a deep link
           const listingId = route.params.listingId;
           // Fetch the listing details from your backend using the listingId
           getListingFromId(listingId).then(data => setItem(data));
         }
         
-        // TODO do I need to check if item exists
-        checkIfSaved();
-        if(item && item.seller) {
+        if(item && user) {
+          checkIfSaved();
+        }
+        if(item && item.sellerId) {
           fetchSellerRatings();
         }    
        
-      }, [user, route.params]);
+      }, [item, user, route.params]);
 
       if (!item) {
         // Render a loading indicator or null if no item data is available yet

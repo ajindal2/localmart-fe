@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Switch, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { createListing } from '../api/ListingsService';
+import { createListing, updateListing } from '../api/ListingsService';
 import { getSellerLocation } from '../api/SellerService';
 import { AuthContext } from '../AuthContext';
 import colors from '../constants/colors';
@@ -23,21 +23,27 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
   const [titleError, setTitleError] = useState('');
   const [priceError, setPriceError] = useState('');
   const [photoError, setPhotoError] = useState('');
+  const [isEditing] = useState(route.params?.isEditing || false);
+  const [listing] = useState(route.params?.listing || {});
+  //const { isEditing, listing } = route.params || { isEditing: false, listing: null };
+
 
   useEffect(() => {
     console.log('Photos updated:', photos);
   }, [photos]);
 
   React.useLayoutEffect(() => {
+    console.log('route.params: ', route.params);
+
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={handleCancelListing}>
           <Text style={styles.cancelButtonText}>Cancel</Text>
         </TouchableOpacity>
       ),
-      title: 'Create New Listing',
+      title: isEditing ? 'Edit Listing' : 'Create New Listing',
     });
-  }, [navigation]); 
+  }, [navigation, isEditing]); 
 
   const updateLocation = async (newLocation) => {
     let updatedProfileData = {};
@@ -80,6 +86,17 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
       setPickupLocation(updatedProfileData.location);
     }
   };  
+
+  useEffect(() => {
+    if (isEditing && listing) {
+      setTitle(listing.title || '');
+      setDescription(listing.description || '');
+      setPrice(listing.price.toString() || '');
+      setPhotos(listing.imageUrls || []);
+      setPickupLocation(listing.location || {});
+      setIsFree(listing.price === 0);
+    }
+  }, [isEditing, listing]);
 
   useEffect(() => {
     const fetchAndSetSellerLocation = async () => {
@@ -203,15 +220,21 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           return;
         }
 
+        const listingDetails = {
+          title,
+          description,
+          price: isFree ? '0' : price,
+          photos,
+          location: pickupLocation
+        };
         try {
-          const listingDetails = {
-            title,
-            description,
-            price: isFree ? '0' : price,
-            photos,
-            location: pickupLocation
-          };
-          const listing = await createListing(user._id, listingDetails);
+          if (isEditing) {
+            // Call API to update the listing
+            await updateListing(listing._id, listingDetails);
+          } else {
+            // Call API to create a new listing
+            await createListing(user._id, listingDetails);
+          }
           // Handle success
           setShouldCreateListing(false); // Reset the flag
           // Handle success - reset the form fields and navigate to HomeScreen
@@ -221,16 +244,16 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           setIsFree(false);
           setPhotos([]);
           navigation.navigate('HomeScreen'); // Navigate to the homeScreen
-        } catch (error) {
-          // Handle error
-          console.error(error);
-          setShouldCreateListing(false); // Reset the flag
-        }
-      };
+      } catch (error) {
+        // Handle error
+        console.error(error);
+        setShouldCreateListing(false); // Reset the flag
+      }
+    };
 
-      if (shouldCreateListing) {
-        handleCreateListing();
-        setShouldCreateListing(false); 
+    if (shouldCreateListing) {
+      handleCreateListing();
+      setShouldCreateListing(false); 
     }
   }, [photos, shouldCreateListing, title, description, price, isFree, user._id]);
 
@@ -342,14 +365,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
         {pickupLocation.city || pickupLocation.postalCode || 'Loading location...'}
       </Text>
       <TouchableOpacity 
-        style={styles.editButton} 
-        //TODO
-            // 1. location will contain either only zipcode or the exppo location. 
-            // 2. Duplication the logic in LocationProvider update and set the newpickupLocation to updatedProfileData.location
-            // 3. newpickupLocation is what will be sent to BE when creating a new listing to store location.
-            // 4. Use pickupLocation to display on the page. It'll either be city if available or zipcode. 
-            // 5. Add logic in BE similar to UP service to call google API when only zipcode is present.
-          
+        style={styles.editButton}             
             onPress={() => navigation.navigate('ListingLocationPreferenceScreen')}
       >
         <Text>Edit</Text>
@@ -363,7 +379,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
             setShouldCreateListing(true); // Set the state as needed 
           }}
         > 
-        <Text style={styles.nextButtonText}>Create</Text>
+        <Text style={styles.nextButtonText}>{isEditing ? 'Update' : 'Create'}</Text>
         </TouchableOpacity>
     </ScrollView>
   );

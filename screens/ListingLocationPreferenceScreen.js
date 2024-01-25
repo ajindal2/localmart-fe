@@ -10,7 +10,7 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
     // When the location is updated and the user is ready to navigate back, pass the updated location back as a navigation parameter
     const updateLocation = (newLocation) => {
       console.log('ListingLocationPreferenceScreen updateLocation: ', newLocation);
-      navigation.navigate('CreateNewListing', { updatedLocation: newLocation });
+      navigation.navigate('CreateNewListingScreen', { updatedLocation: newLocation });
     };
 
     const handleZipCodeChange = (text) => {

@@ -9,7 +9,7 @@ function ListingStackNavigator() {
   return (
     <ListingStack.Navigator>
       <ListingStack.Screen
-        name="CreateNewListing"
+        name="CreateNewListingScreen"
         component={CreateNewListingScreen}
         options={{ headerShown: true }} // Adjust as needed
       />

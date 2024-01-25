@@ -3,7 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SavedItems from './screens/SavedItems';
 import MyMessages from './screens/MyMessages';
-import CreateNewListingScreen from './screens/CreateNewListingScreen';
 import ListingStackNavigator from './ListingStackNavigator';
 import HomeStackNavigator from './HomeStackNavigator'
 import AccountStackNavigator from './AccountStackNavigator'
