@@ -1,7 +1,8 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import ListingStackNavigator from './ListingStackNavigator';
-import ViewMyListingScreen from './screens/account/ViewMyListingScreen';
+import CreateListingStackNavigator from './CreateListingStackNavigator';
+import ViewListingStackNavigator from './ViewListingStackNavigator';
+import ViewMyListingScreen from '../screens/account/ViewMyListingScreen';
 
 const ViewMyListingStack = createStackNavigator();
 
@@ -18,10 +19,16 @@ function ViewMyListingStackNavigator() {
       />
       <ViewMyListingStack.Screen
         name="ListingStack"
-        component={ListingStackNavigator}
+        component={CreateListingStackNavigator}
         options={{ 
           headerShown: false,
-          title: 'Edit' 
+        }} 
+      />
+       <ViewMyListingStack.Screen
+        name="ViewListingStack"
+        component={ViewListingStackNavigator}
+        options={{ 
+          headerShown: false,
         }} 
       />
     </ViewMyListingStack.Navigator>

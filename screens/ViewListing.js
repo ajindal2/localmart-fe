@@ -8,7 +8,7 @@ import Toast from 'react-native-toast-message';
 import { createSavedListing, deleteSavedListing, checkSavedStatus } from '../api/SavedListingService';
 import { getListingFromId } from '../api/ListingsService';
 import shareListing from '../utils/ShareListing';
-
+import FullScreenImageModal from '../components/FullScreenImageModal'; 
 
 const ViewListing = ({ route, navigation }) => {
     //const { item } = route.params;
@@ -21,18 +21,29 @@ const ViewListing = ({ route, navigation }) => {
     const [isSaved, setIsSaved] = useState(false);
     const [savedListingId, setSavedListingId] = useState(null);
     const [item, setItem] = useState(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
     
     const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
     ];
 
     const formatDateToMonthYear = (dateString) => {
-        console.log('Logging date joined: ', dateString);
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const monthName = monthNames[date.getMonth()];
-        return `${monthName} ${year}`;
+      console.log('Logging date joined: ', dateString);
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const monthName = monthNames[date.getMonth()];
+      return `${monthName} ${year}`;
     };
+
+    const openImageModal = () => {
+      //setCurrentImageUrl(item.imageUrls);
+      setIsModalVisible(true);
+  };
+
+  // Function to close the modal
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
 
     const navigateToSellerDetails = () => {
         navigation.navigate('SellerDetails', { sellerProfile, ratingsWithProfile, averageRating });
@@ -45,15 +56,17 @@ const ViewListing = ({ route, navigation }) => {
     };
   
     const renderScrollDots = () => {
-      return item.imageUrls.map((_, index) => (
-        <View 
-          key={index} 
-          style={[
-            styles.dot,
-            currentIndex === index ? styles.activeDot : styles.inactiveDot
-          ]}
-        />
-      ));
+      return item && item.imageUrls && item.imageUrls.length > 0 ? (
+        item.imageUrls.map((_, index) => (
+          <View 
+            key={index} 
+            style={[
+              styles.dot,
+              currentIndex === index ? styles.activeDot : styles.inactiveDot
+            ]}
+          />
+        ))
+      ) : null; // Return null or some other placeholder if no images are available
     };
 
     // Handle save listing action
@@ -184,23 +197,41 @@ const ViewListing = ({ route, navigation }) => {
         scrollEventThrottle={16}
         //ref={scrollViewRef}
       >
-       {item.imageUrls.map((url, index) => (
-              <View key={index} style={[styles.imageWrapper, { width: screenWidth }]}>
+      {
+        item && item.imageUrls && item.imageUrls.length > 0 ? (
+          item.imageUrls.map((url, index) => (
+            <View key={index} style={[styles.imageWrapper, { width: screenWidth }]}>
+              <TouchableOpacity onPress={() => openImageModal(url)}>
                 <Image source={{ uri: url }} style={styles.image} />
-                <View style={styles.iconsContainer}>
-                  <TouchableOpacity onPress={handleShareListing} style={styles.iconCircle}>
-                    <Ionicons name="share-social" size={24} color="white" />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={handleSaveListing} style={styles.iconCircle}>
-                    <Ionicons name={isSaved ? "heart" : "heart-outline"} size={24} color={isSaved ? "orange" : "white"} />
-                  </TouchableOpacity>
-                </View>
+              </TouchableOpacity>
+              <View style={styles.iconsContainer}>
+                <TouchableOpacity onPress={handleShareListing} style={styles.iconCircle}>
+                  <Ionicons name="share-social" size={24} color="white" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleSaveListing} style={styles.iconCircle}>
+                  <Ionicons name={isSaved ? "heart" : "heart-outline"} size={24} color={isSaved ? "orange" : "white"} />
+                </TouchableOpacity>
               </View>
-            ))}
+              <View style={styles.dotContainer}>{renderScrollDots()}</View>
+            </View>
+          ))
+        ) : (
+          // Render a placeholder or message if no images are available
+          <View style={[styles.imageWrapper, { width: screenWidth }]}>
+            <Text style={styles.noImageText}>No images available</Text>
+          </View>
+        )
+      }
       </ScrollView>
-      <View style={styles.dotContainer}>{renderScrollDots()}</View>
-      </View>
 
+      <FullScreenImageModal
+        isVisible={isModalVisible}
+        onClose={closeModal}
+        imageUrls={item.imageUrls} // Pass all image URLs
+        initialIndex={currentIndex}  // Pass the current index
+        //imageUrl={item.imageUrls[currentIndex]} // Pass the URL of the current image
+      />
+      </View>
       <Text style={styles.title}>{item.title}</Text>
       <Text style={styles.price}>${item.price}</Text>
       <View style={styles.separator} />
@@ -414,6 +445,26 @@ const styles = StyleSheet.create({
   },
   inactiveDot: {
     backgroundColor: 'white', // Color for inactive dots
+  },
+  modalView: {
+    flex: 1,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 30,
+    left: 10,
+  },
+  fullScreenImage: {
+    width: '100%',
+    height: '80%',
+    resizeMode: 'contain',
+  },
+  modalDotContainer: {
+    position: 'absolute',
+    bottom: 30,
   },
 });
 

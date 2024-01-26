@@ -9,14 +9,13 @@ const sections = [
     {
       data: [
         { key: 'MyProfile', text: 'My Profile' },
-        { key: 'saved_items', text: 'Saved Items' },
+        { key: 'SavedListingStackNavigator', text: 'Saved Items' },
         { key: 'messages', text: 'Messages' },
       ],
     },
     {
       data: [
         { key: 'ViewMyListingStackNavigator', text: 'My Listings' },
-        { key: 'my_calendar', text: 'My Calendar' },
         { key: 'pickup_location', text: 'Pickup Location' },
       ],
     },

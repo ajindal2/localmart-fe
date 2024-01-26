@@ -48,7 +48,10 @@ const ViewMyListingScreen = () => {
   const renderItem = ({ item }) => (
     <TouchableOpacity 
       style={styles.listingItem} 
-      onPress={() => navigation.navigate('ViewListing', { listingId: item._id })}
+      onPress={() =>  navigation.navigate('ViewListingStack', { 
+        screen: 'ViewListing', 
+        params: { item }
+      })}
     >
       <Image source={{ uri: item.imageUrls[0] }} style={styles.listingImage} />
       <View style={styles.listingInfo}>

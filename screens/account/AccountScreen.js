@@ -1,49 +1,71 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { FlatList, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import sections from '../../constants/AccountSections';
+import { AuthContext } from '../../AuthContext';
+
 
 const AccountScreen = ({ navigation }) => {
+
+  const {logout} = useContext(AuthContext);
   
-    // renderItem expects an object with { item, index, separators, section }
-    const renderItem = ({ item, index, separators, section }) => {
-      return (
-        <View>
-          <TouchableOpacity
-            style={styles.item}
-            onPress={() => navigation.navigate(item.key)}
-          >
-            <Text style={styles.itemText}>{item.text}</Text>
-          </TouchableOpacity>
-          {/* Only render separator if not the last item */}
-          {index < section.data.length - 1 && <View style={styles.separator} />}
-        </View>
-      );
+  const handleLogout = () => {
+    /*navigation.reset({
+      index: 0,
+      routes: [{ name: 'LoginScreen' }], // Replace 'LoginScreen' with your actual login screen name
+    });*/
+
+    logout();
+  };
+
+  // renderItem expects an object with { item, index, separators, section }
+  const renderItem = ({ item, index, separators, section }) => {
+
+    const onItemPress = () => {
+      if (item.key === 'logout') {
+        handleLogout();
+      } else {
+        navigation.navigate(item.key);
+      }
     };
-  
-    // renderSection expects an object with { section }
-    const renderSection = ({ section }) => {
-      return (
-        <View style={styles.sectionContainer}>
-          <FlatList
-            data={section.data}
-            renderItem={(props) => renderItem({ ...props, section })}
-            keyExtractor={(item) => item.key}
-          />
-        </View>
-      );
-    };
-  
+
     return (
-      <View style={styles.container}>
-        {sections.map((section, index) => (
-          <React.Fragment key={index}>
-            {renderSection({ section })}
-          </React.Fragment>
-        ))}
-        {/* Footer Component */}
+      <View>
+        <TouchableOpacity
+          style={styles.item}
+          onPress={onItemPress}
+        >
+          <Text style={styles.itemText}>{item.text}</Text>
+        </TouchableOpacity>
+        {/* Only render separator if not the last item */}
+        {index < section.data.length - 1 && <View style={styles.separator} />}
       </View>
     );
   };
+
+  // renderSection expects an object with { section }
+  const renderSection = ({ section }) => {
+    return (
+      <View style={styles.sectionContainer}>
+        <FlatList
+          data={section.data}
+          renderItem={(props) => renderItem({ ...props, section })}
+          keyExtractor={(item) => item.key}
+        />
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      {sections.map((section, index) => (
+        <React.Fragment key={index}>
+          {renderSection({ section })}
+        </React.Fragment>
+      ))}
+      {/* Footer Component */}
+    </View>
+  );
+};
   
 
   const styles = StyleSheet.create({

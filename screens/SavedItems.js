@@ -6,7 +6,7 @@ import { AuthContext } from '../AuthContext';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { getSavedListings, deleteSavedListing } from '../api/SavedListingService'; // Replace with your actual API service call
 
-const SavedItems = () => {
+const SavedItems = ({navigation}) => {
   const { user } = useContext(AuthContext);
   const [savedListings, setSavedListings] = useState([]);
   const { showActionSheetWithOptions } = useActionSheet();
@@ -27,7 +27,21 @@ const SavedItems = () => {
   );
 
   const renderItem = ({ item }) => (
-    <View style={styles.listingItem}>
+    <TouchableOpacity 
+  style={styles.listingItem}
+  onPress={() => {
+    if (item.listing) {
+      navigation.navigate('ViewListingStack', { 
+        screen: 'ViewListing', 
+        params: { item: item.listing }
+      });
+      //navigation.navigate('ViewListing', { item: item.listing });
+    } else {
+      console.log('Listing is null, navigation aborted');
+      // Optionally, you can show an alert or a toast message here
+    }
+  }}
+>
       <Image source={{ uri: item.listing.imageUrls[0] }} style={styles.image} />
       <View style={styles.listingInfo}>
         <Text style={styles.title}>{item.listing.title}</Text>
@@ -37,7 +51,7 @@ const SavedItems = () => {
       <TouchableOpacity style={styles.optionsButton} onPress={() => handleOptionsPress(item)}>
         <Ionicons name="ellipsis-vertical" size={20} color="grey" />
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 
   const handleOptionsPress = (item) => {

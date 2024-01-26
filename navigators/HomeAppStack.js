@@ -1,14 +1,13 @@
 import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import SavedItems from './screens/SavedItems';
-import MyMessages from './screens/MyMessages';
-import ListingStackNavigator from './ListingStackNavigator';
+import SavedListingStackNavigator from './SavedListingStackNavigator';
+import MyMessages from '../screens/MyMessages';
+import CreateListingStackNavigator from './CreateListingStackNavigator';
 import HomeStackNavigator from './HomeStackNavigator'
 import AccountStackNavigator from './AccountStackNavigator'
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import colors from './constants/colors';
-import CameraButton from './components/CameraButton'
+import colors from '../constants/colors';
+import CameraButton from '../components/CameraButton'
 
 const Tab = createBottomTabNavigator();
 
@@ -24,7 +23,7 @@ function HomeAppStack() {
               case 'Home':
                 iconName = focused ? 'home' : 'home-outline';
                 break;
-              case 'SavedItems':
+              case 'SavedListingStackNavigator':
                 iconName = focused ? 'person' : 'person-outline';
                 break;
               case 'MyMessages':
@@ -47,10 +46,10 @@ function HomeAppStack() {
         })}
       >
         <Tab.Screen name="Home" component={HomeStackNavigator} options={{ headerShown: false }}/>
-        <Tab.Screen name="SavedItems" component={SavedItems} />
+        <Tab.Screen name="SavedListingStackNavigator" component={SavedListingStackNavigator} options={{ headerShown: false }}/>
         <Tab.Screen
           name="Create New Listing"
-          component={ListingStackNavigator} // Component to be rendered when the Camera tab is pressed
+          component={CreateListingStackNavigator} // Component to be rendered when the Camera tab is pressed
           options={{
             tabBarIcon: ({ focused, color, size }) => (
               <Ionicons name={focused ? 'camera' : 'camera-outline'} size={size} color={color} />

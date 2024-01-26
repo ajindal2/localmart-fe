@@ -1,6 +1,6 @@
 // App.js
 import React from 'react';
-import AppNavigator from './AppNavigator';
+import AppNavigator from './navigators/AppNavigator';
 import Toast from 'react-native-toast-message';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 

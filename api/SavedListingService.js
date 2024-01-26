@@ -59,7 +59,8 @@ export const deleteSavedListing = async (savedListingId) => {
     });
 
     if (!response.ok) {
-      throw new Error('Error deleting saved listing');
+      const errorData = await response.json();
+      throw new Error('Error deleting saved listing: ', errorData);
     }
 
     return await response.json();

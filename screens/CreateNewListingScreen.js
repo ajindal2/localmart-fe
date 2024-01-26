@@ -41,7 +41,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           <Text style={styles.cancelButtonText}>Cancel</Text>
         </TouchableOpacity>
       ),
-      title: isEditing ? 'Edit Listing' : 'Create New Listing',
+      title: isEditing ? 'Edit listing' : 'Create listing',
     });
   }, [navigation, isEditing]); 
 

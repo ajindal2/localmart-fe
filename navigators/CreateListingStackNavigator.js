@@ -1,25 +1,31 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import CreateNewListingScreen from './screens/CreateNewListingScreen';
-import ListingLocationPreferenceScreen from './screens/ListingLocationPreferenceScreen';
+import CreateNewListingScreen from '../screens/CreateNewListingScreen';
+import ListingLocationPreferenceScreen from '../screens/ListingLocationPreferenceScreen';
 
 const ListingStack = createStackNavigator();
 
-function ListingStackNavigator() {
+function CreateListingStackNavigator() {
   return (
     <ListingStack.Navigator>
       <ListingStack.Screen
         name="CreateNewListingScreen"
         component={CreateNewListingScreen}
-        options={{ headerShown: true }} // Adjust as needed
+        options={{ 
+          headerShown: true,
+          title: 'Create listing' 
+        }} 
       />
       <ListingStack.Screen
         name="ListingLocationPreferenceScreen"
         component={ListingLocationPreferenceScreen}
-        options={{ headerShown: true }} // Adjust as needed
+        options={{ 
+          headerShown: true,
+          title: 'Listing location' 
+        }} 
       />
     </ListingStack.Navigator>
   );
 }
 
-export default ListingStackNavigator;
+export default CreateListingStackNavigator;

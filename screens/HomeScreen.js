@@ -13,12 +13,7 @@ const HomeScreen = ({ navigation }) => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState(''); 
   const { user, logout} = useContext(AuthContext);
-  const { location, setLocation } = useContext(LocationContext);
-
-  const handleLogout = () => {
-    logout();
-  };
-
+  const { location } = useContext(LocationContext);
 
   useEffect(() => {
     const timerId = setTimeout(() => {
@@ -72,7 +67,10 @@ const HomeScreen = ({ navigation }) => {
     }
 
     const handlePress = () => {
-      navigation.navigate('ViewListing', { item });
+      navigation.navigate('ViewListingStack', { 
+        screen: 'ViewListing', 
+        params: { item }
+      });
     };
   
     return (
@@ -86,20 +84,6 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Button
-        title="Logout"
-        onPress={handleLogout}
-      />
-      <View>
-    { /*location && (
-      <>
-        <Text>Coordinates: {location.coordinates.join(', ')}</Text>
-        <Text>City: {location.city}</Text>
-        <Text>Postal Code: {location.postalCode}</Text>
-      </>
-    ) */}
-  </View>
-      
       <MySearchBar
        value={search}
        onUpdate={(text) => setSearch(text)}

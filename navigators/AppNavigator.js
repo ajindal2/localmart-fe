@@ -3,10 +3,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeAppStack from './HomeAppStack';
 import AuthStack from './AuthStack';
-import { LocationProvider } from './components/LocationProvider';
+import { LocationProvider } from '../components/LocationProvider';
 
 
-import { AuthProvider, AuthContext } from './AuthContext';
+import { AuthProvider, AuthContext } from '../AuthContext';
 //import { Linking } from 'react-native';
 import * as Linking from 'expo-linking';
 
