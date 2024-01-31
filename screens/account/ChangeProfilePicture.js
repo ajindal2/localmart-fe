@@ -5,14 +5,14 @@ import { uploadProfileImage} from '../../api/UserProfileService';
 import { AuthContext } from '../../AuthContext';
 import DEFAULT_IMAGE_URI from '../../constants/AppConstants';
 import { Ionicons } from '@expo/vector-icons';
+import useHideBottomTab from '../../utils/HideBottomTab'; 
 
 const ChangeProfilePicture = ({ route, navigation }) => {
   const [image, setImage] = useState(null);
   const { user } = useContext(AuthContext);
-
-  console.log('Route Params:', route.params);
   const userProfilePicture = route.params?.profilePicture ?? 'https://via.placeholder.com/150';
-  console.log('userProfilePicture inside ChangeProfilePicture: ', userProfilePicture);
+
+  useHideBottomTab(navigation, true);
 
   const handleTakePhoto = async () => {
     try {

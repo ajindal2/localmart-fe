@@ -5,11 +5,13 @@ import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../AuthContext';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { getSavedListings, deleteSavedListing } from '../api/SavedListingService'; // Replace with your actual API service call
+import useHideBottomTab from '../utils/HideBottomTab'; 
 
-const SavedItems = ({navigation}) => {
+const SavedItems = ({navigation, route}) => {
   const { user } = useContext(AuthContext);
   const [savedListings, setSavedListings] = useState([]);
   const { showActionSheetWithOptions } = useActionSheet();
+  const fromAccount = route.params?.fromAccount;
 
   const fetchSavedListings = async () => {
     try {
@@ -19,6 +21,8 @@ const SavedItems = ({navigation}) => {
       console.error('Error fetching saved listings:', error);
     }
   };
+
+  useHideBottomTab(navigation, fromAccount);
 
   useFocusEffect(
     useCallback(() => {

@@ -5,12 +5,14 @@ import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext'; 
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { getListingsByUser } from '../../api/ListingsService'; 
+import useHideBottomTab from '../../utils/HideBottomTab'; 
 
-const ViewMyListingScreen = () => {
+const ViewMyListingScreen = ({navigation}) => {
   const [listings, setListings] = useState([]);
   const { user } = useContext(AuthContext); 
   const { showActionSheetWithOptions } = useActionSheet();
-  const navigation = useNavigation();
+  //const navigation = useNavigation();
+  useHideBottomTab(navigation, true);
 
   useEffect(() => {
     const loadListings = async () => {
@@ -34,6 +36,7 @@ const ViewMyListingScreen = () => {
             screen: 'CreateNewListingScreen',
             params: {
               isEditing: false, 
+              fromAccount: true, // To hide the bottom tab when navigating from here.
             },
           })}
           style={styles.createButton}

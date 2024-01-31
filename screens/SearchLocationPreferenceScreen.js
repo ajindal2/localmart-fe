@@ -3,11 +3,13 @@ import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { LocationContext } from '../components/LocationProvider';
+import useHideBottomTab from '../utils/HideBottomTab'; 
 
-
-const SearchLocationPreferenceScreen = ({ route }) => {
+const SearchLocationPreferenceScreen = ({ navigation, route }) => {
     const [zipCode, setZipCode] = useState('');
     const { setLocation } = useContext(LocationContext);
+
+    useHideBottomTab(navigation, true);
     
     const handleZipCodeChange = (text) => {
         if (/^\d{0,5}$/.test(text)) { // Regex for US ZIP code (0-5 digits)

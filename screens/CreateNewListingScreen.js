@@ -9,6 +9,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native'; 
 import { useFocusEffect } from '@react-navigation/native';
 import * as Location from 'expo-location';
+import useHideBottomTab from '../utils/HideBottomTab'; 
 
 
 const CreatingNewListingScreen = ({ navigation, route }) => {
@@ -25,16 +26,16 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
   const [photoError, setPhotoError] = useState('');
   const [isEditing] = useState(route.params?.isEditing || false);
   const [listing] = useState(route.params?.listing || {});
-  //const { isEditing, listing } = route.params || { isEditing: false, listing: null };
+  const fromAccount = route.params?.fromAccount;
 
 
   useEffect(() => {
     console.log('Photos updated:', photos);
   }, [photos]);
 
-  React.useLayoutEffect(() => {
-    console.log('route.params: ', route.params);
+  useHideBottomTab(navigation, fromAccount);
 
+  React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={handleCancelListing}>

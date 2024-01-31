@@ -2,9 +2,12 @@ import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'rea
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import StarRating from '../components/StarRating';
+import useHideBottomTab from '../utils/HideBottomTab'; 
 
-const AllReviewsScreen = ({ route }) => {
+const AllReviewsScreen = ({ route, navigation }) => {
     const { sellerProfile, ratingsWithProfile, averageRating } = route.params;
+
+    useHideBottomTab(navigation, true);
 
     return (
         <ScrollView style={styles.container}>

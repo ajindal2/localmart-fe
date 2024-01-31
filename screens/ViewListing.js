@@ -1,5 +1,6 @@
-import React, { useState, useContext, useEffect, Fragment } from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../AuthContext';
 import { getSellerRatings } from '../api/RatingsService';
@@ -9,6 +10,7 @@ import { createSavedListing, deleteSavedListing, checkSavedStatus } from '../api
 import { getListingFromId } from '../api/ListingsService';
 import shareListing from '../utils/ShareListing';
 import FullScreenImageModal from '../components/FullScreenImageModal'; 
+import useHideBottomTab from '../utils/HideBottomTab'; 
 
 const ViewListing = ({ route, navigation }) => {
     //const { item } = route.params;
@@ -23,6 +25,9 @@ const ViewListing = ({ route, navigation }) => {
     const [item, setItem] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
     
+    // Hide the bottom tab 
+    useHideBottomTab(navigation, true);
+
     const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
     ];
@@ -182,7 +187,6 @@ const ViewListing = ({ route, navigation }) => {
         // Render a loading indicator or null if no item data is available yet
         return <Text>Loading...</Text>;
     }
-
 
   return (
     <View style={styles.screenContainer}>

@@ -23,6 +23,8 @@ const AccountScreen = ({ navigation }) => {
     const onItemPress = () => {
       if (item.key === 'logout') {
         handleLogout();
+      } else if (item.key === 'SavedListingStackNavigator') {
+        navigation.navigate('SavedListingStackNavigator', { screen: 'SavedItem', params: { fromAccount: true } });
       } else {
         navigation.navigate(item.key);
       }

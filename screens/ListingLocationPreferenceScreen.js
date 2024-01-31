@@ -2,15 +2,18 @@ import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
+import useHideBottomTab from '../utils/HideBottomTab'; 
 
 
 const ListingLocationPreferenceScreen = ({ route, navigation }) => {
     const [zipCode, setZipCode] = useState('');
+
+    useHideBottomTab(navigation, true);
     
     // When the location is updated and the user is ready to navigate back, pass the updated location back as a navigation parameter
     const updateLocation = (newLocation) => {
       console.log('ListingLocationPreferenceScreen updateLocation: ', newLocation);
-      navigation.navigate('CreateNewListingScreen', { updatedLocation: newLocation });
+      navigation.navigate('CreateNewListing', { updatedLocation: newLocation });
     };
 
     const handleZipCodeChange = (text) => {

@@ -21,7 +21,11 @@ function AccountStackNavigator() {
           headerShown: true,
           title: 'My Profile' 
         }}  /> 
-        <AccountStack.Screen name="ChangeProfilePicture" component={ChangeProfilePicture} options={{ headerShown: true }} /> 
+        <AccountStack.Screen name="ChangeProfilePicture" component={ChangeProfilePicture}
+        options={{ 
+          headerShown: true,
+          title: 'Change photo' 
+        }}  /> 
         <AccountStack.Screen name="ViewMyListingStackNavigator" component={ViewMyListingStackNavigator} options={{ headerShown: false }} /> 
         <AccountStack.Screen name="SavedListingStackNavigator" component={SavedListingStackNavigator} options={{ headerShown: false }} />  
       </AccountStack.Navigator>

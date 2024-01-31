@@ -76,7 +76,9 @@ const HomeScreen = ({ navigation }) => {
     return (
       <TouchableOpacity onPress={handlePress} style={styles.itemContainer}>
         <Image source={{ uri: item.imageUrls[0] }} style={styles.image} />
-        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+          {item.title}
+        </Text>
         <Text style={styles.price}>${item.price}</Text>
       </TouchableOpacity>
     );
@@ -119,6 +121,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     marginTop: 5,
+    overflow: 'hidden',
+    width: '100%',
+   // width: TODO what width 
   },
   price: {
     fontSize: 14,

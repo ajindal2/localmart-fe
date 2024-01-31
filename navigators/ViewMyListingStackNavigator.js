@@ -14,7 +14,7 @@ function ViewMyListingStackNavigator() {
         component={ViewMyListingScreen}
         options={{ 
           headerShown: true,
-          title: 'My Listings' 
+          title: 'My Listings',
         }} 
       />
       <ViewMyListingStack.Screen

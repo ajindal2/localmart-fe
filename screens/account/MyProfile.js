@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, Image, TextInput, Button, StyleSheet, Alert, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import ChangeProfilePicture from './ChangeProfilePicture';
 /*import StarRating from 'react-native-star-rating'; 
@@ -14,6 +14,7 @@ import { getUserProfile, updateUserProfile, createUserProfile } from '../../api/
 import { AuthContext } from '../../AuthContext';
 import * as SecureStore from 'expo-secure-store';
 import DEFAULT_IMAGE_URI from '../../constants/AppConstants';
+import useHideBottomTab from '../../utils/HideBottomTab'; 
 
 const MyProfile = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
@@ -34,6 +35,8 @@ const MyProfile = ({ navigation }) => {
   const onStarRatingPress = (rating) => {
     setStarCount(rating);
   };
+
+  useHideBottomTab(navigation, true);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -119,7 +122,7 @@ const MyProfile = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.imageSection}>
         <ProfileImageWithEditIcon
         imageUri={userProfileDetails.profilePicture}
@@ -182,7 +185,7 @@ const MyProfile = ({ navigation }) => {
         onPress={handleUpdateProfile}
       />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

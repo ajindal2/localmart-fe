@@ -13,7 +13,7 @@ function SavedListingStackNavigator() {
         component={SavedItems}
         options={{ 
           headerShown: true,
-          title: 'Saved items' 
+          title: 'Saved items',
         }} 
       />
        <SavedMyListingStack.Screen

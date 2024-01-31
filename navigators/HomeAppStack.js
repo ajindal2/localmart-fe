@@ -46,7 +46,7 @@ function HomeAppStack() {
         })}
       >
         <Tab.Screen name="Home" component={HomeStackNavigator} options={{ headerShown: false }}/>
-        <Tab.Screen name="SavedListingStackNavigator" component={SavedListingStackNavigator} options={{ headerShown: false }}/>
+        <Tab.Screen name="SavedListingStackNavigator" component={SavedListingStackNavigator} options={{ headerShown: false, tabBarLabel: 'Saved' }}/>
         <Tab.Screen
           name="Create New Listing"
           component={CreateListingStackNavigator} // Component to be rendered when the Camera tab is pressed
@@ -58,8 +58,8 @@ function HomeAppStack() {
             headerShown: false,
           }}
         />
-        <Tab.Screen name="MyMessages" component={MyMessages} />
-        <Tab.Screen name="Account" component={AccountStackNavigator} options={{ headerShown: false }} /> 
+        <Tab.Screen name="MyMessages" component={MyMessages} options={{ headerShown: false, tabBarLabel: 'Messages' }} />
+        <Tab.Screen name="Account" component={AccountStackNavigator} options={{ headerShown: false, tabBarLabel: 'Account' }} /> 
       </Tab.Navigator>
   );
 }

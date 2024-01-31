@@ -11,17 +11,19 @@ function ViewListingStackNavigator() {
       <ViewListingStack.Screen name="ViewListing" component={ViewListing} 
        options={{ 
           headerShown: true,
-          title: 'Listing details' 
+          title: 'Listing details',
         }} />
       <ViewListingStack.Screen name="SellerDetails" component={SellerDetails} 
       options={{ 
         headerShown: true,
-        title: 'Seller details' 
+        title: 'Seller details',
+        tabBarStyle: { display: 'none' } 
       }} />
       <ViewListingStack.Screen name="AllReviewsScreen" component={AllReviewsScreen}
       options={{ 
         headerShown: true,
-        title: 'All reviews' 
+        title: 'All reviews',
+        tabBarStyle: { display: 'none' } 
       }} />
     </ViewListingStack.Navigator>
   );

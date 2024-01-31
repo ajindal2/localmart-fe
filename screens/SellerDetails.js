@@ -1,11 +1,16 @@
 import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useEffect, useContext } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import StarRating from '../components/StarRating';
+import useHideBottomTab from '../utils/HideBottomTab'; 
 
 const SellerDetails = ({ route, navigation }) => {
     const { sellerProfile, ratingsWithProfile, averageRating } = route.params;
     const topThreeRatingsWithProfile = ratingsWithProfile.slice(0, 3); // Get top 3 ratings
+
+    // Hide the bottom tab 
+    useHideBottomTab(navigation, true);
+    
 
     const navigateToAllRatings = () => {
         navigation.navigate('AllReviewsScreen', { sellerProfile, ratingsWithProfile, averageRating }); // Navigate to a screen that shows all ratings
