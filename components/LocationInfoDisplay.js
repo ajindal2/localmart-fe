@@ -7,21 +7,21 @@ const LocationInfoDisplay = ({ onPress }) => {
     const { location } = useContext(LocationContext); 
   
     // Determine what text to display based on the available data
-    let locationText = null;
+    let locationText = 'Searching in: ';
     if (location && location.city) {
-      locationText = location.city;
+      locationText += location.city;
     } else if (location && location.postalCode) {
-      locationText = location.postalCode;
+      locationText += location.postalCode;
     }
   
     // Return null to render nothing if neither city nor postalCode is available
-    if (!locationText) {
-      return null;
-    }
+    if (locationText === 'Searching in: ') {
+       locationText = 'Set your search location';
+  }
   
     return (
       <TouchableOpacity style={styles.locationContainer} onPress={onPress}>
-          <Ionicons name="location" size={24} color="black" />
+         <Ionicons name="location" size={20} color="blue" />
           <Text style={styles.locationText}>{locationText}</Text>
       </TouchableOpacity>
     );
@@ -31,11 +31,13 @@ const LocationInfoDisplay = ({ onPress }) => {
     locationContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 10,
+        paddingLeft: 10,
+        paddingBottom: 10,
       },
       locationText: {
-        marginLeft: 8,
+        marginLeft: 5,
         fontSize: 16,
+        color: 'blue',
       },
  });
 

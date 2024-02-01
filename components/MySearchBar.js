@@ -1,37 +1,53 @@
 import React from 'react';
 import { SearchBar } from 'react-native-elements';
-import colors from '../constants/colors';
-import { Dimensions } from 'react-native';
+import { useTheme } from './ThemeContext';
+import { useFonts } from 'expo-font';
+import { Ionicons } from '@expo/vector-icons';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 
-const MySearchBar =  ({ value, onUpdate }) => {
-  const screenWidth = Dimensions.get('window').width;
+
+
+const MySearchBar =  ({ value, onUpdate, navigation }) => {
+  const [fontsLoaded] = useFonts({
+    Montserrat: require('../assets/fonts/Montserrat-Regular.ttf'), 
+  });
+  const { colors, typography, spacing } = useTheme();
+
+  if (!fontsLoaded) {
+    return null; 
+  }
+
+  const handleLocationIconPress = () => {
+    navigation.navigate('SearchLocationPreferenceScreen'); 
+  };
 
   return (
     <SearchBar
-      placeholder="Search Localmart..."
-      placeholderTextColor="gray"
+      placeholder="Search Localmart"
+      placeholderTextColor={colors.secondaryText}
       containerStyle={{
         backgroundColor: 'transparent',
         borderBottomColor: 'transparent',
         borderTopColor: 'transparent',
-        width: screenWidth - 60,
+        width: '100%',
         alignSelf: 'center', // Centers the SearchBar in its parent container
-        //marginHorizontal: 20, // Adds equal horizontal margin to both sides
         paddingTop: 0, // Reduces padding at the top of the container
         marginTop: 0,  // Reduces margin at the top of the container
       }}
       inputContainerStyle={{
-        backgroundColor: colors.inputBackground, // Changes the background color of the input field
-        paddingTop: 0,
+        borderWidth: 1, // Define border width
+        borderColor: colors.inputBorder, // Use border color from theme
         borderRadius: 15,
+        backgroundColor: '#fff', // Changes the background color of the input field
+        paddingBottom: 0,
       }}
       inputStyle={{
         color: 'black', // Changes the text color
-        fontSize: 17
-
+        fontFamily: 'Montserrat', // Set the font family
+        fontSize: 17, //typography.body.fontSize,
       }}
-      clearIcon={{ color: 'red', size: 20 }} // Customizes the clear icon
-      searchIcon={{ color: 'green', size: 25 }} // Customizes the search icon
+      clearIcon={{ size: 20, color: colors.iconColor }} // Customizes the clear icon
+      searchIcon={{ color: colors.iconColor, size: 20 }} // Customizes the search icon
       onChangeText={onUpdate}
       value={value}
     />

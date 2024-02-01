@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeAppStack from './HomeAppStack';
 import AuthStack from './AuthStack';
 import { LocationProvider } from '../components/LocationProvider';
+import { ThemeProvider } from '../components/ThemeContext';
 
 
 import { AuthProvider, AuthContext } from '../AuthContext';
@@ -54,7 +55,9 @@ export default function AppNavigator() {
   return (
     <AuthProvider>
       <LocationProvider>
-        <AppStack />
+        <ThemeProvider>
+         <AppStack />
+        </ThemeProvider>
       </LocationProvider>
     </AuthProvider>
   );

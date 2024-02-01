@@ -3,10 +3,9 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Alert, Butto
 import { AuthContext } from '../AuthContext';
 import MySearchBar from '../components/MySearchBar';
 import { getListings } from '../api/ListingsService';
-import colors from '../constants/colors';
 import LocationInfoDisplay from '../components/LocationInfoDisplay';
 import { LocationContext } from '../components/LocationProvider';
-
+import ListingItem from '../components/ListingItem';
 
 const HomeScreen = ({ navigation }) => {
   const [listings, setListings] = useState([]);
@@ -57,45 +56,27 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  // TODO: will have to truncate long titles
-  // TODO: check how a description with new lines etc is stored in mongo.
-  // tODO: check complications of decimal prices
-  const RenderItem = ({ item }) => {
-    // Check if the item is the filler item
-    if (!item.title) {
-      return <View style={styles.invisibleItem} />;
-    }
-
-    const handlePress = () => {
-      navigation.navigate('ViewListingStack', { 
-        screen: 'ViewListing', 
-        params: { item }
-      });
-    };
-  
-    return (
-      <TouchableOpacity onPress={handlePress} style={styles.itemContainer}>
-        <Image source={{ uri: item.imageUrls[0] }} style={styles.image} />
-        <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
-          {item.title}
-        </Text>
-        <Text style={styles.price}>${item.price}</Text>
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <View style={styles.container}>
       <MySearchBar
        value={search}
        onUpdate={(text) => setSearch(text)}
+       navigation={navigation}
       />
      <LocationInfoDisplay onPress={() => navigation.navigate('SearchLocationPreferenceScreen')} />
-      <FlatList
-         data={listings}
-         renderItem={({ item }) => <RenderItem item={item} navigation={navigation} />}
-         keyExtractor={item => item._id ? item._id.toString() : Math.random().toString()}
-         numColumns={2}
+     <FlatList
+        data={listings}
+        renderItem={({ item }) => (
+          <ListingItem
+            item={item}
+            onPress={() => navigation.navigate('ViewListingStack', { 
+              screen: 'ViewListing', 
+              params: { item }
+            })}
+          />
+        )}
+        keyExtractor={item => item._id ? item._id.toString() : Math.random().toString()}
+        numColumns={2}
       />
     </View>
   );
@@ -107,34 +88,6 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     marginTop: 0,
   },
-  itemContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    margin: 5,
-  },
-  image: {
-    width: '100%',
-    height: 150, // Adjust height
-    borderRadius: 5,
-  },
-  title: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginTop: 5,
-    overflow: 'hidden',
-    width: '100%',
-   // width: TODO what width 
-  },
-  price: {
-    fontSize: 14,
-    color: 'grey',
-  },
-  invisibleItem: {
-    flex: 1,
-    flexDirection: 'column',
-    margin: 5,
-    opacity: 0, // Make the item invisible
-  }
 });
 
 export const updateLocationInContext = (location, setLocation) => {

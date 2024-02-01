@@ -8,12 +8,20 @@ const AccountScreen = ({ navigation }) => {
 
   const {logout} = useContext(AuthContext);
   
-  const handleLogout = () => {
-    /*navigation.reset({
+  const resetToWelcomeScreen = () => {
+    let rootNavigator = navigation;
+    while (rootNavigator.getParent()) {
+      rootNavigator = rootNavigator.getParent();
+    }
+  
+    rootNavigator.reset({
       index: 0,
-      routes: [{ name: 'LoginScreen' }], // Replace 'LoginScreen' with your actual login screen name
-    });*/
-
+      routes: [{ name: 'WelcomeScreen' }],
+    });
+  };
+  
+  const handleLogout = () => {
+    //resetToWelcomeScreen();
     logout();
   };
 

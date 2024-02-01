@@ -2,7 +2,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import React from 'react';
 
 const useHideBottomTab = (navigation, shouldHide) => {
-  console.log('shouldHide: ', shouldHide);
   const findTabNavigator = (navigation) => {
     const parent = navigation.getParent();
     if (!parent) {
