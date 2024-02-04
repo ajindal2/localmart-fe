@@ -1,6 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Alert, Button } from 'react-native';
-import { AuthContext } from '../AuthContext';
 import MySearchBar from '../components/MySearchBar';
 import { getListings } from '../api/ListingsService';
 import LocationInfoDisplay from '../components/LocationInfoDisplay';
@@ -11,7 +10,6 @@ const HomeScreen = ({ navigation }) => {
   const [listings, setListings] = useState([]);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState(''); 
-  const { user, logout} = useContext(AuthContext);
   const { location } = useContext(LocationContext);
 
   useEffect(() => {

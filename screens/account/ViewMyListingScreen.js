@@ -1,17 +1,20 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../AuthContext'; 
-import { useActionSheet } from '@expo/react-native-action-sheet';
 import { getListingsByUser } from '../../api/ListingsService'; 
 import useHideBottomTab from '../../utils/HideBottomTab'; 
+import CustomActionSheet from '../../components/CustomActionSheet'; 
+import { useTheme } from '../../components/ThemeContext';
+import ButtonComponent from '../../components/ButtonComponent';
 
 const ViewMyListingScreen = ({navigation}) => {
   const [listings, setListings] = useState([]);
   const { user } = useContext(AuthContext); 
-  const { showActionSheetWithOptions } = useActionSheet();
-  //const navigation = useNavigation();
+  const [activeItemId, setActiveItemId] = useState(null);
+  const { colors, typography, spacing } = useTheme();
+  const styles = getStyles(colors, typography, spacing);
+
   useHideBottomTab(navigation, true);
 
   useEffect(() => {
@@ -31,22 +34,49 @@ const ViewMyListingScreen = ({navigation}) => {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity
-          onPress={() => navigation.navigate('ListingStack', {
-            screen: 'CreateNewListingScreen',
-            params: {
-              isEditing: false, 
-              fromAccount: true, // To hide the bottom tab when navigating from here.
-            },
-          })}
-          style={styles.createButton}
-        >
-          <Ionicons name="create" size={24} color="black" />
-          <Text style={styles.createButtonText}>Create</Text>
-        </TouchableOpacity>
+        <ButtonComponent iconName="create-outline" type="primary" round={true}
+        onPress={() => navigation.navigate('ListingStack', {
+          screen: 'CreateNewListingScreen',
+          params: {
+            isEditing: false, 
+            fromAccount: true, // To hide the bottom tab when navigating from here.
+          },
+        })}
+       style={{ marginRight: 20 }}/>
+        
       ),
     });
   }, [navigation]);
+
+  const getActionSheetOptions = (item) => [
+    {
+      icon: 'share-social-outline',
+      text: 'Share Listing',
+      onPress: () => {
+        console.log('Sharing listing:', item._id);
+        setActiveItemId(null);
+      },
+    },
+    {
+      icon: 'pencil-outline',
+      text: 'Edit Listing',
+      onPress: () => {
+        navigation.navigate('ListingStack', {
+          screen: 'CreateNewListingScreen',
+          params: {
+            isEditing: true, 
+            listing: item,
+            fromAccount: true, // To hide the bottom tab when navigating from here.
+          },
+        });
+        setActiveItemId(null);
+      },
+    },
+  ];
+
+  const handleOpenActionSheet = (item) => {
+    setActiveItemId(item._id); 
+  };
 
   const renderItem = ({ item }) => (
     <TouchableOpacity 
@@ -58,61 +88,48 @@ const ViewMyListingScreen = ({navigation}) => {
     >
       <Image source={{ uri: item.imageUrls[0] }} style={styles.listingImage} />
       <View style={styles.listingInfo}>
-      <Text style={styles.listingTitle}>{item.title}</Text>
+      <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+        {item.title}
+      </Text>
       <Text style={styles.listingDetails}>
         {`$${item.price.toFixed(2)}`} · {new Date(item.dateCreated).toLocaleDateString()}
       </Text>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.buttonStyle}>
-          <Text style={styles.buttonText}>Button 1</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonStyle}>
-          <Text style={styles.buttonText}>Button 2</Text>
-        </TouchableOpacity>
       </View>
-      </View>
-      <TouchableOpacity style={styles.optionsButton} onPress={() => handleOptionsPress(item)}>
+      <TouchableOpacity style={styles.optionsButton} onPress={() => handleOpenActionSheet(item)}>
         <Ionicons name="ellipsis-vertical" size={20} color="grey" />
       </TouchableOpacity>
     </TouchableOpacity>
   );
 
-  const handleOptionsPress = (item) => {
-    const options = ['Share', 'Edit Listing', 'Cancel'];
-    const cancelButtonIndex = 2;
-
-    showActionSheetWithOptions(
-      {
-        options,
-        cancelButtonIndex,
-      },
-      (buttonIndex) => {
-        if (buttonIndex === 0) {
-          // Logic for sharing the listing
-          //shareListing(item);
-        } else if (buttonIndex === 1) {
-          navigation.navigate('ListingStack', {
-            screen: 'CreateNewListingScreen',
-            params: {
-              isEditing: true, 
-              listing: item,
-            },
-          });
-        }
-      },
-    );
-  };
+  const actionSheetOptions = listings
+  .filter(item => item._id === activeItemId)
+  .map(item => getActionSheetOptions(item))[0] || [];
 
   return (
-    <FlatList
-      data={listings}
-      renderItem={renderItem}
-      keyExtractor={item => item._id}
-    />
+    <View style={styles.container}>
+      <FlatList
+        data={listings}
+        renderItem={renderItem}
+        keyExtractor={item => item._id}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+      />
+      <CustomActionSheet
+          isVisible={activeItemId !== null}
+          onClose={() => setActiveItemId(null)}
+          options={actionSheetOptions}
+        />
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
+const { width } = Dimensions.get('window');
+const imageSize = width * 0.2; 
+
+const getStyles = (colors, typography, spacing) => StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+  },
   createButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -124,54 +141,36 @@ const styles = StyleSheet.create({
   },
   listingItem: {
     flexDirection: 'row',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    padding: spacing.size10,
+    alignItems: 'center',
   },
   listingImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 5,
-    marginRight: 10,
+    width: imageSize,
+    height: imageSize,
+    borderRadius: imageSize / 8,
+    marginRight: spacing.size10,
   },
   listingInfo: {
     flex: 1,
     justifyContent: 'center',
+    marginLeft: spacing.size10,
   },
-  listingTitle: {
-    fontSize: 18,
-    color: 'black',
-  },
-  listingPrice: {
-    fontSize: 14,
-    color: 'grey',
-  },
-  listingDate: {
-    fontSize: 12,
-    color: 'grey',
+  title: {
+    fontSize: typography.body,
+    fontWeight: 'bold',
   },
   listingDetails: {
-    fontSize: 14,
-    color: 'grey',
-    // Add any other styling you need
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    marginTop: 10,
-  },
-  buttonStyle: {
-    backgroundColor: '#007bff', // Example button color
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 5,
-    marginRight: 10, // Add margin to separate the buttons
-  },
-  buttonText: {
-    color: 'white',
+    fontSize: typography.price,
+    color: colors.secondaryText,
+    marginTop: spacing.xs,
   },
   optionsButton: {
-    padding: 30,
-    paddingRight: -20
+    padding: spacing.size10,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: colors.inputBorder,
+    margin: spacing.xs
   },
 });
 

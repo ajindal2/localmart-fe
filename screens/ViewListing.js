@@ -1,6 +1,5 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../AuthContext';
 import { getSellerRatings } from '../api/RatingsService';
@@ -11,6 +10,10 @@ import { getListingFromId } from '../api/ListingsService';
 import shareListing from '../utils/ShareListing';
 import FullScreenImageModal from '../components/FullScreenImageModal'; 
 import useHideBottomTab from '../utils/HideBottomTab'; 
+import { useTheme } from '../components/ThemeContext';
+import ButtonComponent from '../components/ButtonComponent';
+import ExpandingTextComponent from '../components/ExpandingTextComponent';
+
 
 const ViewListing = ({ route, navigation }) => {
     //const { item } = route.params;
@@ -24,10 +27,14 @@ const ViewListing = ({ route, navigation }) => {
     const [savedListingId, setSavedListingId] = useState(null);
     const [item, setItem] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    
+    const [sellerImageLoadError, setSellerImageLoadError] = useState(false);
+    const { colors, typography, spacing } = useTheme();
+    const styles = getStyles(colors, typography, spacing);
+    const STOCK_IMAGE_URI = require('../assets/stock-image.png'); 
+
     // Hide the bottom tab 
     useHideBottomTab(navigation, true);
-
+    
     const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
     ];
@@ -189,8 +196,8 @@ const ViewListing = ({ route, navigation }) => {
     }
 
   return (
-    <View style={styles.screenContainer}>
-      <ScrollView style={styles.container}>
+    <View style={styles.container}>
+      <ScrollView style={styles.topContainer}>
       <View style={styles.imageContainer}>
       {/* Section 1: Images, Title, and Price */}
       <ScrollView
@@ -205,7 +212,7 @@ const ViewListing = ({ route, navigation }) => {
         item && item.imageUrls && item.imageUrls.length > 0 ? (
           item.imageUrls.map((url, index) => (
             <View key={index} style={[styles.imageWrapper, { width: screenWidth }]}>
-              <TouchableOpacity onPress={() => openImageModal(url)}>
+              <TouchableOpacity activeOpacity={1} onPress={() => openImageModal(url)}>
                 <Image source={{ uri: url }} style={styles.image} />
               </TouchableOpacity>
               <View style={styles.iconsContainer}>
@@ -236,72 +243,85 @@ const ViewListing = ({ route, navigation }) => {
         //imageUrl={item.imageUrls[currentIndex]} // Pass the URL of the current image
       />
       </View>
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.price}>${item.price}</Text>
-      <View style={styles.separator} />
 
-      {/* Section 2: Seller Details */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Seller Details</Text>
-        {
-            sellerProfile ? (
-                <View>
-                <TouchableOpacity onPress={navigateToSellerDetails} style={styles.sellerDetailsContainer}>
-                    <View style={styles.sellerDetails}>
-                    <Image source={{ uri: sellerProfile.profilePicture }} style={styles.sellerImage} />
-                    <View style={styles.sellerInfo}>
-                        <Text style={styles.sellerName}>{ratingsWithProfile[0].ratedUser.userName}</Text>
-                        <View style={styles.ratingContainer}>
-                        <StarRating
-                            rating={averageRating.toFixed(1)}
-                        />
-                        <Text style={styles.ratingCount}> {averageRating} ({ratingsWithProfile.length} Ratings)</Text>
-                        </View>
-                    </View>
-                    </View>
-                    <Ionicons name="chevron-forward" size={20} color="grey" />
-                </TouchableOpacity>
-              </View>
-            ) : (
-            <Text>Loading seller details...</Text>
-            )
-        }
-        </View>
+      <View style={styles.textContainer}>
+        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.price}>${item.price}</Text>
+        <View style={styles.separator} />
 
-      <View style={styles.separator} />
+        {/* Section 2: Seller Details */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Seller Details</Text>
+          {
+              sellerProfile ? (
+                  <View>
+                  <TouchableOpacity activeOpacity={1} onPress={navigateToSellerDetails} style={styles.sellerDetailsContainer}>
+                      <View style={styles.sellerDetails}>
+                      <Image 
+                        source={
+                          sellerImageLoadError || !sellerProfile.profilePicture
+                            ? STOCK_IMAGE_URI
+                            : { uri: sellerProfile.profilePicture }
+                        }
+                        style={styles.sellerImage}
+                        onError={() => setSellerImageLoadError(true)}
+                      />
+                      <View style={styles.sellerInfo}>
+                          <Text style={styles.sellerName}>{ratingsWithProfile[0].ratedUser.userName}</Text>
+                          <View style={styles.ratingContainer}>
+                          <StarRating
+                              rating={averageRating.toFixed(1)}
+                          />
+                          <Text style={styles.ratingCount}> {averageRating} ({ratingsWithProfile.length} Ratings)</Text>
+                          </View>
+                      </View>
+                      </View>
+                      <Ionicons name="chevron-forward" size={20} color="grey" />
+                  </TouchableOpacity>
+                </View>
+              ) : (
+              <Text style={styles.sellerDetailsContainer} >Loading seller details...</Text>
+              )
+          }
+          </View>
 
-       {/* Section 3: Listing Description */}
-       <Text style={styles.sectionTitle}>Description</Text>
-       <Text style={styles.description}>{item.description}</Text>
-       <View style={styles.separator} />
+        <View style={styles.separator} />
 
-       {/* Section 4: More like this */}
-       <Text style={styles.sectionTitle}>More items like this</Text>
+        {/* Section 3: Listing Description */}
+        <Text style={styles.sectionTitle}>Description</Text>
+        <ExpandingTextComponent description={item.description} />
+        <View style={styles.separator} />
 
+        {/* Section 4: Location */}
+        <Text style={styles.sectionTitle}>Location</Text>
+       </View>
     </ScrollView>
 
     <View style={styles.buttonContainer}>
-        <TouchableOpacity style={[styles.button, styles.primaryButton]}>
-          <Text style={styles.buttonText}>Schedule pickup</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Message seller</Text>
-        </TouchableOpacity>
-      </View>
+      <ButtonComponent 
+        title="Message seller"
+        type="primary"
+        onPress={() => console.log('message seller')}
+        style={{ width: '100%', flexDirection: 'row' }}
+      />
+    </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  screenContainer: {
-    flex: 1,
+const getStyles = (colors, typography, spacing) => StyleSheet.create({
+  container: {
+    flex: 1, 
   },
   section: {
     marginTop: 1,
   },
-  container: {
+  topContainer: {
     flex: 1,
-    marginBottom: 60, // Height of the button container
+    marginBottom: 60, 
+  },
+  textContainer: {
+    padding: spacing.size10,
   },
   imageWrapper: {
     position: 'relative',
@@ -372,34 +392,31 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
-    marginLeft: 10,
+    paddingBottom: 5,
   },
   price: {
     fontSize: 18,
-    color: 'grey',
-    //marginBottom: 10,
-    marginLeft: 10,
-  },
-  description: {
-    margin: 10,
+    color: colors.secondaryText,
   },
   separator: {
-    height: 1,
-    backgroundColor: '#e0e0e0',
-    marginVertical: 10,
+    height: 2,
+    backgroundColor: colors.separatorColor,
+    marginBottom: spacing.size10,
+    marginTop: spacing.size10,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: typography.heading,
     fontWeight: 'bold',
-    marginLeft: 10,
+    color: colors.headingColor, 
+    paddingBottom: spacing.size10,
   },
   sellerDetailsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10,
+    paddingBottom: 10,
   },
   sellerDetails: {
     flexDirection: 'row',
@@ -411,7 +428,7 @@ const styles = StyleSheet.create({
   sellerName: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginLeft: 10, 
+    marginBottom: 5, 
     // other styling as needed
   },
   ratingContainer: {
@@ -427,7 +444,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    margin: 10,
+    marginRight: 10,
   },
   dotContainer: {
     position: 'absolute',

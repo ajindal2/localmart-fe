@@ -10,18 +10,27 @@ export const theme = {
     inputBorder: '#d7d7d7', // light gray
     titleColor: '#000',
     iconColor: '#666',
-    // more colors...
+    mediumGrey: '#d9d9d9',
+    darkGrey: '#808080',
+    white: '#fff',
+    error: 'red',
+    disabledBox: '#e0e0e0',
+    separatorColor: '#e0e0e0',
+    headingColor: '#000'
   },
   typography: {
     // fontSizes
     authTitle: 32 ,
-    pageTitle: 20 , // Absolute unit
-    body: 16 ,  // Absolute unit
+    pageTitle: 20 ,
+    heading: 18,
+    body: 16 ,  
     price: 14,
-    caption: 12 ,  // Absolute unit
-    // more text styles...
+    subHeading: 14,
+    caption: 12 ,  
+    iconSize: 20.
   },
   spacing: {
+    xxs: 2, 
     xs: 4, // Absolute unit
     sm: 8, // Absolute unit
     //md: 0.02 * width, 

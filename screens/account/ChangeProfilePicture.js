@@ -1,16 +1,19 @@
 import React, { useState, useContext } from 'react';
-import { View, Button, Image, StyleSheet, Alert, Platform, TouchableOpacity, Text } from 'react-native';
+import { View, Image, StyleSheet, Alert, Dimensions } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { uploadProfileImage} from '../../api/UserProfileService';
 import { AuthContext } from '../../AuthContext';
 import DEFAULT_IMAGE_URI from '../../constants/AppConstants';
-import { Ionicons } from '@expo/vector-icons';
 import useHideBottomTab from '../../utils/HideBottomTab'; 
+import ButtonComponent from '../../components/ButtonComponent';
+import { useTheme } from '../../components/ThemeContext';
 
 const ChangeProfilePicture = ({ route, navigation }) => {
   const [image, setImage] = useState(null);
   const { user } = useContext(AuthContext);
   const userProfilePicture = route.params?.profilePicture ?? 'https://via.placeholder.com/150';
+  const { colors, typography, spacing } = useTheme();
+  const styles = getStyles(colors, typography, spacing);
 
   useHideBottomTab(navigation, true);
 
@@ -102,76 +105,70 @@ const handleChoosePhoto = async () => {
         <Image source={image ? { uri: image } : { uri: userProfilePicture }} style={styles.image} />
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={handleTakePhoto} style={styles.button}>
-        <Ionicons name="camera" size={20} color="#fff" />
-          <Text style={styles.buttonText}>Take Photo</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleChoosePhoto} style={styles.button}>
-        <Ionicons name="images" size={20} color="#fff" />
-          <Text style={styles.buttonText}>Select Photo</Text>
-        </TouchableOpacity>
+        <ButtonComponent title="Take photo" type="secondary" iconName="camera"
+          onPress={handleTakePhoto}
+          style={[styles.button, styles.firstButton]}
+        />
+        <ButtonComponent title="Select photo" type="secondary" iconName="images"
+          onPress={handleChoosePhoto}
+          style={[styles.button]}
+        />
       </View>
       {image && (
-        <TouchableOpacity style={styles.usePhotoButton} onPress={handleConfirmPhoto}>
-          <Text style={styles.usePhotoButtonText}>Use photo</Text>
-        </TouchableOpacity>      )}
+         <View style={styles.bottomButtonContainer}>
+          <ButtonComponent title="Use photo" type="primary" 
+          onPress={handleConfirmPhoto}
+          />
+         </View>
+      )}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const screenWidth = Dimensions.get('window').width; // Get the screen width
+const imageSize = screenWidth * 0.6; // 50% of screen width
+
+const screenHeight = Dimensions.get('window').height; // Get the screen height
+const marginBottom = screenHeight * 0.05; // 5% of screen height for bottom margin
+const marginTop = screenHeight * 0.05; 
+
+const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center', // Aligns vertically center
     alignItems: 'center', // Aligns horizontally center
+    padding: spacing.size10,
   },
   imageContainer: {
-    marginBottom: 20, // Adds spacing between the image and the buttons
+    marginBottom: marginBottom, // Adds spacing between the image and the buttons
+    marginTop: marginTop,
   },
   image: {
-    width: 220, // Diameter of the profile image
-    height: 230, // Diameter of the profile image
-    borderRadius: 110, // Half the width/height to make it circular
-    backgroundColor: '#fff', // Assuming a white background for the image
+    width: imageSize, // Diameter of the profile image
+    height: imageSize, // Diameter of the profile image
+    borderRadius: imageSize / 2, // Half the width/height to make it circular
+    backgroundColor: colors.white, // Assuming a white background for the image
     justifyContent: 'center', // Center the image icon/text inside the circle
     alignItems: 'center',
-    borderWidth: 2, // This sets the width of the border
-    borderColor: '#808080', // This sets the color of the border to grey
+    borderWidth: spacing.xxs, // This sets the width of the border
+    borderColor: colors.darkGrey, // This sets the color of the border to grey
   },
   buttonContainer: {
     width: '100%', // Use a percentage of the screen width
     justifyContent: 'center',
     alignItems: 'center',
   },
-  button: {
-    flexDirection: 'row',
-    backgroundColor: '#34A853', // Button color
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
-    marginVertical: 10,
-    width: '70%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff', // White text color
-    fontWeight: 'bold', // Bold text
-    marginLeft: 15, // Increase this value to add more space
-  },
-  usePhotoButton: {
-    backgroundColor: '#4285F4', // Button color for 'Use photo'
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
+  bottomButtonContainer: {
     position: 'absolute',
-    bottom: 20,
-    width: '70%',
+    bottom: marginBottom,
+    width: '100%',
   },
-  usePhotoButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+  firstButton: {
+    marginBottom: spacing.size20, 
   },
+  button: {
+    width: '75%', 
+    flexDirection: 'row'
+  }
 });
 
 export default ChangeProfilePicture;

@@ -1,7 +1,6 @@
-import React, { useState, useContext} from 'react';
+import React, { useState} from 'react';
 import { View, TouchableOpacity, Alert, StyleSheet, Image, Text } from 'react-native';
-import axios from 'axios';
-import { AuthContext } from '../AuthContext'; // Import AuthContext
+import { useFocusEffect } from '@react-navigation/native';
 import ButtonComponent from '../components/ButtonComponent';
 import { useFonts } from 'expo-font';
 import InputComponent from '../components/InputComponent';
@@ -13,65 +12,88 @@ const RegisterScreen = ({ navigation }) => {
   const [emailAddress, setEmailAddress] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [errors, setErrors] = useState({});
   const [fontsLoaded] = useFonts({
     Montserrat: require('../assets/fonts/Montserrat-Regular.ttf'), 
   });
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      // Clear the errors state when the screen is focused
+      setErrors({}); 
+      // clear the form fields 
+       setUserName('');
+       setEmailAddress('');
+       setPassword('');
+    }, [])
+  );
+
   if (!fontsLoaded) {
     return null; // Or a loading indicator if you prefer
   }
 
-  const handleRegister = async () => {
-    try {
-     /* const response = await axios.post('http://localhost:3000/auth/register', { //'${BASE_URL}/auth/register', {
-        userName,
-        emailAddress,
-        password,*/
-        const response = await fetch('http://192.168.86.24:3000/auth/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userName, emailAddress, password }),
-      });
+  const validateInput = () => {
+    let isValid = true;
+    let newErrors = {};
+  
+    if (!userName || userName.length < 4) {
+      isValid = false;
+      newErrors.userName = 'Username must be at least 4 characters long.';
+    }
+  
+    // Email validation (use a more robust regex in production)
+    if (!emailAddress || !/\S+@\S+\.\S+/.test(emailAddress)) {
+      isValid = false;
+      newErrors.emailAddress = 'Please enter a valid email address.';
+    }
+  
+    // Password validation
+    if (!password || password.length < 6 || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+      isValid = false;
+      newErrors.password = 'Password must be at least 6 characters, contain an uppercase letter and a number.';
+    }
+  
+    setErrors(newErrors);
+    return isValid;
+  };
 
-      /*if (response.status === 201) {
-        //const data = await response.json();
-        // Assuming the response includes the user data and a token
-        //await AsyncStorage.setItem('access_token', data.access_token);
-        //setUser({ userName, token: data.access_token });
-        Alert.alert('Success', 'Registration successful');
-        navigation.navigate('LoginScreen'); // Navigate to login screen upon successful registration
-      } else {
-        Alert.alert('Registration Failed', response.data.message || 'An error occurred');
-      }
-    } catch (error) {
-      Alert.alert('Registration Error', error.response.data.message || 'An error occurred during registration');
-    }*/
+  const handleRegister = async () => {
+    if (!validateInput()) {
+      // Input validation failed
+      return;
+    }
+
+    try {
+      const response = await fetch('http://192.168.86.24:3000/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userName, emailAddress, password }),
+    });
 
     // Check if the response is as expected
     if (response.ok) {
       // Handle success
-      if (response.status === 201) {
-        const data = await response.json(); // Parsing the response as JSON
-        console.log(data); // Handle or display the data as needed
-        Alert.alert('Success', 'Registration successful');
-        navigation.navigate('LoginScreen');
-        // Additional logic
-      } else {
-        Alert.alert('Registration Failed', response.data.message || 'An error occurred');
-      }
+      const data = await response.json(); // Parsing the response as JSON
+      Alert.alert('Success', 'Registration successful');
+      navigation.navigate('LoginScreen');     
     } else {
-      // Handle unexpected response structure
-      console.error('Unexpected response from server:', response);
-      Alert.alert('Error', 'Unexpected response from server');
+      // Handle server-side validation errors
+      const errorData = await response.json();
+      if (errorData.errors) {
+        setErrors(errorData.errors);
+      } else {
+        // Handle other types of errors (e.g., not related to validation)
+        Alert.alert('Error', errorData.message || 'An error occurred during registration');
+      }
     }
   } catch (error) {
     // Handle network errors or errors returned from the server
     console.error('Error in registration:', error);
-    Alert.alert('Registration Error', error.response?.data?.message || 'An error occurred during registration');
+    Alert.alert('Registration Error', 'An error occurred during registration');
   }
   };
 
@@ -90,6 +112,7 @@ const RegisterScreen = ({ navigation }) => {
           style={styles.input}
         />
       </View>
+      {errors.userName && <Text style={styles.errorText}>{errors.userName}</Text>}
 
       <View style={styles.inputContainer}>
       <Ionicons name="mail-outline" size={20} color="#666" />
@@ -101,6 +124,7 @@ const RegisterScreen = ({ navigation }) => {
           style={styles.input}
         />
       </View>
+      {errors.emailAddress && <Text style={styles.errorText}>{errors.emailAddress}</Text>}
 
       <View style={styles.inputContainer}>
         <Ionicons name="lock-closed-outline" size={20} color="#666" />
@@ -115,6 +139,8 @@ const RegisterScreen = ({ navigation }) => {
           <Ionicons name={passwordVisible ? 'eye' : 'eye-off'} size={20} color="#666" />
         </TouchableOpacity>
       </View>
+      {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+
   
       <ButtonComponent title="Register" type="primary" 
         onPress={handleRegister}           
@@ -197,6 +223,14 @@ const RegisterScreen = ({ navigation }) => {
       textAlign: 'center',
       color: colors.secondaryText,
     },
+    errorText: {
+      color: 'red',
+      fontSize: 12,
+      width: '100%',
+      textAlign: 'left',
+      //marginTop: 5,
+      marginBottom: 20,
+    }
   });
   
   export default RegisterScreen;

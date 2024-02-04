@@ -1,35 +1,63 @@
 import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import React, { useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import StarRating from '../components/StarRating';
 import useHideBottomTab from '../utils/HideBottomTab'; 
+import { useTheme } from '../components/ThemeContext';
+import FullScreenImageModal from '../components/FullScreenImageModal';
 
 const SellerDetails = ({ route, navigation }) => {
     const { sellerProfile, ratingsWithProfile, averageRating } = route.params;
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [imageErrors, setImageErrors] = useState({});
+    const [sellerImageLoadError, setSellerImageLoadError] = useState(false);
     const topThreeRatingsWithProfile = ratingsWithProfile.slice(0, 3); // Get top 3 ratings
+    const { colors, typography, spacing } = useTheme();
+    const styles = getStyles(colors, typography, spacing);
+    const STOCK_IMAGE_URI = require('../assets/stock-image.png'); 
 
-    // Hide the bottom tab 
-    useHideBottomTab(navigation, true);
+    const openImageModal = () => {
+      setIsModalVisible(true);
+    };
     
-
     const navigateToAllRatings = () => {
         navigation.navigate('AllReviewsScreen', { sellerProfile, ratingsWithProfile, averageRating }); // Navigate to a screen that shows all ratings
     };
+
+    // Function to handle image load error
+    const handleImageError = (imageId) => {
+      setImageErrors((prevErrors) => ({
+        ...prevErrors,
+        [imageId]: true, // Mark this image as errored
+      }));
+    };
+
+    // Hide the bottom tab 
+    useHideBottomTab(navigation, true);
 
     return (
       <ScrollView style={styles.container}>
         {/* Section 1: Seller Info */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Seller Info</Text>
-          <Image source={{ uri: sellerProfile.profilePicture }} style={styles.sellerImage} />
+        <TouchableOpacity onPress={openImageModal} style={styles.imageContainer}>
+            <Image 
+              source={
+                sellerImageLoadError || !sellerProfile.profilePicture
+                  ? STOCK_IMAGE_URI
+                  : { uri: sellerProfile.profilePicture }
+              }
+              style={styles.sellerImage}
+              onError={() => setSellerImageLoadError(true)}
+            />
+          </TouchableOpacity>
           <Text style={styles.sellerName}>{ratingsWithProfile[0].ratedUser.userName}</Text>
-          <Text style={styles.sellerName}>{sellerProfile.aboutMe}</Text>
-          {/* Display ratings */}
+          <Text style={styles.sellerDescription}>{sellerProfile.aboutMe}</Text>
         </View>
 
         <View style={styles.separator} />
 
         {/* Section 2: Seller Ratings Info */}
+        <View style={styles.bottomContainer}>
         <TouchableOpacity onPress={navigateToAllRatings} style={styles.ratingsSection}>
             <View style={styles.section}>
                 <View style={styles.sectionHeader}>
@@ -49,17 +77,20 @@ const SellerDetails = ({ route, navigation }) => {
                 <View key={index} style={styles.ratingItem}>
                     <View style={styles.separator} />
                     <View style={styles.ratingHeader}>
-                        <Image                
-                            source={{ uri: ratingWithProfile.ratedByProfilePicture }} 
-                            style={styles.raterImage} 
-                        />
-                        <View style={styles.ratingDetails}>
-                            <View style={styles.ratingInfo}>
-                                <Text style={styles.raterName}>{ratingWithProfile.ratedBy.userName}</Text>
-                                <StarRating rating={ratingWithProfile.stars} size={16} />
-                            </View>
-                        <Text style={styles.ratingDate}>{formatDate(ratingWithProfile.dateGiven)}</Text>
+                      <Image
+                        source={
+                          imageErrors[ratingWithProfile.ratedByProfilePicture] || !ratingWithProfile.ratedByProfilePicture ? STOCK_IMAGE_URI : { uri: ratingWithProfile.ratedByProfilePicture }
+                        }
+                        style={styles.raterImage}
+                        onError={() => handleImageError(ratingWithProfile.ratedByProfilePicture)} // Handle error for this specific image URI
+                      />                 
+                      <View style={styles.ratingDetails}>
+                        <View style={styles.ratingInfo}>
+                            <Text style={styles.raterName}>{ratingWithProfile.ratedBy.userName}</Text>
+                            <StarRating rating={ratingWithProfile.stars} size={16} />
                         </View>
+                        <Text style={styles.ratingDate}>{formatDate(ratingWithProfile.dateGiven)}</Text>
+                      </View>
                     </View>
 
                     <Text 
@@ -78,6 +109,7 @@ const SellerDetails = ({ route, navigation }) => {
                 ))}
             </View>
         </TouchableOpacity>
+        
 
         <View style={styles.separator} />
 
@@ -86,22 +118,31 @@ const SellerDetails = ({ route, navigation }) => {
           <Text style={styles.sectionTitle}>More listings from this seller</Text>
           {/* Placeholder for listings component */}
         </View>
+        </View>
+
+        <FullScreenImageModal
+          isVisible={isModalVisible}
+          onClose={() => setIsModalVisible(false)}
+          imageUrls={[sellerProfile.profilePicture || STOCK_IMAGE_URI]} // Pass the seller's profile picture or stock image
+        />
       </ScrollView>
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
+const getStyles = (colors, typography, spacing) => StyleSheet.create({
+  container: {
       flex: 1,
-      padding: 10,
+    },
+    bottomContainer: {
+      padding: spacing.size10,
     },
     separator: {
-        height: 1,
-        backgroundColor: '#e0e0e0',
-        //marginVertical: 10,
+      height: 2,
+      backgroundColor: colors.separatorColor,
+      marginBottom: spacing.size10,
+      marginTop: spacing.size10,
       },
     section: {
-        marginBottom: 20,
     },
     sectionHeader: {
         flexDirection: 'row',
@@ -109,8 +150,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
+      fontSize: typography.heading,
+      fontWeight: 'bold',
+      color: colors.headingColor, 
+      paddingBottom: spacing.size10,
     },
     averageRatingContainer: {
         flexDirection: 'row',
@@ -123,20 +166,27 @@ const styles = StyleSheet.create({
         marginLeft: 8,
     },
     sellerImage: {
-      width: 100,
-      height: 100,
-      borderRadius: 50,
+      width: '100%', // Make the image span the full width of its container
+      height: 200, // Set a fixed height, or use a percentage like '30%' for relative sizing
     },
     sellerName: {
-      fontSize: 16,
-      marginTop: 10,
+      fontSize: 22,
+      fontWeight: 'bold',
+      paddingBottom: 5,
+      paddingLeft: spacing.size10,
+      paddingTop: spacing.size10,
     },
-      averageRating: {
-        fontSize: 16,
-        fontWeight: 'bold',
-      },
+    sellerDescription: {
+      fontSize: typography.body,
+      color: colors.secondaryText,
+      paddingLeft: spacing.size10,
+    },
+    averageRating: {
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
     ratingsSection: {
-        padding: 10,
+        //padding: 10,
     },
     ratingItem: {
         //padding: 10,

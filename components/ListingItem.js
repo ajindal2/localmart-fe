@@ -11,7 +11,7 @@ const ListingItem = ({ item, onPress }) => {
     }
 
     return (
-        <TouchableOpacity onPress={onPress} style={styles.itemContainer}>
+        <TouchableOpacity activeOpacity={1} onPress={onPress} style={styles.itemContainer}>
         <Image source={{ uri: item.imageUrls[0] }} style={styles.image} />
         <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
             {item.title}

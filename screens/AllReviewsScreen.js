@@ -1,13 +1,27 @@
 import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import StarRating from '../components/StarRating';
 import useHideBottomTab from '../utils/HideBottomTab'; 
+import { useTheme } from '../components/ThemeContext';
+
 
 const AllReviewsScreen = ({ route, navigation }) => {
     const { sellerProfile, ratingsWithProfile, averageRating } = route.params;
+    const [imageErrors, setImageErrors] = useState({});
+    const { colors, typography, spacing } = useTheme();
+    const styles = getStyles(colors, typography, spacing);
+    const STOCK_IMAGE_URI = require('../assets/stock-image.png'); 
 
     useHideBottomTab(navigation, true);
+
+    // Function to handle image load error
+    const handleImageError = (imageId) => {
+      setImageErrors((prevErrors) => ({
+        ...prevErrors,
+        [imageId]: true, // Mark this image as errored
+      }));
+    };
 
     return (
         <ScrollView style={styles.container}>
@@ -32,10 +46,13 @@ const AllReviewsScreen = ({ route, navigation }) => {
                 <View key={index} style={styles.ratingItem}>
                     <View style={styles.separator} />
                     <View style={styles.ratingHeader}>
-                        <Image                
-                            source={{ uri: ratingWithProfile.ratedByProfilePicture }} 
-                            style={styles.raterImage} 
-                        />
+                      <Image
+                          source={
+                            imageErrors[ratingWithProfile.ratedByProfilePicture] || !ratingWithProfile.ratedByProfilePicture ? STOCK_IMAGE_URI : { uri: ratingWithProfile.ratedByProfilePicture }
+                          }
+                          style={styles.raterImage}
+                          onError={() => handleImageError(ratingWithProfile.ratedByProfilePicture)} // Handle error for this specific image URI
+                        /> 
                         <View style={styles.ratingDetails}>
                             <View style={styles.ratingInfo}>
                                 <Text style={styles.raterName}>{ratingWithProfile.ratedBy.userName}</Text>
@@ -60,19 +77,17 @@ const AllReviewsScreen = ({ route, navigation }) => {
                 </View>
                 ))}
             </View>
-      
-
         </ScrollView>
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
+const getStyles = (colors, typography, spacing) => StyleSheet.create({
+  container: {
       flex: 1,
-      backgroundColor: 'white',
+      padding: spacing.size10,
     },
     section: {
-      padding: 10,
+      //padding: 10,
     },
     header: {
       flexDirection: 'row',
@@ -98,7 +113,7 @@ const styles = StyleSheet.create({
     ratingContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginTop: 10,
+      marginTop: 5,
     },
     averageRatingText: {
       marginLeft: 10,
@@ -115,6 +130,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
+      paddingBottom:10,
       //marginLeft: 10,
     },
     raterName: {
@@ -130,7 +146,7 @@ const styles = StyleSheet.create({
     ratingText: {
       fontSize: 14,
       color: 'black',
-      //paddingTop: 5,
+      paddingTop: 10,
       paddingBottom: 10
     },
     seeMoreText:{
@@ -146,13 +162,14 @@ const styles = StyleSheet.create({
     ratingHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingTop: 10,
-      paddingBottom: 10
+      //paddingTop: 10,
+      //paddingBottom: 10
     },
     separator: {
-      height: 1,
-      backgroundColor: '#e0e0e0',
-      //marginVertical: 10,
+      height: 2,
+      backgroundColor: colors.separatorColor,
+      marginBottom: spacing.size10,
+      marginTop: spacing.size10,
     },
   });
 

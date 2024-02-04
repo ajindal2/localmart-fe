@@ -21,7 +21,7 @@ function CreateListingStackNavigator() {
         component={ListingLocationPreferenceScreen}
         options={{ 
           headerShown: true,
-          title: 'Listing location' 
+          title: 'Set a location' 
         }} 
       />
     </ListingStack.Navigator>

@@ -10,6 +10,9 @@ import { Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import useHideBottomTab from '../utils/HideBottomTab'; 
+import { useTheme } from '../components/ThemeContext';
+import InputComponent from '../components/InputComponent';
+import ButtonComponent from '../components/ButtonComponent';
 
 
 const CreatingNewListingScreen = ({ navigation, route }) => {
@@ -27,7 +30,8 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
   const [isEditing] = useState(route.params?.isEditing || false);
   const [listing] = useState(route.params?.listing || {});
   const fromAccount = route.params?.fromAccount;
-
+  const { colors, typography, spacing } = useTheme();
+  const styles = getStyles(colors, typography, spacing);
 
   useEffect(() => {
     console.log('Photos updated:', photos);
@@ -303,7 +307,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
     <ScrollView style={styles.container}>
       
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Add upto 10 photos</Text>
+        <Text style={styles.text}>Add upto 10 photos</Text>
         <ScrollView style={styles.photoScrollView} horizontal showsHorizontalScrollIndicator={false}>
           {renderPhotoSlots()}
         </ScrollView>
@@ -312,20 +316,21 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>What are you selling?</Text>
-        <TextInput
-          style={[styles.input, titleError ? styles.errorInput : {}]}
-          placeholder="What are you selling?"
-          onChangeText={setTitle}
-          value={title}
+        <Text style={styles.text}>What are you selling?</Text>
+
+        <InputComponent
+           placeholder="What are you selling?"
+           onChangeText={setTitle}
+           value={title}
+          style={[titleError ? styles.errorInput : {}]}
         />
         {titleError ? <Text style={styles.errorMessage}>{titleError}</Text> : null}
 
-        <TextInput
-          style={[styles.input, styles.descriptionInput]}
+        <InputComponent
           placeholder="Description"
+          value={description}          
           onChangeText={setDescription}
-          value={description}
+          style={{marginTop: 10}}
           multiline
         />
       <View style={styles.separator} />
@@ -333,17 +338,17 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Price</Text>
-        <TextInput
-          style={[
-            styles.input, 
-            isFree && styles.inputDisabled,
-            priceError && styles.errorInput
-          ]}
+        <Text style={styles.text}>Price</Text>
+
+        <InputComponent
           placeholder="Price"
           onChangeText={setPrice}
           value={price}
-          editable={!isFree} // Disable editing when isFree is true
+          editable={!isFree}  // Disable editing when isFree is true
+          style={[
+            isFree && styles.inputDisabled,
+            priceError && styles.errorInput
+          ]}
         />
         {priceError ? <Text style={styles.errorMessage}>{priceError}</Text> : null}
 
@@ -351,6 +356,8 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           <Text>Free</Text>
           <Switch
             value={isFree}
+            trackColor={{ false: "#767577", true: "#81b0ff" }} // Colors for the track
+            thumbColor={isFree ? "#f5dd4b" : "#f4f3f4"} // Color for the thumb
             onValueChange={(value) => {
               setIsFree(value);
               setPrice(value ? '0' : ''); // Set price to '0' if free, else empty string
@@ -361,105 +368,72 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
       </View>
 
       <View style={styles.section}>
-      <Text style={styles.sectionTitle}>PickUp Location</Text>
-      <Text>
-        {pickupLocation.city || pickupLocation.postalCode || 'Loading location...'}
-      </Text>
-      <TouchableOpacity 
-        style={styles.editButton}             
+        <Text style={styles.text}>Pickup Location</Text>
+        <View style={styles.locationRow}>
+          <Text style={styles.locationText}>
+            {pickupLocation.city || pickupLocation.postalCode || 'Loading location...'}
+          </Text>
+          <ButtonComponent 
+            title="Edit"
             onPress={() => navigation.navigate('ListingLocationPreferenceScreen')}
-      >
-        <Text>Edit</Text>
-      </TouchableOpacity>
-    </View>
+            style={styles.buttonStyle} 
+          />
+        </View>
+        <View style={styles.separator} />
+      </View>
 
-      <View style={styles.separator} />
-        <TouchableOpacity 
-          style={styles.nextButton} 
-          onPress={() => {
-            setShouldCreateListing(true); // Set the state as needed 
-          }}
-        > 
-        <Text style={styles.nextButtonText}>{isEditing ? 'Update' : 'Create'}</Text>
-        </TouchableOpacity>
+      <ButtonComponent title={isEditing ? 'Update' : 'Create'} type="primary" 
+        onPress={() => {
+          setShouldCreateListing(true); // Set the state as needed 
+        }}
+        style={{ marginTop: 20, width: '100%', flexDirection: 'row' }}
+      />
+  
     </ScrollView>
   );
 };
 
 
-const styles = StyleSheet.create({
-  // Add your styles here
+const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
-    backgroundColor: 'white',
+    padding: spacing.size10,
   },
   errorInput: {
-    borderColor: 'red', // Color for error state
+    borderColor: colors.error, // Color for error state
   },
   errorPhotoSlot: {
-    borderColor: 'red', // Color for error state
+    borderColor: colors.error, // Color for error state
     borderWidth: 1, // Adjust the border width as needed
   },
   errorMessage: {
-    color: 'red', // Adjust color as needed
-    fontSize: 14,
+    color: colors.error, // Adjust color as needed
+    fontSize: typography.subHeading,
     marginTop: 5,
   },
-  nextButton: {
-    backgroundColor: 'red',
-    padding: 15,
-    borderRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 20, // Adjust as needed
-  },
   cancelButtonText: {
-    color: 'blue', // Adjust color as needed
-    marginRight: 10,
+    color: colors.primary,
+    marginRight: spacing.size10,
     fontWeight: 'bold',
   },
   photoScrollView: {
     flexDirection: 'row',
-    marginTop: 10,
-  },
-  nextButtonText: {
-    color: 'white',
-    marginRight: 10,
-    fontWeight: 'bold',
+    marginTop: spacing.size10,
   },
   section: {
-    marginTop: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: colors.inputBackground,
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-    backgroundColor: '#d9d9d9',
-  },
-  descriptionInput: {
-    height: 100,
-    textAlignVertical: 'top',
   },
   inputDisabled: {
-    backgroundColor: '#e0e0e0',
+    backgroundColor: typography.disabledBox,
   },
   toggleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
   },
   photosContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginTop: 10,
+    marginTop: spacing.size10,
   },
   photoSlot: {
     width: 120,
@@ -469,8 +443,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
-    marginRight:10,
+    marginBottom: spacing.size10,
+    marginRight:spacing.size10,
     position: 'relative',
     overflow: 'visible', // Allow overflow
   },
@@ -481,7 +455,7 @@ const styles = StyleSheet.create({
   },
   deleteIcon: {
     position: 'absolute',
-    top: -2, // Adjust these values as needed to place the icon correctly
+    top: -2, 
     right: -2,
     backgroundColor: 'grey', // Grey background for the circle
     borderRadius: 12, // Half of width and height to make it circle
@@ -494,19 +468,33 @@ const styles = StyleSheet.create({
   deleteIconImage: {
     color: 'white', // White color for the icon
   },
-  editButton: {
-    marginTop: 10,
-    backgroundColor: 'lightgrey',
-    padding: 10,
-    borderRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   separator: {
     height: 2,
-    backgroundColor: '#e0e0e0',
-    marginTop: 10,
+    backgroundColor: colors.separatorColor,
+    marginBottom: spacing.size10,
+    marginTop: spacing.size10,
   },
+  text: {
+    fontSize: typography.heading,
+    fontWeight: 'bold',
+    color: colors.headingColor, 
+    paddingBottom: spacing.size10,
+  },
+  locationText: {
+    color: colors.secondaryText, 
+  },
+  locationRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  buttonStyle: {
+    height: 30, // Decrease button height
+    //paddingVertical: 3, // Adjust padding to align content within the smaller button
+    paddingTop: 1,
+    paddingBottom: 1,
+    fontSize: 12,
+  }
 });
 
 export default CreatingNewListingScreen;

@@ -59,14 +59,14 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   },
   title: {
     fontSize: typography.authTitle,
-    fontFamily: 'Montserrat', // Use Montserrat font for the title
-    color: colors.titleColor, // Use dark color for the text
+    fontFamily: 'Montserrat', 
+    color: colors.titleColor, 
     textAlign: 'center',
   },
   description: {
     fontSize: typography.body,
     fontFamily: 'Montserrat', 
-    color: colors.secondaryText, // TODO import theme
+    color: colors.secondaryText, 
     textAlign: 'center',
     marginTop: spacing.size10,
   },

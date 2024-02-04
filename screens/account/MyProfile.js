@@ -1,12 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, TextInput, Button, StyleSheet, Alert, ScrollView } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import ChangeProfilePicture from './ChangeProfilePicture';
-/*import StarRating from 'react-native-star-rating'; 
-commenting this and using a custom 
-StarRating instead since this is giving a warning that ViewPropTypes will be removed from React Native, 
-along with all other PropTypes. We recommend that you migrate away from PropTypes and switch to a type system like TypeScript. 
-Looks like the RN's StarRating uses ViewProps.*/
+import { View, Text, Image, TextInput, Button, StyleSheet, Alert, ScrollView, Dimensions } from 'react-native';
 import StarRating from '../../components/StarRating';
 import ProfileImageWithEditIcon from '../../components/ProfileImageWithEditIcon';
 import { getUser, updateUser } from '../../api/UserService';
@@ -15,9 +8,15 @@ import { AuthContext } from '../../AuthContext';
 import * as SecureStore from 'expo-secure-store';
 import DEFAULT_IMAGE_URI from '../../constants/AppConstants';
 import useHideBottomTab from '../../utils/HideBottomTab'; 
+import InputComponent from '../../components/InputComponent';
+import ButtonComponent from '../../components/ButtonComponent';
+import { useTheme } from '../../components/ThemeContext';
+
 
 const MyProfile = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
+  const { colors, typography, spacing } = useTheme();
+  const styles = getStyles(colors, typography, spacing);
   const [starCount, setStarCount] = useState(3.5);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -133,7 +132,7 @@ const MyProfile = ({ navigation }) => {
             })}}
         />
         <View style={styles.profileSection}>
-            <Text>Member since April 2003</Text>
+            <Text style={styles.subText}>Member since April 2003</Text>
             <StarRating
             rating={starCount}
             onRatingChange={onStarRatingPress}
@@ -141,87 +140,94 @@ const MyProfile = ({ navigation }) => {
         </View>
       </View>
       <View style={styles.aboutSection}>
-        <Text>About Me</Text>
-        <TextInput
-          style={styles.input}
+        <Text style={styles.text}>About Me</Text>
+        <InputComponent
+          placeholder="Telling about yourself lets the buyers know more about why you are here."
+          multiline
+          value={userProfileDetails.aboutMe}
           onChangeText={(text) => {
             setUserProfileDetails({ ...userProfileDetails, aboutMe: text });
             setIsUserProfileDetailsChanged(true);
           }}
-          value={userProfileDetails.aboutMe}
-          multiline
-          placeholder="Telling about yourself lets the buyers know more about why you are here."
+          style={styles.input}
         />
       </View>
       <View style={styles.aboutSection}>
-        <Text>User Name</Text>
-        <TextInput
-          style={styles.input}
+        <Text style={styles.text}>User Name</Text>
+        <InputComponent
+          placeholder="User Name"
+          value={userAuthDetails.userName}          
           onChangeText={(text) => {
             setUserAuthDetails({ ...userAuthDetails, userName: text });
             setIsUserAuthDetailsChanged(true);
           }}
-          value={userAuthDetails.userName}
-          placeholder="User Name"
+          style={styles.input}
         />
       </View>
       <View style={styles.aboutSection}>
-        <Text>Email Address</Text>
-        <TextInput
-          style={styles.input}
+        <Text style={styles.text}>Email Address</Text>
+        <InputComponent
+          placeholder="Email"
+          keyboardType="email-address"
+          value={userAuthDetails.emailAddress}          
           onChangeText={(text) => {
             setUserAuthDetails({ ...userAuthDetails, emailAddress: text });
             setIsUserAuthDetailsChanged(true);
           }}
-          value={userAuthDetails.emailAddress}
-          placeholder="Email"
-          keyboardType="email-address"
+          style={styles.input}
         />
       </View>
       <View style={styles.aboutSection}>
-      <Button
-        title="Update Profile"
-        backgroundColor="#FF5757"
+      <ButtonComponent title="Update Profile" type="primary" 
         onPress={handleUpdateProfile}
-      />
+        style={{ width: '100%', flexDirection: 'row' }}/>
       </View>
     </ScrollView>
   );
 };
 
-const styles = StyleSheet.create({
-    container: {
+const screenWidth = Dimensions.get('window').width;
+// Define the size of the profile picture as a percentage of the screen width
+const profilePictureSize = screenWidth * 0.3; // for example, 30% of the screen width
+
+const getStyles = (colors, typography, spacing) => StyleSheet.create({
+  container: {
       flex: 1,
-      padding: 10,
+      padding: spacing.size10,
     },
     imageSection: {
       flexDirection: 'row',
       alignItems: 'center',
-      padding: 10,
+      padding: spacing.size10,
     },
     profileSection: {
         flexDirection: 'column',
         alignItems: 'center',
-        padding: 20,
+        padding: spacing.size20,
     },
     profilePicture: {
-      width: 150,
-      height: 150,
-      borderRadius: 75, // Makes it round
+      width: profilePictureSize,
+      height: profilePictureSize,
+      borderRadius: profilePictureSize / 2, 
     },
     aboutSection: {
-      marginTop: 20,
+      marginTop: spacing.size20,
     },
     input: {
-      height: 100,
-      borderColor: 'gray',
-      borderWidth: 1,
-      padding: 10,
-      textAlignVertical: 'top', // Aligns text to the top on Android
-      backgroundColor: '#d9d9d9',
-      margin: '50'
-
+      flex: 1,
     },
+    text: {
+      fontSize: typography.heading,
+      fontWeight: 'bold',
+      color: colors.headingColor, 
+      padding: spacing.xs,
+    },
+    subText: {
+      fontSize: typography.body,
+      fontWeight: 'bold',
+      color: colors.secondaryText, 
+      padding: spacing.xs,
+    }
   });
   
 export default MyProfile;

@@ -44,7 +44,7 @@ const LoginScreen = ({ navigation }) => {
 
       } else {
         console.error('Error in data:', data);
-        Alert.alert('Login failed', 'Invalid userName or password');
+        Alert.alert('Login failed', 'Invalid Username or Password');
       }
     } catch (error) {
       console.error('Error logging in:', error);
@@ -142,7 +142,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   },
   input: {
     flex: 1,
-    borderWidth: 0
+    borderWidth: 0 // to hide the border of the inner InputComponent since we are using another component to inlcude icon
   },
   forgotPassword: {
     alignSelf: 'flex-end',

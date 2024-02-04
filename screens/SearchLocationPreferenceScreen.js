@@ -1,13 +1,17 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, Dimensions, StyleSheet, Alert } from 'react-native';
 import * as Location from 'expo-location';
 import { LocationContext } from '../components/LocationProvider';
 import useHideBottomTab from '../utils/HideBottomTab'; 
+import InputComponent from '../components/InputComponent';
+import ButtonComponent from '../components/ButtonComponent';
+import { useTheme } from '../components/ThemeContext';
 
 const SearchLocationPreferenceScreen = ({ navigation, route }) => {
     const [zipCode, setZipCode] = useState('');
     const { setLocation } = useContext(LocationContext);
+    const { colors, typography, spacing } = useTheme();
+    const styles = getStyles(colors, typography, spacing);
 
     useHideBottomTab(navigation, true);
     
@@ -20,6 +24,7 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
     const updateLocationWithZipCode = async () => {
         if (/^\d{5}$/.test(zipCode)) {
             setLocation({ postalCode: zipCode });
+            navigation.navigate('HomeScreen');
             Alert.alert('Location Updated', `Location set to ZIP code: ${zipCode}`);
         } else {
             Alert.alert('Invalid ZIP Code', 'Please enter a valid 5-digit ZIP code.');
@@ -65,52 +70,70 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Search Location Preference</Text>
-      <Text style={styles.subHeading}>Where are you searching?</Text>
+      <Text style={styles.heading}>Where is you searching?</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Enter ZIP Code"
-        keyboardType="numeric"
-        value={zipCode}
-        onChangeText={handleZipCodeChange}
+      <ButtonComponent title="Get My Location" type="secondary" iconName="location"
+        onPress={getCurrentLocation}
+        style={[styles.button]}
       />
-      <Button title="Update Location" onPress={updateLocationWithZipCode} />
 
-      <Button 
-        title="Get My Location" 
-        onPress={getCurrentLocation} 
-        style={styles.locationButton}
-      />
+      <Text style={styles.orText}>or</Text>
+
+      <InputComponent
+          placeholder="Enter ZIP Code"
+          keyboardType="numeric"
+          value={zipCode}
+          onChangeText={handleZipCodeChange}
+          style={styles.input}
+        />
+
+      <View style={styles.bottomButtonContainer}>
+        <ButtonComponent title="Update Location" type="primary" 
+          onPress={updateLocationWithZipCode}
+          style={{ width: '100%', flexDirection: 'row' }}
+        />
+      </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const screenHeight = Dimensions.get('window').height; // Get the screen height
+const marginBottom = screenHeight * 0.04; // 5% of screen height for bottom margin
+const marginTop = screenHeight * 0.05; 
+
+const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: spacing.size10,
+    alignItems: 'center',
   },
   heading: {
-    fontSize: 20,
+    fontSize: typography.heading,
     fontWeight: 'bold',
-    marginBottom: 10,
+    color: colors.secondaryText, 
+    padding: spacing.xs,
   },
-  subHeading: {
-    fontSize: 16,
-    color: 'grey',
-    marginBottom: 20,
+  button: {
+    width: '75%', 
+    flexDirection: 'row',
+    marginTop: marginTop,
+    marginBottom: marginBottom,
   },
   input: {
-    borderWidth: 1,
-    borderColor: 'grey',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    marginBottom: 10,
+    width: '75%', 
+    flexDirection: 'row',
+    //marginBottom: marginBottom,
   },
-  locationButton: {
-    marginTop: 10,
-  }
+  bottomButtonContainer: {
+    position: 'absolute',
+    bottom: marginBottom,
+    width: '100%',
+  },
+  orText: {
+    marginBottom: marginBottom,
+    color: colors.secondaryText,
+    fontSize: typography.body,
+  },
 });
 
 export default SearchLocationPreferenceScreen;

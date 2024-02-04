@@ -4,7 +4,7 @@ import { useTheme } from './ThemeContext';
 
 const { width } = Dimensions.get('window');
 
-const InputComponent = ({ placeholder, value, onChangeText, secureTextEntry, keyboardType, style }) => {
+const InputComponent = ({ placeholder, value, onChangeText, secureTextEntry, multiline, keyboardType, editable, style }) => {
   const { colors, typography, spacing } = useTheme();
 
   // Move the styles inside the component to access the theme
@@ -22,13 +22,16 @@ const InputComponent = ({ placeholder, value, onChangeText, secureTextEntry, key
 
   return (
     <TextInput
-      style={[inputStyles.input, style]} // Use the dynamic styles
+      style={[inputStyles.input, style]} 
       placeholder={placeholder}
-      placeholderTextColor={colors.secondaryText} // Optionally use theme colors for placeholder text
+      placeholderTextColor={colors.secondaryText}
+      cursorColor={colors.primary}
       value={value}
       onChangeText={onChangeText}
       secureTextEntry={secureTextEntry}
       keyboardType={keyboardType}
+      multiline={multiline}
+      editable={editable}
     />
   );
 };

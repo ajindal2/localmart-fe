@@ -21,15 +21,18 @@ const FullScreenImageModal = ({ isVisible, onClose, imageUrls, initialIndex }) =
   };
 
   const renderScrollDots = () => {
-    return imageUrls.map((_, index) => (
-      <View 
-        key={index} 
-        style={[
-          styles.dot,
-          currentIndex === index ? styles.activeDot : styles.inactiveDot
-        ]}
-      />
-    ));
+    if (imageUrls.length > 1) { // Only render dots if more than one image
+      return imageUrls.map((_, index) => (
+        <View 
+          key={index} 
+          style={[
+            styles.dot,
+            currentIndex === index ? styles.activeDot : styles.inactiveDot
+          ]}
+        />
+      ));
+    }
+    return null; // Don't render dots for a single image
   };
 
   return (
