@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
 //import BASE_URL from '../constants/AppConstants';
 import * as SecureStore from 'expo-secure-store';
+import {checkNetworkConnection} from '../utils/NetworkConnection';
 
 export const getListings = async (searchKey, locationParams) => {
   try {
@@ -31,15 +30,29 @@ export const getListings = async (searchKey, locationParams) => {
       url += `?${queryString}`;
     }
 
+    const isConnected = await checkNetworkConnection();
+    if (!isConnected) {
+      throw new Error('No internet connection. Please check your network settings.');
+    }
+
     const response = await fetch(url);
-    const data = await response.json();
-    return data;
+    return await handleResponse(response); 
   } catch (error) {
-    console.error('Error fetching listings:', error);
-    throw error;
+    console.error('Error fetching listings:', error.message);
+    throw error; // Re-throw the error for calling code to handle it further
   }
 };
 
+export const getListingsByUser = async (userId) => {
+  try {
+    const response = await fetch(`http://192.168.86.24:3000/listings/user/${userId}`);
+    return await handleResponse(response); 
+  } catch (error) {
+    //return []; // Return an empty array in case of an error indicating empty seller listings for this user.
+    console.error('Error fetching listings:', error.message);
+    throw error; // Re-throw the error for calling code to handle it further
+  }
+};
 
 export const getListingFromId = async (listingId) => {
   try {
@@ -147,22 +160,6 @@ export const updateListing = async (listingId, listingDetails) => {
   }
 };
 
-
-export const getListingsByUser = async (userId) => {
-  try {
-    const response = await fetch(`http://192.168.86.24:3000/listings/user/${userId}`);
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Failed to the seller listings:', errorData);
-      throw new Error(errorData.message || 'Failed to fetch seller listings');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching seller listings:', error);
-    return []; // Return an empty array in case of an error indicating empty seller listings for this user.
-  }
-};
-
 export const deleteListing = async (listingId) => {
   try {
     const response = await fetch(`http://192.168.86.24:3000/listings/${listingId}`, {
@@ -196,3 +193,20 @@ export const updateListingStatus = async (listingId, newStatus) => {
     throw error;
   }
 };
+
+export const handleResponse = async(response) => {
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error('Failed to fetch listings:', errorData);
+    let errorCode = response.status;
+    if (errorCode === 404) {
+      throw new Error('No listings found.');
+    } else if (errorCode >= 500) {
+      throw new Error('Internal server error. Please try again later.');
+    } else {
+      throw new Error(errorData.message || 'An error occurred. Please try again.');
+    }
+  }
+  const data = await response.json();
+  return data;
+}

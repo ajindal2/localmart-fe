@@ -8,12 +8,12 @@ export const getUserProfile = async (userId) => {
         const profile = await response.json();
         return profile;
       } else if (response.status === 404) {
-        // Profile not found, return null or a specific message
+        // Profile not found, return null
         return null;
       } else {
         const errorData = await response.json();
         console.error('Error fetching user profile:', errorData);
-        throw new Error(errorData.message || 'Error fetching user profile');
+        throw new Error(errorData.message || 'An error occurred. Please try again.');
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);

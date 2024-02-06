@@ -80,7 +80,6 @@ const MyProfile = ({ navigation }) => {
     setError('');
     try {
       if (isUserAuthDetailsChanged) {
-        console.log("Auth updated");
         const updatedAuthProfile = await updateUser(user._id, userAuthDetails);
         setUser(updatedAuthProfile); // Update the user state in AuthContext
         await SecureStore.setItemAsync('user', JSON.stringify(updatedAuthProfile));
@@ -88,7 +87,6 @@ const MyProfile = ({ navigation }) => {
   
       // Update User Profile Details if they have been changed. The server will make sure of creating the Profile is it doesnt exist.
       if (isUserProfileDetailsChanged) {
-        console.log("Profile updated");
         await updateUserProfile(user._id, userProfileDetails);
       }
   

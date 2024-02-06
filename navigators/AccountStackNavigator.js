@@ -14,7 +14,7 @@ function AccountStackNavigator() {
         <AccountStack.Screen name="AccountScreen" component={AccountScreen} 
         options={{ 
           headerShown: true,
-          title: 'My account' 
+          title: 'My Account' 
         }}  /> 
         <AccountStack.Screen name="MyProfile" component={MyProfile} 
         options={{ 

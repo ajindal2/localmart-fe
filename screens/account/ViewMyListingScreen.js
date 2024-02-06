@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Dimensions, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../../AuthContext'; 
 import { getListingsByUser } from '../../api/ListingsService'; 
@@ -10,21 +10,39 @@ import ButtonComponent from '../../components/ButtonComponent';
 
 const ViewMyListingScreen = ({navigation}) => {
   const [listings, setListings] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [loaded, setLoaded] = useState(false); // Track whether listings have been loaded
   const { user } = useContext(AuthContext); 
   const [activeItemId, setActiveItemId] = useState(null);
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
-
+  const errorMessageTitle = "No Listings Found";
+  const errorMessageDetails = "We're experiencing some problems on our end. Please try again later.";
+  const emptyListingsMessage = "Start selling and mange your listings here.";
+  
   useHideBottomTab(navigation, true);
 
   useEffect(() => {
     const loadListings = async () => {
+      setError(null); // Reset the error state
+      setLoading(true);
+      setLoaded(false); // Reset loaded before fetching
       try {
         const fetchedListings = await getListingsByUser(user._id);
         setListings(fetchedListings);
+        setLoading(false);
       } catch (error) {
-        console.error('Failed to load listings:', error);
-        // Handle error (e.g., show a message)
+        let errorMessage = error.message; // Default to the error message thrown
+        if (error.message.includes('No listings found')) {
+          errorMessage = emptyListingsMessage;
+        } else if (error.message.includes('Internal server error')) {
+          errorMessage = errorMessageDetails;
+        }
+        setError(errorMessage);
+        setLoading(false);
+      } finally {
+        setLoaded(true); // Set loaded to true after fetching, regardless of the outcome
       }
     };
 
@@ -42,8 +60,7 @@ const ViewMyListingScreen = ({navigation}) => {
             fromAccount: true, // To hide the bottom tab when navigating from here.
           },
         })}
-       style={{ marginRight: 20 }}/>
-        
+       style={{ marginRight: 20 }}/>     
       ),
     });
   }, [navigation]);
@@ -107,17 +124,41 @@ const ViewMyListingScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
+      {loading ? (
+      <ActivityIndicator size="large" color={colors.primary} />
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle}>{errorMessageTitle}</Text>
+          <Text style={styles.errorMessage}>{error}</Text>
+        </View>
+      ) : listings.length === 0 && loaded ? ( // Check if listings are empty and loaded
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle}>{errorMessageTitle}</Text>
+          <Text style={styles.errorMessage}>{emptyListingsMessage}</Text>
+          <ButtonComponent iconName="create-outline" type="primary" title="Start Selling"
+            onPress={() => navigation.navigate('ListingStack', {
+              screen: 'CreateNewListingScreen',
+              params: {
+                isEditing: false, 
+                fromAccount: true, // To hide the bottom tab when navigating from here.
+              },
+            })}
+            style={{ marginTop: 50 }}
+          />
+        </View>
+      ) : (
       <FlatList
         data={listings}
         renderItem={renderItem}
         keyExtractor={item => item._id}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
+      )}
       <CustomActionSheet
-          isVisible={activeItemId !== null}
-          onClose={() => setActiveItemId(null)}
-          options={actionSheetOptions}
-        />
+        isVisible={activeItemId !== null}
+        onClose={() => setActiveItemId(null)}
+        options={actionSheetOptions}
+      />       
     </View>
   );
 };
@@ -171,6 +212,22 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     height: 1,
     backgroundColor: colors.inputBorder,
     margin: spacing.xs
+  },
+  errorContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  errorTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.primary, 
+  },
+  errorMessage: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 10,
+    textAlign: 'center',
+    paddingHorizontal: 20, // Add some horizontal padding for better readability
   },
 });
 

@@ -31,6 +31,7 @@ const ViewListing = ({ route, navigation }) => {
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
     const STOCK_IMAGE_URI = require('../assets/stock-image.png'); 
+    const STOCK_LISTING_IMAGE_URI = require('../assets/app_icon.png'); 
 
     // Hide the bottom tab 
     useHideBottomTab(navigation, true);
@@ -83,18 +84,6 @@ const ViewListing = ({ route, navigation }) => {
 
     // Handle save listing action
     const handleSaveListing = async () => {
-      /*setIsSaved(!isSaved);
-      Toast.show({
-          type: 'success',
-          text1: isSaved ? 'Listing Saved' : 'Listing Unsaved',
-  
-          visibilityTime: 4000,
-          autoHide: true,
-          position: 'bottom',
-          topOffset: 30,
-          bottomOffset: 40,
-        }); */
-
         const newSavedState = !isSaved;
         setIsSaved(newSavedState);
       
@@ -125,10 +114,9 @@ const ViewListing = ({ route, navigation }) => {
             });
           }
         } catch (error) {
-          console.error('Error handling saved listing:', error);
           Toast.show({
             type: 'error',
-            text1: 'An error occurred',
+            text1: 'An error occurred. Please try again later.',
             visibilityTime: 4000,
             autoHide: true,
             position: 'bottom',
@@ -164,8 +152,10 @@ const ViewListing = ({ route, navigation }) => {
         const checkIfSaved = async () => {
           try {
             const response = await checkSavedStatus(user._id, item._id);
-            setIsSaved(response.isSaved);
-            setSavedListingId(response.savedListingId);
+            if (response) {
+              setIsSaved(response.isSaved);
+              setSavedListingId(response.savedListingId);
+            }
           } catch (error) {
             console.error('Error checking saved status:', error);
           }
@@ -229,7 +219,7 @@ const ViewListing = ({ route, navigation }) => {
         ) : (
           // Render a placeholder or message if no images are available
           <View style={[styles.imageWrapper, { width: screenWidth }]}>
-            <Text style={styles.noImageText}>No images available</Text>
+            <Image source={STOCK_LISTING_IMAGE_URI} style={styles.image} />
           </View>
         )
       }
@@ -240,7 +230,6 @@ const ViewListing = ({ route, navigation }) => {
         onClose={closeModal}
         imageUrls={item.imageUrls} // Pass all image URLs
         initialIndex={currentIndex}  // Pass the current index
-        //imageUrl={item.imageUrls[currentIndex]} // Pass the URL of the current image
       />
       </View>
 
@@ -267,12 +256,14 @@ const ViewListing = ({ route, navigation }) => {
                         onError={() => setSellerImageLoadError(true)}
                       />
                       <View style={styles.sellerInfo}>
-                          <Text style={styles.sellerName}>{ratingsWithProfile[0].ratedUser.userName}</Text>
+                          <Text style={styles.sellerName}>{sellerProfile.userId.userName}</Text>
                           <View style={styles.ratingContainer}>
                           <StarRating
                               rating={averageRating.toFixed(1)}
                           />
-                          <Text style={styles.ratingCount}> {averageRating} ({ratingsWithProfile.length} Ratings)</Text>
+                          <Text style={styles.ratingCount}>
+                            {ratingsWithProfile.length > 0 ? `${averageRating.toFixed(1)} (${ratingsWithProfile.length} Ratings)` : 'No Ratings'}
+                          </Text>
                           </View>
                       </View>
                       </View>
@@ -280,7 +271,7 @@ const ViewListing = ({ route, navigation }) => {
                   </TouchableOpacity>
                 </View>
               ) : (
-              <Text style={styles.sellerDetailsContainer} >Loading seller details...</Text>
+              <Text style={styles.sellerDetailsContainer}>Unable to load seller details</Text>
               )
           }
           </View>
@@ -438,6 +429,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   },
   ratingCount: {
     fontSize: 14,
+    marginLeft: 5,
     // other styling as needed
   },
   sellerImage: {

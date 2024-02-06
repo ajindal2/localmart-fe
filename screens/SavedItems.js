@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useContext } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../AuthContext';
@@ -7,22 +7,42 @@ import { getSavedListings, deleteSavedListing } from '../api/SavedListingService
 import useHideBottomTab from '../utils/HideBottomTab'; 
 import CustomActionSheet from '../components/CustomActionSheet'; 
 import { useTheme } from '../components/ThemeContext';
+import ButtonComponent from '../components/ButtonComponent';
 
 const SavedItems = ({navigation, route}) => {
   const { user } = useContext(AuthContext);
   const [savedListings, setSavedListings] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [loaded, setLoaded] = useState(false); // Track whether listings have been loaded
   const [activeItemId, setActiveItemId] = useState(null);
   const fromAccount = route.params?.fromAccount;
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
+  const errorMessageTitle = "No Listings Found";
+  const errorMessageDetails = "We're experiencing some problems on our end. Please try again later.";
+  const emptyListingsMessage = "You dont have any saved listings at this time.";
 
   const fetchSavedListings = async () => {
+    setError(null); // Reset the error state
+    setLoading(true);
+    setLoaded(false); // Reset loaded before fetching
     try {
       const data = await getSavedListings(user._id); // Fetch saved listings from backend
       setSavedListings(data);
+      setLoading(false);
     } catch (error) {
-      console.error('Error fetching saved listings:', error);
-    }
+      let errorMessage = error.message; // Default to the error message thrown
+        if (error.message.includes('No listings found')) {
+          errorMessage = emptyListingsMessage;
+        } else if (error.message.includes('Internal server error')) {
+          errorMessage = errorMessageDetails;
+        }
+        setError(errorMessage);
+        setLoading(false);
+      } finally {
+        setLoaded(true); // Set loaded to true after fetching, regardless of the outcome
+      }
   };
 
   useHideBottomTab(navigation, fromAccount);
@@ -116,12 +136,30 @@ const SavedItems = ({navigation, route}) => {
 
   return (
     <View style={styles.container}>
+      {loading ? (
+      <ActivityIndicator size="large" color={colors.primary} />
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle}>{errorMessageTitle}</Text>
+          <Text style={styles.errorMessage}>{error}</Text>
+        </View>
+      ) : savedListings.length === 0 && loaded ? ( // Check if listings are empty and loaded
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle}>{errorMessageTitle}</Text>
+          <Text style={styles.errorMessage}>{emptyListingsMessage}</Text>
+          <ButtonComponent iconName="home-outline" type="primary" title="Start Exploring"
+            onPress={() => navigation.navigate('HomeScreen')}
+            style={{ marginTop: 50 }}
+          />
+        </View>
+      ) : (
       <FlatList
         data={savedListings}
         renderItem={renderItem}
         keyExtractor={(item) => item._id}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
+      )}
      <CustomActionSheet
         isVisible={activeItemId !== null}
         onClose={() => setActiveItemId(null)}
@@ -176,6 +214,22 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     height: 1,
     backgroundColor: colors.inputBorder,
     margin: spacing.xs
+  },
+  errorContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  errorTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.primary, 
+  },
+  errorMessage: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 10,
+    textAlign: 'center',
+    paddingHorizontal: 20, // Add some horizontal padding for better readability
   },
 });
 

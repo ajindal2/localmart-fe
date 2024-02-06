@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import StarRating from '../components/StarRating';
 import useHideBottomTab from '../utils/HideBottomTab'; 
@@ -39,7 +39,7 @@ const SellerDetails = ({ route, navigation }) => {
       <ScrollView style={styles.container}>
         {/* Section 1: Seller Info */}
         <View style={styles.section}>
-        <TouchableOpacity onPress={openImageModal} style={styles.imageContainer}>
+        <TouchableOpacity  activeOpacity={1} onPress={openImageModal} style={styles.imageContainer}>
             <Image 
               source={
                 sellerImageLoadError || !sellerProfile.profilePicture
@@ -50,68 +50,90 @@ const SellerDetails = ({ route, navigation }) => {
               onError={() => setSellerImageLoadError(true)}
             />
           </TouchableOpacity>
-          <Text style={styles.sellerName}>{ratingsWithProfile[0].ratedUser.userName}</Text>
-          <Text style={styles.sellerDescription}>{sellerProfile.aboutMe}</Text>
+          <Text style={styles.sellerName}>{sellerProfile.userId.userName}</Text>
+          {sellerProfile.aboutMe && (
+            <Text style={styles.sellerDescription}>{sellerProfile.aboutMe}</Text>
+          )}
         </View>
 
         <View style={styles.separator} />
 
         {/* Section 2: Seller Ratings Info */}
         <View style={styles.bottomContainer}>
+        {ratingsWithProfile.length > 0 ? (
+          <>
         <TouchableOpacity onPress={navigateToAllRatings} style={styles.ratingsSection}>
-            <View style={styles.section}>
-                <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>Ratings</Text>
-                    <Ionicons name="chevron-forward" size={20} color="grey" />
-                </View>
-                <View style={styles.averageRatingContainer}>
-                    <StarRating rating={averageRating.toFixed(1)} />
-                    <Text style={styles.totalRatings}>
-                        ({ratingsWithProfile.length} ratings)
-                    </Text>
-                </View>
+          <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionTitle}>Ratings</Text>
+                  <Ionicons name="chevron-forward" size={20} color="grey" />
+              </View>
+              <View style={styles.averageRatingContainer}>
+                <StarRating rating={averageRating.toFixed(1)} />
+                <Text style={styles.totalRatings}>
+                    ({ratingsWithProfile.length} ratings)
+                </Text>
+              </View>
             
 
             {/* TODO add logic to show placeholder image when profile image does not exist */}
             {topThreeRatingsWithProfile.map((ratingWithProfile, index) => (
-                <View key={index} style={styles.ratingItem}>
-                    <View style={styles.separator} />
-                    <View style={styles.ratingHeader}>
-                      <Image
-                        source={
-                          imageErrors[ratingWithProfile.ratedByProfilePicture] || !ratingWithProfile.ratedByProfilePicture ? STOCK_IMAGE_URI : { uri: ratingWithProfile.ratedByProfilePicture }
-                        }
-                        style={styles.raterImage}
-                        onError={() => handleImageError(ratingWithProfile.ratedByProfilePicture)} // Handle error for this specific image URI
-                      />                 
-                      <View style={styles.ratingDetails}>
-                        <View style={styles.ratingInfo}>
-                            <Text style={styles.raterName}>{ratingWithProfile.ratedBy.userName}</Text>
-                            <StarRating rating={ratingWithProfile.stars} size={16} />
-                        </View>
-                        <Text style={styles.ratingDate}>{formatDate(ratingWithProfile.dateGiven)}</Text>
+              <View key={index} style={styles.ratingItem}>
+                  <View style={styles.separator} />
+                  <View style={styles.ratingHeader}>
+                    <Image
+                      source={
+                        imageErrors[ratingWithProfile.ratedByProfilePicture] || !ratingWithProfile.ratedByProfilePicture ? STOCK_IMAGE_URI : { uri: ratingWithProfile.ratedByProfilePicture }
+                      }
+                      style={styles.raterImage}
+                      onError={() => handleImageError(ratingWithProfile.ratedByProfilePicture)} // Handle error for this specific image URI
+                    />                 
+                    <View style={styles.ratingDetails}>
+                      <View style={styles.ratingInfo}>
+                          <Text style={styles.raterName}>{ratingWithProfile.ratedBy.userName}</Text>
+                          <StarRating rating={ratingWithProfile.stars} size={16} />
                       </View>
+                      <Text style={styles.ratingDate}>{formatDate(ratingWithProfile.dateGiven)}</Text>
                     </View>
+                  </View>
 
-                    <Text 
-                    style={styles.ratingText} 
-                    numberOfLines={3} 
-                    ellipsizeMode='tail'
-                    >
-                    {ratingWithProfile.text}
-                    </Text>
+                  <Text 
+                  style={styles.ratingText} 
+                  numberOfLines={3} 
+                  ellipsizeMode='tail'
+                  >
+                  {ratingWithProfile.text}
+                  </Text>
 
-                    {ratingWithProfile.text.length > 100 && ( // Assuming 100 characters as the cutoff
-                    <Text style={styles.seeMoreText}>See more</Text>
-                    )}
+                  {ratingWithProfile.text.length > 100 && ( // Assuming 100 characters as the cutoff
+                  <Text style={styles.seeMoreText}>See more</Text>
+                  )}
 
-                </View>
-                ))}
-            </View>
+              </View>
+            ))}
+          </View>
         </TouchableOpacity>
-        
-
         <View style={styles.separator} />
+        </>
+        ) : (
+          <>
+            <View style={styles.ratingsSection}>
+              <View style={styles.section}>
+                <View style={styles.sectionHeader}>
+                    <Text style={styles.sectionTitle}>Ratings</Text>
+                </View>
+                <View style={styles.averageRatingContainer}>
+                  <StarRating rating={averageRating.toFixed(1)} />
+                  <Text style={styles.totalRatings}>
+                      ({ratingsWithProfile.length} ratings)
+                  </Text>
+                </View>
+              
+              </View>
+            </View>
+          <View style={styles.separator} />
+          </>
+        )}
 
         {/* Section 3: More Listings from this Seller */}
         <View style={styles.section}>
