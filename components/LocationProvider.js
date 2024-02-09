@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUserLocation, updateUserProfile } from '../api/UserProfileService';
+import {reverseGeocode} from '../api/LocationService'
 import * as Location from 'expo-location';
 import { AuthContext } from '../AuthContext';
 
@@ -37,32 +38,26 @@ export const LocationProvider = ({ children }) => {
         }
 
         let expoLocation = await Location.getCurrentPositionAsync({});
-        let cityNameConst = '';
-        let postalCodeConst = '';
-
-        if (expoLocation) {
-          let response = await Location.reverseGeocodeAsync({
-            latitude: expoLocation.coords.latitude,
-            longitude: expoLocation.coords.longitude,
-          });
-
-          if (response.length > 0) {
-            cityNameConst = response[0].city;
-            postalCodeConst = response[0].postalCode;
-          } 
-
-          const updatedProfileData = {
-            location: { 
-              coordinates: [{ latitude: expoLocation.coords.latitude, longitude: expoLocation.coords.longitude }],
-              city: cityNameConst,
-              postalCode: postalCodeConst,
-            }
-          };
-         
-          await updateUserProfile(user._id, updatedProfileData);
-          setLocation(updatedProfileData.location);
+        if (expoLocation && expoLocation.coords) {
+          try {
+            const result = await reverseGeocode(expoLocation.coords.latitude, expoLocation.coords.longitude);
+            const updatedProfileData = {
+              location: { 
+                city: result.city,
+                state: result.state,
+                postalCode: result.postalCode,
+                coordinates: [{ latitude: result.coordinates[1], longitude: result.coordinates[0] }],
+              }
+            };
+            await updateUserProfile(user._id, updatedProfileData);
+            setLocation(updatedProfileData.location);
+          } catch (error) {
+            console.error('Failed to retrieve location details:', error);
+            Alert.alert('Error', error.message);
+          }         
         } else {
           // Handle the case where location is undefined or null
+          Alert.alert('Error', 'Error occured when retrieving location');
           console.error('Failed to retrieve location.');
         }
       } else {
@@ -76,71 +71,47 @@ export const LocationProvider = ({ children }) => {
   }, [user]);
 
   const updateLocation = async (newLocation) => {
-    let updatedProfileData = {};
-    console.log('Inside updateLocation in Provider');
-
     if (newLocation.coords) {
-        try {
-            console.log('calling reverseGeocodeAsync');
-            let response = await Location.reverseGeocodeAsync({
-                latitude: newLocation.coords.latitude,
-                longitude: newLocation.coords.longitude,
-            });
-
-            let cityNameConst = '';
-            let postalCodeConst = '';
-
-            if (response.length > 0) {
-                cityNameConst = response[0].city || '';
-                postalCodeConst = response[0].postalCode || '';
-            }
-
-            updatedProfileData = {
-                location: { 
-                    coordinates: [{ latitude: newLocation.coords.latitude, longitude: newLocation.coords.longitude }],
-                    city: cityNameConst,
-                    postalCode: postalCodeConst,
-                }
-            };
-        } catch (error) {
-            console.error('Failed to retrieve location details:', error);
-            // Handle error, e.g., show a user-friendly message or log the error
-        }
-    } else if (newLocation.postalCode) {
-        updatedProfileData = {
-            location: {
-                postalCode: newLocation.postalCode,
-            },
+      try {
+        const result = await reverseGeocode(newLocation.coords.latitude, newLocation.coords.longitude);
+        const updatedProfileData = {
+          location: { 
+            city: result.city,
+            state: result.state,
+            postalCode: result.postalCode,
+            coordinates: [{ latitude: result.coordinates[1], longitude: result.coordinates[0] }],
+          }
         };
-    }
-
-    if (Object.keys(updatedProfileData).length > 0 && user._id) { 
-        try {
-            let ret = await updateUserProfile(user._id, updatedProfileData);
-            // Set the complete details into the locatiobnContext using the response from update
-            if(!updatedProfileData.location.coordinates) {
-              updatedProfileData = {
-                location: {
-                  coordinates: [{ latitude: ret.location.coordinates[1], longitude: ret.location.coordinates[0] }],
-                    city: ret.location.city,
-                    postalCode: ret.location.postalCode,
-                }
-              }
-            }
-            setLocation(updatedProfileData.location);
-        } catch (error) {
-            console.error('Error updating user profile:', error);
-            // Handle error, e.g., show a user-friendly message or log the error
+        await updateUserProfile(user._id, updatedProfileData);
+        setLocation(updatedProfileData.location);
+        navigation.navigate('HomeScreen');
+      } catch (error) {
+        console.error('Failed to retrieve location details:', error);
+        Alert.alert('Error', error.message);
+      }
+    } else if (newLocation.city && newLocation.postalCode && newLocation.coordinates && newLocation.state) {
+      const updatedProfileData = {
+        location: { 
+          city: newLocation.city,
+          state:  newLocation.state,
+          postalCode: newLocation.postalCode,
+          coordinates: newLocation.coordinates,
         }
+      };
+      await updateUserProfile(user._id, updatedProfileData);
+      setLocation(updatedProfileData.location);
+      Alert.alert('Location Updated Successfully');
+      navigation.navigate('HomeScreen');
+    } else {
+      // Handle the case where location is undefined or null
+      Alert.alert('Error', 'Error occured when retrieving location');
+      console.error('Failed to retrieve location.');
     }
 };
 
-// Make sure to bind this function in the context where it is used.
-
-
-  return (
-    <LocationContext.Provider value={{ location, setLocation: updateLocation }}>
-      {children}
-    </LocationContext.Provider>
+return (
+  <LocationContext.Provider value={{ location, setLocation: updateLocation }}>
+    {children}
+  </LocationContext.Provider>
   );
 };

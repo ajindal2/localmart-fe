@@ -285,6 +285,15 @@ const ViewListing = ({ route, navigation }) => {
 
         {/* Section 4: Location */}
         <Text style={styles.sectionTitle}>Location</Text>
+        <Text style={styles.locationText}>
+          {item.location ? 
+              (
+                item.location.city && item.location.state ? `${item.location.city}, ${item.location.state}` :
+                item.location.city || item.location.postalCode || 'Location not specified'
+              ) : 
+              'Unable to load location'
+          }
+          </Text>
        </View>
     </ScrollView>
 
@@ -478,6 +487,9 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   modalDotContainer: {
     position: 'absolute',
     bottom: 30,
+  },
+  locationText: {
+    color: colors.secondaryText, 
   },
 });
 

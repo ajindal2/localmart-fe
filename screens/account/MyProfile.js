@@ -3,7 +3,7 @@ import { View, Text, Image, TextInput, Button, StyleSheet, Alert, ScrollView, Di
 import StarRating from '../../components/StarRating';
 import ProfileImageWithEditIcon from '../../components/ProfileImageWithEditIcon';
 import { getUser, updateUser } from '../../api/UserService';
-import { getUserProfile, updateUserProfile, createUserProfile } from '../../api/UserProfileService';
+import { getUserProfile, updateUserProfile } from '../../api/UserProfileService';
 import { AuthContext } from '../../AuthContext';
 import * as SecureStore from 'expo-secure-store';
 import DEFAULT_IMAGE_URI from '../../constants/AppConstants';
@@ -95,7 +95,7 @@ const MyProfile = ({ navigation }) => {
     } catch (error) {
       setIsLoading(false);
       setError(error.message);
-      Alert.alert('Update Failed', error.message);
+      Alert.alert('Error', 'Update failed, please try again later');
     }
   
     // Reset change trackers

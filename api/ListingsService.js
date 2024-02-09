@@ -1,6 +1,5 @@
 //import BASE_URL from '../constants/AppConstants';
 import * as SecureStore from 'expo-secure-store';
-import {checkNetworkConnection} from '../utils/NetworkConnection';
 
 export const getListings = async (searchKey, locationParams) => {
   try {
@@ -28,11 +27,6 @@ export const getListings = async (searchKey, locationParams) => {
     const queryString = queryParams.toString();
     if (queryString) {
       url += `?${queryString}`;
-    }
-
-    const isConnected = await checkNetworkConnection();
-    if (!isConnected) {
-      throw new Error('No internet connection. Please check your network settings.');
     }
 
     const response = await fetch(url);
@@ -108,7 +102,6 @@ export const createListing = async (userId, listingDetails) => {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Error creating listing');
     }
-
     const data = await response.json();
     return data;
   } catch (error) {
@@ -151,7 +144,6 @@ export const updateListing = async (listingId, listingDetails) => {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Error updating listing');
     }
-
     const data = await response.json();
     return data;
   } catch (error) {

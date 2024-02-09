@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { View, Text, Dimensions, StyleSheet, Alert } from 'react-native';
 import * as Location from 'expo-location';
 import { LocationContext } from '../components/LocationProvider';
+import {validateAndGeocodePostalCode} from '../api/LocationService'
 import useHideBottomTab from '../utils/HideBottomTab'; 
 import InputComponent from '../components/InputComponent';
 import ButtonComponent from '../components/ButtonComponent';
@@ -16,45 +17,58 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
     useHideBottomTab(navigation, true);
     
     const handleZipCodeChange = (text) => {
-        if (/^\d{0,5}$/.test(text)) { // Regex for US ZIP code (0-5 digits)
+      if (/^\d{0,5}$/.test(text)) { // Regex for US ZIP code (0-5 digits)
         setZipCode(text);
-        }
+      }
     };
 
     const updateLocationWithZipCode = async () => {
-        if (/^\d{5}$/.test(zipCode)) {
-            setLocation({ postalCode: zipCode });
-            navigation.navigate('HomeScreen');
-            Alert.alert('Location Updated', `Location set to ZIP code: ${zipCode}`);
-        } else {
-            Alert.alert('Invalid ZIP Code', 'Please enter a valid 5-digit ZIP code.');
+      if (/^\d{5}$/.test(zipCode)) {
+        try {
+          const result = await validateAndGeocodePostalCode(zipCode);
+          const updatedProfileData = {
+            location: { 
+              city: result.city,
+              state: result.state,
+              postalCode: result.postalCode,
+              coordinates: [{ latitude: result.coordinates[1], longitude: result.coordinates[0] }],
+            }
+          };
+          setLocation(updatedProfileData.location);
+         
+        } catch (error) {
+          console.error('Failed to retrieve location details:', error);
+          Alert.alert('Error', error.message);
         }
+      } else {
+        Alert.alert('Invalid ZIP Code', 'Please enter a valid 5-digit ZIP code.');
+      }
     };
 
     const getCurrentLocation = async () => {
-        const { status: existingStatus } = await Location.getForegroundPermissionsAsync();
+      const { status: existingStatus } = await Location.getForegroundPermissionsAsync();
 
-        if (existingStatus !== 'granted') {
-            // Show custom dialog or UI element explaining the need for location permission
-            Alert.alert(
-                "Location Permission",
-                "We need to access your location to provide personalized content based on your area. This includes showing nearby listings and optimizing your search results.",
-                [
-                    { 
-                        text: "Cancel", 
-                        onPress: () => console.log('Permission denied by user'), 
-                        style: 'cancel'
-                    },
-                    { 
-                        text: "OK", 
-                        onPress: () => requestLocationPermission() 
-                    },
-                ]
-            );
-        } else {
-            const location = await Location.getCurrentPositionAsync({});
-            setLocation(location);
-        }
+      if (existingStatus !== 'granted') {
+        // Show custom dialog or UI element explaining the need for location permission
+        Alert.alert(
+          "Location Permission",
+          "We need to access your location to provide personalized content based on your area. This includes showing nearby listings and optimizing your search results.",
+          [
+              { 
+                  text: "Cancel", 
+                  onPress: () => console.log('Permission denied by user'), 
+                  style: 'cancel'
+              },
+              { 
+                  text: "OK", 
+                  onPress: () => requestLocationPermission() 
+              },
+          ]
+        );
+      } else {
+        const location = await Location.getCurrentPositionAsync({});
+        setLocation(location);
+      }
     };
 
     const requestLocationPermission = async () => {

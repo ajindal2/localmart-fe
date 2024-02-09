@@ -1,14 +1,13 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Switch, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Switch, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { createListing, updateListing } from '../api/ListingsService';
 import { getSellerLocation } from '../api/SellerService';
 import { AuthContext } from '../AuthContext';
-import colors from '../constants/colors';
 import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native'; 
 import { useFocusEffect } from '@react-navigation/native';
-import * as Location from 'expo-location';
+import {reverseGeocode} from '../api/LocationService'
 import useHideBottomTab from '../utils/HideBottomTab'; 
 import { useTheme } from '../components/ThemeContext';
 import InputComponent from '../components/InputComponent';
@@ -52,41 +51,37 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
 
   const updateLocation = async (newLocation) => {
     let updatedProfileData = {};
-  
+
     if (newLocation.coords) {
-        try {
-            let response = await Location.reverseGeocodeAsync({
-                latitude: newLocation.coords.latitude,
-                longitude: newLocation.coords.longitude,
-            });
-  
-            let cityNameConst = '';
-            let postalCodeConst = '';
-  
-            if (response.length > 0) {
-                cityNameConst = response[0].city || '';
-                postalCodeConst = response[0].postalCode || '';
-            }
-  
-            updatedProfileData = {
-                location: { 
-                    coordinates: [{ latitude: newLocation.coords.latitude, longitude: newLocation.coords.longitude }],
-                    city: cityNameConst,
-                    postalCode: postalCodeConst,
-                }
-            };
-        } catch (error) {
-            console.error('Failed to retrieve location details:', error);
-            // Handle error, e.g., show a user-friendly message or log the error
-        }
-    } else if (newLocation.postalCode) {
+      try {
+        const result = await reverseGeocode(newLocation.coords.latitude, newLocation.coords.longitude);
         updatedProfileData = {
-            location: {
-                postalCode: newLocation.postalCode,
-            },
-        };
+          location: { 
+            city: result.city,
+            state: result.state,
+            postalCode: result.postalCode,
+            coordinates: [{ latitude: result.coordinates[1], longitude: result.coordinates[0] }],
+          }
+        };       
+      } catch (error) {
+        console.error('Failed to retrieve location details:', error);
+        Alert.alert('Error', error.message);
+      }
+    } else if (newLocation.city && newLocation.postalCode && newLocation.coordinates) {
+      updatedProfileData = {
+        location: { 
+          city: newLocation.city,
+          state: result.state,
+          postalCode: newLocation.postalCode,
+          coordinates: newLocation.coordinates,
+        }
+      };
+    } else {
+      // Handle the case where location is undefined or null
+      Alert.alert('Error', 'Error occured when retrieving location');
+      console.error('Failed to retrieve location.');
     }
-  
+
     if (Object.keys(updatedProfileData).length > 0 ) { 
       setPickupLocation(updatedProfileData.location);
     }
@@ -250,7 +245,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           setPhotos([]);
           navigation.navigate('HomeScreen'); // Navigate to the homeScreen
       } catch (error) {
-        // Handle error
+        Alert.alert('Error', 'An unknown error occured, please try again later.');
         console.error(error);
         setShouldCreateListing(false); // Reset the flag
       }
@@ -371,7 +366,13 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
         <Text style={styles.text}>Pickup Location</Text>
         <View style={styles.locationRow}>
           <Text style={styles.locationText}>
-            {pickupLocation.city || pickupLocation.postalCode || 'Loading location...'}
+            {pickupLocation ? 
+              (
+                pickupLocation.city && pickupLocation.state ? `${pickupLocation.city}, ${pickupLocation.state}` :
+                pickupLocation.city || pickupLocation.postalCode || 'Location not specified'
+              ) : 
+              'Unable to load location'
+            }
           </Text>
           <ButtonComponent 
             title="Edit"
