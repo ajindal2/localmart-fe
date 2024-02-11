@@ -1,13 +1,14 @@
 import React, { useContext } from 'react';
-import { FlatList, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { FlatList, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import sections from '../../constants/AccountSections';
+import { getUserRatings } from '../../api/RatingsService';
 import { AuthContext } from '../../AuthContext';
 
 
 const AccountScreen = ({ navigation }) => {
 
-  const {logout} = useContext(AuthContext);
-  
+  const { user, logout } = useContext(AuthContext);
+
   const resetToWelcomeScreen = () => {
     let rootNavigator = navigation;
     while (rootNavigator.getParent()) {
@@ -25,6 +26,17 @@ const AccountScreen = ({ navigation }) => {
     logout();
   };
 
+  const handleAllReviews = async () => {
+    try {
+      const { averageRating, ratingsWithProfile } = await getUserRatings(user._id);
+      console.log('ratingsWithProfile: ', ratingsWithProfile);
+      navigation.navigate('AllReviewsScreen', {ratingsWithProfile, averageRating });     
+    } catch (error) {
+      Alert.alert('Error', 'Error occurred when fetching ratings. Please try again later.');
+      console.error('Error fetching seller ratings', error);
+    }
+  }
+
   // renderItem expects an object with { item, index, separators, section }
   const renderItem = ({ item, index, separators, section }) => {
 
@@ -33,6 +45,8 @@ const AccountScreen = ({ navigation }) => {
         handleLogout();
       } else if (item.key === 'SavedListingStackNavigator') {
         navigation.navigate('SavedListingStackNavigator', { screen: 'SavedItem', params: { fromAccount: true } });
+      } else if (item.key === 'user_reviews') {
+        handleAllReviews();
       } else {
         navigation.navigate(item.key);
       }

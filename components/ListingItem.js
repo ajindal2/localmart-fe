@@ -6,6 +6,10 @@ const ListingItem = ({ item, onPress }) => {
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
 
+    const convertMetersToMiles = (meters) => {
+      return meters * 0.000621371;
+    };
+
     if (!item || !item.title) {
         return <View style={styles.invisibleItem} />;
     }
@@ -18,7 +22,16 @@ const ListingItem = ({ item, onPress }) => {
           <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
             {item.title}
           </Text>
-          <Text style={styles.price}>${item.price}</Text>
+          <View style={styles.priceDistanceContainer}>
+            <Text style={styles.price}>${item.price}</Text>
+            {/* Conditional rendering for distance */}
+            {item.distance && (
+              <>
+                <Text style={styles.dot}> · </Text>
+                <Text style={styles.distance}>{convertMetersToMiles(item.distance).toFixed(2)} mi</Text>
+              </>
+            )}
+          </View>
         </View>
       </TouchableOpacity>
     );
@@ -55,18 +68,34 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5, // For Android
   },
+  priceDistanceContainer: {
+    flexDirection: 'row', // Align items in a row
+    alignItems: 'center', // Center items vertically
+  },
   title: {
     fontWeight: 'bold',
-    fontSize: typography.price,
+    fontSize: typography.body,
     paddingTop: 5,
     paddingLeft: 5,
     overflow: 'hidden',
     width: '100%',
   },
   price: {
-    fontSize: typography.caption,
+    fontSize: typography.price,
     color: colors.secondaryText,
     paddingLeft: 5,
+    paddingBottom: 5,
+  },
+  dot: {
+    fontSize: typography.price,
+    color: colors.secondaryText,
+    //paddingLeft: 5,
+    paddingBottom: 5,
+  },
+  distance: {
+    fontSize: typography.price,
+    color: colors.secondaryText,
+   // paddingLeft: 5,
     paddingBottom: 5,
   },
   invisibleItem: {

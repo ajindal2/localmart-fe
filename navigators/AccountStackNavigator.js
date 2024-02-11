@@ -4,6 +4,7 @@ import MyProfile from '../screens/account/MyProfile';
 import ChangeProfilePicture from '../screens/account/ChangeProfilePicture';
 import ViewMyListingStackNavigator from './ViewMyListingStackNavigator';
 import SavedListingStackNavigator from './SavedListingStackNavigator';
+import AllReviewsScreen from '../screens/AllReviewsScreen';
 
 const AccountStack = createStackNavigator();
 
@@ -28,6 +29,12 @@ function AccountStackNavigator() {
         }}  /> 
         <AccountStack.Screen name="ViewMyListingStackNavigator" component={ViewMyListingStackNavigator} options={{ headerShown: false }} /> 
         <AccountStack.Screen name="SavedListingStackNavigator" component={SavedListingStackNavigator} options={{ headerShown: false }} />  
+        <AccountStack.Screen name="AllReviewsScreen" component={AllReviewsScreen}
+          options={{ 
+            headerShown: true,
+            title: 'All reviews',
+            //tabBarStyle: { display: 'none' } 
+          }} />
       </AccountStack.Navigator>
     );
   }

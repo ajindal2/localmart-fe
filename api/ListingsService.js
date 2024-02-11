@@ -157,32 +157,38 @@ export const deleteListing = async (listingId) => {
     const response = await fetch(`http://192.168.86.24:3000/listings/${listingId}`, {
       method: 'DELETE',
     });
+
     if (!response.ok) {
-      throw new Error('Failed to delete listing');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to delete the listing.');
     }
-    return await response.json(); // Or handle response appropriately
+
+    console.log('Listing deleted successfully:', listingId);
   } catch (error) {
     console.error('Error deleting listing:', error);
-    throw error;
+    throw error; // Re-throw to allow further handling, e.g., showing an error message in the UI
   }
 };
 
-export const updateListingStatus = async (listingId, newStatus) => {
+export const updateListingStatus = async (listingId, status) => {
   try {
     const response = await fetch(`http://192.168.86.24:3000/listings/${listingId}/status`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ status: newStatus }),
+      body: JSON.stringify({ status }),
     });
+
     if (!response.ok) {
-      throw new Error('Failed to update listing status');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to update listing status.');
     }
-    return await response.json(); // Or handle response appropriately
+
+    console.log('Listing status updated successfully:', listingId, status);
   } catch (error) {
     console.error('Error updating listing status:', error);
-    throw error;
+    throw error; // Re-throw to allow further handling, e.g., showing an error message in the UI
   }
 };
 

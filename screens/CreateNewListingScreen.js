@@ -369,7 +369,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
             {pickupLocation ? 
               (
                 pickupLocation.city && pickupLocation.state ? `${pickupLocation.city}, ${pickupLocation.state}` :
-                pickupLocation.city || pickupLocation.postalCode || 'Location not specified'
+                pickupLocation.city || pickupLocation.postalCode || 'Set a location (required)'
               ) : 
               'Unable to load location'
             }

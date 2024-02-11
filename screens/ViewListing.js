@@ -35,17 +35,11 @@ const ViewListing = ({ route, navigation }) => {
 
     // Hide the bottom tab 
     useHideBottomTab(navigation, true);
-    
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-    ];
 
-    const formatDateToMonthYear = (dateString) => {
-      console.log('Logging date joined: ', dateString);
+    const formatDate = (dateString) => {
       const date = new Date(dateString);
-      const year = date.getFullYear();
-      const monthName = monthNames[date.getMonth()];
-      return `${monthName} ${year}`;
+      const options = { month: 'short', year: 'numeric' };
+      return date.toLocaleString('en-US', options);
     };
 
     const openImageModal = () => {
@@ -257,6 +251,7 @@ const ViewListing = ({ route, navigation }) => {
                       />
                       <View style={styles.sellerInfo}>
                           <Text style={styles.sellerName}>{sellerProfile.userId.userName}</Text>
+                          <Text style={styles.dateJoined}>Joined {formatDate(sellerProfile.userId.date)}</Text>
                           <View style={styles.ratingContainer}>
                           <StarRating
                               rating={averageRating.toFixed(1)}
@@ -429,7 +424,11 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5, 
-    // other styling as needed
+  },
+  dateJoined: {
+    fontSize: 16,
+    //fontWeight: 'bold',
+    marginBottom: 5, 
   },
   ratingContainer: {
     flexDirection: 'row',

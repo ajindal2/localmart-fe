@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Dimensions, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Dimensions, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../../AuthContext'; 
-import { getListingsByUser } from '../../api/ListingsService'; 
+import { getListingsByUser, deleteListing, updateListingStatus } from '../../api/ListingsService'; 
 import useHideBottomTab from '../../utils/HideBottomTab'; 
 import CustomActionSheet from '../../components/CustomActionSheet'; 
 import { useTheme } from '../../components/ThemeContext';
@@ -65,6 +65,31 @@ const ViewMyListingScreen = ({navigation}) => {
     });
   }, [navigation]);
 
+  const markAsSold = async (listingId) => {
+    try {
+      await updateListingStatus(listingId, 'Sold');
+      const updatedListings = listings.map(item =>
+        item._id === listingId ? { ...item, status: 'Sold' } : item
+      );
+      setListings(updatedListings);
+    } catch (error) {
+      console.error('Error marking listing as sold:', error);
+      Alert.alert('Error', 'Error updating status, please try again later.');
+    }
+  };
+
+  const handleDeleteListing = async (listingId) => {
+    try {
+      await deleteListing(listingId); 
+      const updatedListings = listings.filter(item => item._id !== listingId); // Remove the deleted item from the listings array
+      setListings(updatedListings); // Update the state with the new listings array
+      Alert.alert('Listing deleted successfully');
+    } catch (error) {
+      console.error('Error deleting listing:', error);
+      Alert.alert('Error', 'Error deleting listing, please try again later.');
+    }
+  };
+
   const getActionSheetOptions = (item) => [
     {
       icon: 'share-social-outline',
@@ -89,6 +114,56 @@ const ViewMyListingScreen = ({navigation}) => {
         setActiveItemId(null);
       },
     },
+    {
+      icon: 'checkmark-circle-outline',
+      text: 'Mark as Sold',
+      onPress: () => {
+        Alert.alert(
+          'Confirm',
+          'Are you sure you want to mark this listing as sold, it cannot be undone?',
+          [
+            {
+              text: 'Yes',
+              onPress: async () => {
+                markAsSold(item._id)
+                setActiveItemId(null); // Close the action sheet only after confirming
+              },
+            },
+            {
+              text: 'No',
+              onPress: () => console.log('Cancelled marking as sold'),
+              style: 'cancel',
+            },
+          ],
+          { cancelable: false }
+        );
+      },
+    },
+    {
+      icon: 'trash-outline',
+      text: 'Delete Listing',
+      onPress: () => {
+        Alert.alert(
+          'Confirm',
+          'Are you sure you want to delete this listing, it cannot be undone?',
+          [
+            {
+              text: 'Yes',
+              onPress: async () => {
+                handleDeleteListing(item._id);
+                setActiveItemId(null); // Close the action sheet only after confirming
+              },
+            },
+            {
+              text: 'No',
+              onPress: () => console.log('Cancelled delete'),
+              style: 'cancel',
+            },
+          ],
+          { cancelable: false }
+        );
+      },
+    },
   ];
 
   const handleOpenActionSheet = (item) => {
@@ -109,7 +184,7 @@ const ViewMyListingScreen = ({navigation}) => {
         {item.title}
       </Text>
       <Text style={styles.listingDetails}>
-        {`$${item.price.toFixed(2)}`} · {new Date(item.dateCreated).toLocaleDateString()}
+        {`$${item.price.toFixed(2)}`} · {item.status} · Created on: {new Date(item.dateCreated).toLocaleDateString()}
       </Text>
       </View>
       <TouchableOpacity style={styles.optionsButton} onPress={() => handleOpenActionSheet(item)}>

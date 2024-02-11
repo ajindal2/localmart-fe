@@ -7,12 +7,14 @@ import { useTheme } from '../components/ThemeContext';
 
 
 const AllReviewsScreen = ({ route, navigation }) => {
-    const { sellerProfile, ratingsWithProfile, averageRating } = route.params;
+    const { ratingsWithProfile, averageRating } = route.params;
     const [imageErrors, setImageErrors] = useState({});
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
     const STOCK_IMAGE_URI = require('../assets/stock-image.png'); 
-
+    const errorMessageTitle = "No Ratings Found";
+    const emptyRatingsMessage = "You dont have any ratings yet";
+    
     useHideBottomTab(navigation, true);
 
     // Function to handle image load error
@@ -25,6 +27,13 @@ const AllReviewsScreen = ({ route, navigation }) => {
 
     return (
         <ScrollView style={styles.container}>
+          {(!ratingsWithProfile || ratingsWithProfile.length === 0) ? (
+              <View style={styles.errorContainer}>
+              <Text style={styles.errorTitle}>{errorMessageTitle}</Text>
+              <Text style={styles.errorMessage}>{emptyRatingsMessage}</Text>
+            </View>
+          ) : (
+            <>
             {/* Section 1: Reviews summary */}
             <View style={styles.section}>
               <View style={styles.header}>
@@ -77,7 +86,9 @@ const AllReviewsScreen = ({ route, navigation }) => {
                 </View>
                 ))}
             </View>
-        </ScrollView>
+      </>
+    )}
+  </ScrollView>
     );
 };
 
@@ -170,6 +181,22 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
       backgroundColor: colors.separatorColor,
       marginBottom: spacing.size10,
       marginTop: spacing.size10,
+    },
+    errorContainer: {
+      alignItems: 'center',
+      marginTop: 20,
+    },
+    errorTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: colors.primary, 
+    },
+    errorMessage: {
+      fontSize: 14,
+      color: '#666',
+      marginTop: 10,
+      textAlign: 'center',
+      paddingHorizontal: 20, // Add some horizontal padding for better readability
     },
   });
 

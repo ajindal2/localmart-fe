@@ -11,16 +11,20 @@ const LocationInfoDisplay = ({ onPress }) => {
   
     // Determine what text to display based on the available data
     let locationText = 'Searching in: ';
-    if (location && location.city) {
-      locationText += location.city;
-    } else if (location && location.postalCode) {
-      locationText += location.postalCode;
-    }
+    if (location) {
+      if (location.city && location.state) {
+        locationText += `${location.city}, ${location.state}`;
+      } else if (location.city) {
+        locationText += location.city;
+      } else if (location.postalCode) {
+        locationText += location.postalCode;
+      }
+    } 
   
     // Return null to render nothing if neither city nor postalCode is available
     if (locationText === 'Searching in: ') {
        locationText = 'Set your search location';
-  }
+    }
   
     return (
       <TouchableOpacity style={styles.locationContainer} onPress={onPress}>

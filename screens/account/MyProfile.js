@@ -6,7 +6,6 @@ import { getUser, updateUser } from '../../api/UserService';
 import { getUserProfile, updateUserProfile } from '../../api/UserProfileService';
 import { AuthContext } from '../../AuthContext';
 import * as SecureStore from 'expo-secure-store';
-import DEFAULT_IMAGE_URI from '../../constants/AppConstants';
 import useHideBottomTab from '../../utils/HideBottomTab'; 
 import InputComponent from '../../components/InputComponent';
 import ButtonComponent from '../../components/ButtonComponent';
@@ -17,7 +16,6 @@ const MyProfile = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
-  const [starCount, setStarCount] = useState(3.5);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [userAuthDetails, setUserAuthDetails] = useState({
@@ -31,8 +29,10 @@ const MyProfile = ({ navigation }) => {
   const [isUserAuthDetailsChanged, setIsUserAuthDetailsChanged] = useState(false);
   const [isUserProfileDetailsChanged, setIsUserProfileDetailsChanged] = useState(false);
 
-  const onStarRatingPress = (rating) => {
-    setStarCount(rating);
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = { month: 'short', year: 'numeric' };
+    return date.toLocaleString('en-US', options);
   };
 
   useHideBottomTab(navigation, true);
@@ -48,18 +48,19 @@ const MyProfile = ({ navigation }) => {
 
         setUserAuthDetails({
           emailAddress: userAuthProfile.emailAddress,
-          userName: userAuthProfile.userName
+          userName: userAuthProfile.userName,
+          date: userAuthProfile.date,
         });
        
         if (userProfile) {
           setUserProfileDetails({
             aboutMe: userProfile.aboutMe || '', 
-            profilePicture: userProfile.profilePicture || 'https://via.placeholder.com/150'
+            profilePicture: userProfile.profilePicture || 'https://via.placeholder.com/150',
           })
         } else {
           setUserProfileDetails({
             aboutMe : '',
-            profilePicture : 'https://via.placeholder.com/150'
+            profilePicture : 'https://via.placeholder.com/150',
           })
         }
         
@@ -130,11 +131,7 @@ const MyProfile = ({ navigation }) => {
             })}}
         />
         <View style={styles.profileSection}>
-            <Text style={styles.subText}>Member since April 2003</Text>
-            <StarRating
-            rating={starCount}
-            onRatingChange={onStarRatingPress}
-            />
+          <Text style={styles.subText}>Member since {formatDate(userAuthDetails.date)}</Text>
         </View>
       </View>
       <View style={styles.aboutSection}>

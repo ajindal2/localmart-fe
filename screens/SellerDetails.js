@@ -1,27 +1,44 @@
-import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import StarRating from '../components/StarRating';
 import useHideBottomTab from '../utils/HideBottomTab'; 
 import { useTheme } from '../components/ThemeContext';
 import FullScreenImageModal from '../components/FullScreenImageModal';
+import ListingItem from '../components/ListingItem';
+import { getListingsByUser } from '../api/ListingsService'; 
+
 
 const SellerDetails = ({ route, navigation }) => {
     const { sellerProfile, ratingsWithProfile, averageRating } = route.params;
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [imageErrors, setImageErrors] = useState({});
     const [sellerImageLoadError, setSellerImageLoadError] = useState(false);
+    const [listings, setListings] = useState([]);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [loaded, setLoaded] = useState(false); // Track whether listings have been loaded
     const topThreeRatingsWithProfile = ratingsWithProfile.slice(0, 3); // Get top 3 ratings
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
     const STOCK_IMAGE_URI = require('../assets/stock-image.png'); 
+    const errorMessageTitle = "No Listings Found";
+    const errorMessageDetails = "Failed to load seller listings";
+    const emptyListingsMessage = "This seller does not have other listings. LocalMart is a growing marketplace, please try again later.";
+    
+
+    const formatJoinedDate = (dateString) => {
+      const date = new Date(dateString);
+      const options = { month: 'short', year: 'numeric' };
+      return date.toLocaleString('en-US', options);
+    };
 
     const openImageModal = () => {
       setIsModalVisible(true);
     };
     
     const navigateToAllRatings = () => {
-        navigation.navigate('AllReviewsScreen', { sellerProfile, ratingsWithProfile, averageRating }); // Navigate to a screen that shows all ratings
+        navigation.navigate('AllReviewsScreen', {ratingsWithProfile, averageRating }); // Navigate to a screen that shows all ratings
     };
 
     // Function to handle image load error
@@ -35,9 +52,40 @@ const SellerDetails = ({ route, navigation }) => {
     // Hide the bottom tab 
     useHideBottomTab(navigation, true);
 
-    return (
-      <ScrollView style={styles.container}>
-        {/* Section 1: Seller Info */}
+    useEffect(() => {
+      const loadListings = async () => {
+        setError(null); // Reset the error state
+        setLoading(true);
+        setLoaded(false); // Reset loaded before fetching
+        try {
+          const data = await getListingsByUser(sellerProfile.userId._id);
+          let modifiedData = data;
+
+          // Check if the number of listings is odd
+          if (data.length % 2 !== 0) {
+            modifiedData = [...data, {}]; // Create a new array with an extra empty object
+          } 
+          setListings(modifiedData);
+          setLoading(false);
+        } catch (error) {
+          let errorMessage = error.message; // Default to the error message thrown
+          if (error.message.includes('No listings found')) {
+            errorMessage = emptyListingsMessage;
+          } else if (error.message.includes('Internal server error')) {
+            errorMessage = errorMessageDetails;
+          }
+          setError(errorMessage);
+          setLoading(false);
+        } finally {
+          setLoaded(true); // Set loaded to true after fetching, regardless of the outcome
+        }
+      };
+  
+      loadListings();
+    }, [sellerProfile.userId]);
+
+    const ListHeader = () => (
+      <>
         <View style={styles.section}>
         <TouchableOpacity  activeOpacity={1} onPress={openImageModal} style={styles.imageContainer}>
             <Image 
@@ -51,6 +99,7 @@ const SellerDetails = ({ route, navigation }) => {
             />
           </TouchableOpacity>
           <Text style={styles.sellerName}>{sellerProfile.userId.userName}</Text>
+          <Text style={styles.dateJoined}>Joined {formatJoinedDate(sellerProfile.userId.date)}</Text>
           {sellerProfile.aboutMe && (
             <Text style={styles.sellerDescription}>{sellerProfile.aboutMe}</Text>
           )}
@@ -136,19 +185,43 @@ const SellerDetails = ({ route, navigation }) => {
         )}
 
         {/* Section 3: More Listings from this Seller */}
-        <View style={styles.section}>
           <Text style={styles.sectionTitle}>More listings from this seller</Text>
-          {/* Placeholder for listings component */}
-        </View>
-        </View>
+      </View>
+    </>
+  );
 
-        <FullScreenImageModal
-          isVisible={isModalVisible}
-          onClose={() => setIsModalVisible(false)}
-          imageUrls={[sellerProfile.profilePicture || STOCK_IMAGE_URI]} // Pass the seller's profile picture or stock image
+
+  return (
+    <View style={styles.container}>
+      {loading ? (
+        <ActivityIndicator size="large" color={colors.primary} />
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle}>{errorMessageTitle}</Text>
+          <Text style={styles.errorMessage}>{error}</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={listings}
+          renderItem={({ item }) => (
+            <ListingItem
+              item={item}
+              onPress={() => navigation.navigate('ViewListingFromSeller', { item })}
+            />
+          )}
+          keyExtractor={item => item._id ? item._id.toString() : Math.random().toString()}
+          numColumns={2}
+          ListHeaderComponent={ListHeader}
         />
-      </ScrollView>
-    );
+      )}
+
+      <FullScreenImageModal
+        isVisible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        imageUrls={[sellerProfile.profilePicture || STOCK_IMAGE_URI]}
+      />
+    </View>
+  );
 };
 
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
@@ -198,9 +271,15 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
       paddingLeft: spacing.size10,
       paddingTop: spacing.size10,
     },
+    dateJoined: {
+      fontSize: typography.body,
+      paddingBottom: 5,
+      paddingLeft: spacing.size10,
+    },
     sellerDescription: {
       fontSize: typography.body,
       color: colors.secondaryText,
+      paddingTop: spacing.size10,
       paddingLeft: spacing.size10,
     },
     averageRating: {
@@ -254,12 +333,28 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
       seeMoreText:{
         color: 'blue',
         marginTop: 5,
-      }
+      },
+      errorContainer: {
+        alignItems: 'center',
+        marginTop: 20,
+      },
+      errorTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: colors.primary, 
+      },
+      errorMessage: {
+        fontSize: 14,
+        color: '#666',
+        marginTop: 10,
+        textAlign: 'center',
+        paddingHorizontal: 20, // Add some horizontal padding for better readability
+      },
 });
 
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-  }
+  const date = new Date(dateString);
+  return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+}
 
 export default SellerDetails;

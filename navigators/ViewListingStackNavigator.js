@@ -25,6 +25,13 @@ function ViewListingStackNavigator() {
         title: 'All reviews',
         tabBarStyle: { display: 'none' } 
       }} />
+      {/* Additional ViewListing Screen for navigating from SellerDetails */}
+      <ViewListingStack.Screen name="ViewListingFromSeller" component={ViewListing} 
+        options={{ 
+          headerShown: true,
+          title: 'Listing Details',
+        }} 
+      />
     </ViewListingStack.Navigator>
   );
 }
