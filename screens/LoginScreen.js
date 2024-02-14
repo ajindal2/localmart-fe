@@ -33,9 +33,11 @@ const LoginScreen = ({ navigation }) => {
         body: JSON.stringify({ userName, password }),
       });
       const data = await response.json();
-      if (data && data.access_token) {
+      if (data && data.access_token && data.refresh_token) {
         await SecureStore.setItemAsync('token', data.access_token);
         setToken(data.access_token);
+
+        await SecureStore.setItemAsync('refreshToken', data.refresh_token);
 
       if (data.user) {
         await SecureStore.setItemAsync('user', JSON.stringify(data.user));
@@ -43,7 +45,7 @@ const LoginScreen = ({ navigation }) => {
       }
 
       } else {
-        console.error('Error in data:', data);
+        console.error('Error in login data:', data);
         Alert.alert('Login failed', 'Invalid Username or Password');
       }
     } catch (error) {

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, Image, TextInput, Button, StyleSheet, Alert, ScrollView, Dimensions } from 'react-native';
-import StarRating from '../../components/StarRating';
 import ProfileImageWithEditIcon from '../../components/ProfileImageWithEditIcon';
 import { getUser, updateUser } from '../../api/UserService';
 import { getUserProfile, updateUserProfile } from '../../api/UserProfileService';
@@ -13,7 +12,7 @@ import { useTheme } from '../../components/ThemeContext';
 
 
 const MyProfile = ({ navigation }) => {
-  const { user, setUser } = useContext(AuthContext);
+  const { user, setUser, logout } = useContext(AuthContext);
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
   const [isLoading, setIsLoading] = useState(false);
@@ -94,6 +93,9 @@ const MyProfile = ({ navigation }) => {
       setIsLoading(false);
       Alert.alert('Profile Updated', 'Your profile has been successfully updated.');
     } catch (error) {
+      if (error.message === 'RefreshTokenExpired') {
+        logout();
+      } 
       setIsLoading(false);
       setError(error.message);
       Alert.alert('Error', 'Update failed, please try again later');

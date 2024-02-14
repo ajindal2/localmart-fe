@@ -1,5 +1,6 @@
 //import BASE_URL from '../constants/AppConstants';
 import * as SecureStore from 'expo-secure-store';
+import { fetchWithTokenRefresh } from '../api/FetchService';
 
 export const getUserProfile = async (userId) => {
   try {
@@ -75,7 +76,7 @@ export const getUserLocation = async (userId) => {
     
   const token = await SecureStore.getItemAsync('token');
     try {
-      const response = await fetch(`http://192.168.86.24:3000/userProfile/${userId}`, {
+      const response = await fetchWithTokenRefresh(`http://192.168.86.24:3000/userProfile/${userId}`, {
         method: 'PUT', // or 'PATCH' if you're updating partially
         headers: {
           'Content-Type': 'application/json',
@@ -113,7 +114,7 @@ export const getUserLocation = async (userId) => {
   
     // Send the request to the server
     try {
-      const response = await fetch(apiUrl, {
+      const response = await fetchWithTokenRefresh(apiUrl, {
         method: 'PUT',
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -134,29 +135,3 @@ export const getUserLocation = async (userId) => {
       throw error;
     }
   };
-
-  /*export const updateUserProfileWithImage = async (userId, formData) => {
-    const token = await SecureStore.getItemAsync('token');
-  
-    try {
-      const response = await fetch(`http://192.168.86.49:3000/userProfile/${userId}/image`, {
-        method: 'PUT', // This might be 'POST' or 'PATCH' depending on your backend setup
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          // 'Content-Type': 'multipart/form-data' // Don't set this manually if you're using fetch with FormData, it will be set automatically
-        },
-        body: formData,
-      });
-  
-      if (response.ok) {
-        const updatedProfile = await response.json();
-        return updatedProfile;
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Could not update the profile image.');
-      }
-    } catch (error) {
-      console.error('Error updating profile picture:', error);
-      throw error;
-    }
-  };*/

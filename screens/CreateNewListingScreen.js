@@ -16,7 +16,7 @@ import ButtonComponent from '../components/ButtonComponent';
 const CreatingNewListingScreen = ({ navigation, route }) => {
   const PHOTO_SLOT_WIDTH = 120; // Use the same width as defined in your photoSlot style
 
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const [photos, setPhotos] = useState([]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -277,6 +277,9 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           setPhotos([]);
           navigation.navigate('HomeScreen'); // Navigate to the homeScreen
       } catch (error) {
+        if (error.message === 'RefreshTokenExpired') {
+          logout();
+        } 
         Alert.alert('Error', 'An unknown error occured, please try again later.');
         console.error(error);
         setShouldCreateListing(false); // Reset the flag

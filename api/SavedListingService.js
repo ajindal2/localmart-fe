@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
+import { fetchWithTokenRefresh } from '../api/FetchService';
 
 const BASE_URL = 'http://192.168.86.24:3000'; 
 
@@ -16,7 +17,7 @@ export const getSavedListings = async (userId) => {
 export const createSavedListing = async (userId, listingId) => {
   try {
     const token = await SecureStore.getItemAsync('token');
-    const response = await fetch(`http://192.168.86.24:3000/savedListings`, {
+    const response = await fetchWithTokenRefresh(`http://192.168.86.24:3000/savedListings`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -42,7 +43,7 @@ export const createSavedListing = async (userId, listingId) => {
 export const deleteSavedListing = async (savedListingId) => {
   try {
     const token = await SecureStore.getItemAsync('token');
-    const response = await fetch(`http://192.168.86.24:3000/savedListings/${savedListingId}`, {
+    const response = await fetchWithTokenRefresh(`http://192.168.86.24:3000/savedListings/${savedListingId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

@@ -19,7 +19,7 @@ const ViewListing = ({ route, navigation }) => {
     //const { item } = route.params;
     const screenWidth = Dimensions.get('window').width;
     const [currentIndex, setCurrentIndex] = useState(0);
-    const { user } = useContext(AuthContext);
+    const { user, logout } = useContext(AuthContext);
     const [sellerProfile, setSellerProfile] = useState(null);
     const [ratingsWithProfile, setRatingsWithProfile] = useState([]);
     const [averageRating, setAverageRating] = useState(0); 
@@ -108,6 +108,9 @@ const ViewListing = ({ route, navigation }) => {
             });
           }
         } catch (error) {
+          if (error.message === 'RefreshTokenExpired') {
+            logout();
+          } 
           Toast.show({
             type: 'error',
             text1: 'An error occurred. Please try again later.',

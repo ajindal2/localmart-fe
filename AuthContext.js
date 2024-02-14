@@ -23,9 +23,6 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const logout = async () => {
-    if (user && user._id) {
-      console.log("Logging out user with ID:", user._id);
-    }
     
     try {
       await SecureStore.deleteItemAsync('token');

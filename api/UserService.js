@@ -1,5 +1,6 @@
 //import BASE_URL from '../constants/AppConstants';
 import * as SecureStore from 'expo-secure-store';
+import { fetchWithTokenRefresh } from '../api/FetchService';
 
 export const getUser = async (userId) => {
   try {
@@ -19,7 +20,7 @@ export const updateUser = async (userId, user) => {
   const token = await SecureStore.getItemAsync('token');
  
     try {
-      const response = await fetch(`http://192.168.86.24:3000/users/${userId}`, {
+      const response = await fetchWithTokenRefresh(`http://192.168.86.24:3000/users/${userId}`, {
         method: 'PUT', // or 'PATCH' if you're updating partially
         headers: {
           'Content-Type': 'application/json',

@@ -1,5 +1,6 @@
 //import BASE_URL from '../constants/AppConstants';
 import * as SecureStore from 'expo-secure-store';
+import { fetchWithTokenRefresh } from '../api/FetchService';
 
 export const getListings = async (searchKey, locationParams) => {
   try {
@@ -89,7 +90,7 @@ export const createListing = async (userId, listingDetails) => {
       });
     });
 
-    const response = await fetch(url, {
+    const response = await fetchWithTokenRefresh(url, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -131,7 +132,7 @@ export const updateListing = async (listingId, listingDetails) => {
       });
     });
 
-    const response = await fetch(url, {
+    const response = await fetchWithTokenRefresh(url, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,

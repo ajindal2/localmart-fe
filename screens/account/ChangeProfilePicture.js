@@ -10,7 +10,7 @@ import { useTheme } from '../../components/ThemeContext';
 
 const ChangeProfilePicture = ({ route, navigation }) => {
   const [image, setImage] = useState(null);
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const userProfilePicture = route.params?.profilePicture ?? 'https://via.placeholder.com/150';
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
@@ -95,6 +95,9 @@ const handleChoosePhoto = async () => {
       // Navigate back or refresh the profile view if necessary
       navigation.navigate('MyProfile');
     } catch (error) {
+      if (error.message === 'RefreshTokenExpired') {
+        logout();
+      } 
       Alert.alert('Error', 'Could not update profile image: ' + error.message);
     }
   };
