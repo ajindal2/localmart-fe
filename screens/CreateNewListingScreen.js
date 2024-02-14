@@ -13,8 +13,9 @@ import { useTheme } from '../components/ThemeContext';
 import InputComponent from '../components/InputComponent';
 import ButtonComponent from '../components/ButtonComponent';
 
-
 const CreatingNewListingScreen = ({ navigation, route }) => {
+  const PHOTO_SLOT_WIDTH = 120; // Use the same width as defined in your photoSlot style
+
   const { user } = useContext(AuthContext);
   const [photos, setPhotos] = useState([]);
   const [title, setTitle] = useState('');
@@ -71,7 +72,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
       updatedProfileData = {
         location: { 
           city: newLocation.city,
-          state: result.state,
+          state: newLocation.state,
           postalCode: newLocation.postalCode,
           coordinates: newLocation.coordinates,
         }
@@ -103,7 +104,13 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
       try {
         const locationData = await  getSellerLocation(user._id);
         if (locationData && locationData.city) {
-          setPickupLocation(locationData); 
+          const location = { 
+            city: locationData.city,
+            state: locationData.state,
+            postalCode: locationData.postalCode,
+            coordinates: [{ latitude: locationData.coordinates.coordinates[1], longitude: locationData.coordinates.coordinates[0] }],
+          }
+          setPickupLocation(location); 
         }
       } catch (error) {
         console.error('Error fetching seller location:', error);
@@ -156,8 +163,13 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
                 setPickupLocation({}); // Reset in case of error
               }
   
-              // Navigate to home page
-              navigation.navigate('HomeScreen');
+              if(isEditing) {
+                navigation.navigate('AccountStackNavigator', {
+                  screen: 'AccountScreen',
+                }); 
+              } else {
+                navigation.navigate('HomeScreen');
+              }
             };
   
             // Call the async function
@@ -203,6 +215,26 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
   const handleDeletePhoto = useCallback((index) => {
     setPhotos(currentPhotos => currentPhotos.filter((_, i) => i !== index));
   }, [photos]);
+
+  const handleLongPress = (index) => {
+    Alert.alert(
+      "Set as Primary Image",
+      "Do you want to set this image as the primary image for your listing?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Set as Primary",
+          onPress: () => {
+            const newPhotos = [...photos];
+            const [selectedPhoto] = newPhotos.splice(index, 1); // Remove the selected photo
+            newPhotos.unshift(selectedPhoto); // Add it to the beginning
+            setPhotos(newPhotos); // Update the photos array
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
 
   useEffect(() => {   
       const handleCreateListing = async () => {
@@ -281,13 +313,16 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
     const slots = [];
     for (let i = 0; i < 10; i++) {
       slots.push(
-        <TouchableOpacity key={i} style={[styles.photoSlot, i === 0 && photoError ? styles.errorPhotoSlot : {}]} onPress={() => handleAddPhoto()}>
+        <TouchableOpacity key={i} onLongPress={() => handleLongPress(i)} style={[styles.photoSlot, i === 0 && photoError ? styles.errorPhotoSlot : {}]} onPress={() => handleAddPhoto()}>
           {photos[i] ? (
             <>
               <Image source={{ uri: photos[i] }} style={styles.photo} />
               <TouchableOpacity onPress={() => handleDeletePhoto(i)} style={styles.deleteIcon}>
                 <Ionicons name="close-circle" size={22} style={styles.deleteIconImage} />
               </TouchableOpacity>
+              <View style={styles.longPressIndicator}>
+              <Text style={styles.longPressText}>Hold to Set Primary</Text>
+            </View>
             </>
           ) : (
             <Ionicons name="cloud-upload-outline" size={22} color="gray" />
@@ -495,7 +530,19 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     paddingTop: 1,
     paddingBottom: 1,
     fontSize: 12,
-  }
+  },
+  longPressIndicator: {
+    position: 'absolute',
+    bottom: 5,
+    right: 5,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: 5,
+    padding: 2,
+  },
+  longPressText: {
+    color: '#fff',
+    fontSize: 10,
+  },
 });
 
 export default CreatingNewListingScreen;

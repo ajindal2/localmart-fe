@@ -36,9 +36,9 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     if (location) {
       getListings(null, {
-        latitude: location.coordinates.latitude,
-        longitude: location.coordinates.longitude,
-        maxDistance: 5000 // 500 meters TODO adjust
+        latitude: location.coordinates[0].latitude,
+        longitude: location.coordinates[0].longitude,
+        maxDistance: 50000 // 500 meters TODO adjust
       }).then(data => {
         setListings(data);
       }).catch(error => {
@@ -52,7 +52,16 @@ const HomeScreen = ({ navigation }) => {
     setLoading(true);
     setLoaded(false); // Reset loaded before fetching
     try {
-      const data = await getListings(searchKey);
+      let data;
+      if(location) {
+       data = await getListings(searchKey, {
+          latitude: location.coordinates[0].latitude,
+          longitude: location.coordinates[0].longitude,
+          maxDistance: 50000 // 500 meters TODO adjust
+        });
+      } else {
+       data = await getListings(searchKey, {});
+      }
       let modifiedData = data;
 
       // Check if the number of listings is odd

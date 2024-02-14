@@ -4,7 +4,6 @@ import * as SecureStore from 'expo-secure-store';
 export const getListings = async (searchKey, locationParams) => {
   try {
     let url = `http://192.168.86.24:3000/listings`;
-
     const queryParams = new URLSearchParams();
 
     if (searchKey) {
@@ -30,6 +29,7 @@ export const getListings = async (searchKey, locationParams) => {
     }
 
     const response = await fetch(url);
+    
     return await handleResponse(response); 
   } catch (error) {
     console.error('Error fetching listings:', error.message);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Dimensions, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../../AuthContext'; 
@@ -7,6 +7,7 @@ import useHideBottomTab from '../../utils/HideBottomTab';
 import CustomActionSheet from '../../components/CustomActionSheet'; 
 import { useTheme } from '../../components/ThemeContext';
 import ButtonComponent from '../../components/ButtonComponent';
+import { useFocusEffect } from '@react-navigation/native'; 
 
 const ViewMyListingScreen = ({navigation}) => {
   const [listings, setListings] = useState([]);
@@ -23,31 +24,33 @@ const ViewMyListingScreen = ({navigation}) => {
   
   useHideBottomTab(navigation, true);
 
-  useEffect(() => {
-    const loadListings = async () => {
-      setError(null); // Reset the error state
-      setLoading(true);
-      setLoaded(false); // Reset loaded before fetching
-      try {
-        const fetchedListings = await getListingsByUser(user._id);
-        setListings(fetchedListings);
-        setLoading(false);
-      } catch (error) {
-        let errorMessage = error.message; // Default to the error message thrown
-        if (error.message.includes('No listings found')) {
-          errorMessage = emptyListingsMessage;
-        } else if (error.message.includes('Internal server error')) {
-          errorMessage = errorMessageDetails;
+   useFocusEffect(
+      useCallback(() => {
+      const loadListings = async () => {
+        setError(null); // Reset the error state
+        setLoading(true);
+        setLoaded(false); // Reset loaded before fetching
+        try {
+          const fetchedListings = await getListingsByUser(user._id);
+          setListings(fetchedListings);
+          setLoading(false);
+        } catch (error) {
+          let errorMessage = error.message; // Default to the error message thrown
+          if (error.message.includes('No listings found')) {
+            errorMessage = emptyListingsMessage;
+          } else if (error.message.includes('Internal server error')) {
+            errorMessage = errorMessageDetails;
+          }
+          setError(errorMessage);
+          setLoading(false);
+        } finally {
+          setLoaded(true); // Set loaded to true after fetching, regardless of the outcome
         }
-        setError(errorMessage);
-        setLoading(false);
-      } finally {
-        setLoaded(true); // Set loaded to true after fetching, regardless of the outcome
-      }
-    };
+      };
 
-    loadListings();
-  }, [user._id]);
+      loadListings();
+    }, [user._id])
+  );
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -184,7 +187,7 @@ const ViewMyListingScreen = ({navigation}) => {
         {item.title}
       </Text>
       <Text style={styles.listingDetails}>
-        {`$${item.price.toFixed(2)}`} · {item.status} · Created on: {new Date(item.dateCreated).toLocaleDateString()}
+        {`$${item.price.toFixed(2)}`} · {item.state} · Created on: {new Date(item.dateCreated).toLocaleDateString()}
       </Text>
       </View>
       <TouchableOpacity style={styles.optionsButton} onPress={() => handleOpenActionSheet(item)}>

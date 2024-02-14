@@ -63,7 +63,13 @@ export const LocationProvider = ({ children }) => {
       } else {
         // Fetch location from the backend
         const fetchedLocation = await getUserLocation(user._id);
-        setLocation(fetchedLocation);
+        const location = { 
+          city: fetchedLocation.city,
+          state: fetchedLocation.state,
+          postalCode: fetchedLocation.postalCode,
+          coordinates: [{ latitude: fetchedLocation.coordinates.coordinates[1], longitude: fetchedLocation.coordinates.coordinates[0] }],
+        }
+        setLocation(location);
       }
     };
 
@@ -84,7 +90,7 @@ export const LocationProvider = ({ children }) => {
         };
         await updateUserProfile(user._id, updatedProfileData);
         setLocation(updatedProfileData.location);
-        navigation.navigate('HomeScreen');
+       // navigation.navigate('HomeScreen');
       } catch (error) {
         console.error('Failed to retrieve location details:', error);
         Alert.alert('Error', error.message);
@@ -101,7 +107,7 @@ export const LocationProvider = ({ children }) => {
       await updateUserProfile(user._id, updatedProfileData);
       setLocation(updatedProfileData.location);
       Alert.alert('Location Updated Successfully');
-      navigation.navigate('HomeScreen');
+      //navigation.navigate('HomeScreen');
     } else {
       // Handle the case where location is undefined or null
       Alert.alert('Error', 'Error occured when retrieving location');

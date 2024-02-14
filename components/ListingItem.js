@@ -5,6 +5,7 @@ import { useTheme } from './ThemeContext';
 const ListingItem = ({ item, onPress }) => {
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
+    const STOCK_IMAGE_URI = require('../assets/stock-image.png'); 
 
     const convertMetersToMiles = (meters) => {
       return meters * 0.000621371;
@@ -17,20 +18,24 @@ const ListingItem = ({ item, onPress }) => {
     return (
       <TouchableOpacity activeOpacity={1} onPress={onPress} style={styles.itemContainer}>
         <View style={styles.infoContainer}>
-        <Image source={{ uri: item.imageUrls[0] }} style={styles.image} />
-        
+        <Image 
+          source={item?.imageUrls?.[0] ? { uri: item.imageUrls[0] } : require('../assets/stock-image.png')}
+          style={styles.image} 
+        />      
           <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
             {item.title}
           </Text>
           <View style={styles.priceDistanceContainer}>
-            <Text style={styles.price}>${item.price}</Text>
+            {typeof item?.price === 'number' && (
+              <Text style={styles.price}>${item.price}</Text>
+            )}
             {/* Conditional rendering for distance */}
-            {item.distance && (
+            {/*item.distance && (
               <>
                 <Text style={styles.dot}> · </Text>
                 <Text style={styles.distance}>{convertMetersToMiles(item.distance).toFixed(2)} mi</Text>
               </>
-            )}
+            )*/}
           </View>
         </View>
       </TouchableOpacity>

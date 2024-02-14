@@ -1,12 +1,12 @@
-import React, { useContext } from 'react';
+import React, { useContext, useCallback } from 'react';
 import { FlatList, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import sections from '../../constants/AccountSections';
 import { getUserRatings } from '../../api/RatingsService';
 import { AuthContext } from '../../AuthContext';
+import { useFocusEffect } from '@react-navigation/native'; 
 
 
 const AccountScreen = ({ navigation }) => {
-
   const { user, logout } = useContext(AuthContext);
 
   const resetToWelcomeScreen = () => {
