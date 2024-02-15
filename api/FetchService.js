@@ -1,8 +1,4 @@
-import React, { useContext } from 'react';
 import * as SecureStore from 'expo-secure-store';
-//import { AuthContext } from '../AuthContext';
-
-//const { logout } = useContext(AuthContext);
 
 export const fetchWithTokenRefresh = async (url, options) => {
   try {
@@ -10,7 +6,7 @@ export const fetchWithTokenRefresh = async (url, options) => {
     
     if (response.status === 401) { // Token expired
       const refreshToken = await SecureStore.getItemAsync('refreshToken');
-      console.log('refreshToken: ', refreshToken);
+      console.log('Token expired');
 
       // Attempt to refresh the token
       const refreshResponse = await fetch(`http://192.168.86.24:3000/auth/refresh`, {

@@ -7,6 +7,7 @@ import DEFAULT_IMAGE_URI from '../../constants/AppConstants';
 import useHideBottomTab from '../../utils/HideBottomTab'; 
 import ButtonComponent from '../../components/ButtonComponent';
 import { useTheme } from '../../components/ThemeContext';
+import * as FileSystem from 'expo-file-system';
 
 const ChangeProfilePicture = ({ route, navigation }) => {
   const [image, setImage] = useState(null);
@@ -76,10 +77,12 @@ const handleChoosePhoto = async () => {
 
       // Check for 'assets' array for SDK 48 and later
       if (pickerResult.assets && pickerResult.assets.length > 0) {
-          setImage(pickerResult.assets[0].uri);
+        // Use the new URI with cache-busting query parameter
+        setImage(`${pickerResult.assets[0].uri}?${Date.now()}`);
       } else {
-          // Fallback for older SDK versions
-          setImage(pickerResult.uri);
+        // Fallback for older SDK versions
+        // Use the new URI with cache-busting query parameter
+        setImage(`${pickerResult.uri}?${Date.now()}`);
       }
 
   } catch (error) {

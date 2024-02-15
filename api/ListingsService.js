@@ -68,13 +68,12 @@ export const getListingFromId = async (listingId) => {
 
 export const createListing = async (userId, listingDetails) => {
   try {
-    //console.log('Inside createListing for userid: ', userId);
     const token = await SecureStore.getItemAsync('token');
-    const url = `http://192.168.86.24:3000/listings`;
+    const url = `http://192.168.86.24:3000/listings/${userId}`;
 
     // Prepare the form data
     const formData = new FormData();
-    formData.append('userId', userId);
+    //formData.append('userId', userId);
     formData.append('title', listingDetails.title);
     formData.append('description', listingDetails.description);
     formData.append('price', listingDetails.price);
@@ -94,7 +93,6 @@ export const createListing = async (userId, listingDetails) => {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
-        //'Content-Type': 'multipart/form-data', // Important for sending files
       },
       body: formData,
     });
@@ -136,7 +134,6 @@ export const updateListing = async (listingId, listingDetails) => {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
-        // 'Content-Type': 'multipart/form-data' is not necessary as it's set automatically
       },
       body: formData,
     });

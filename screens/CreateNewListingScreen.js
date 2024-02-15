@@ -205,9 +205,9 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
     });
 
     if (!result.canceled && result.assets) {
-      const newPhotos = result.assets.map(item => item.uri).slice(0, remainingSlots);
+      // Append a cache-busting query parameter. This will force the system to bypass the cache and treat the image as a new resource
+      const newPhotos = result.assets.map(item => `${item.uri}?${Date.now()}`).slice(0, remainingSlots);
       const updatedPhotos = [...photos, ...newPhotos];
-
       setPhotos(updatedPhotos);
     }
   }

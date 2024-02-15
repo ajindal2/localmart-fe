@@ -101,8 +101,6 @@ export const getUserLocation = async (userId) => {
   export const uploadProfileImage = async (userId, imageUri) => {
     const token = await SecureStore.getItemAsync('token');
     const apiUrl = `http://192.168.86.24:3000/userProfile/${userId}/image`;
-
-    console.log('imageUri: ', imageUri);
   
     // Create the form data to send to the server
     let formData = new FormData();
@@ -117,7 +115,6 @@ export const getUserLocation = async (userId) => {
       const response = await fetchWithTokenRefresh(apiUrl, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`,
         },
         body: formData,
