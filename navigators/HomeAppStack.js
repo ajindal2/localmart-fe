@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SavedListingStackNavigator from './SavedListingStackNavigator';
-import MyMessages from '../screens/MyMessages';
+import MyMessagesStackNavigator from './MyMessagesStackNavigator';
 import CreateListingStackNavigator from './CreateListingStackNavigator';
 import HomeStackNavigator from './HomeStackNavigator'
 import AccountStackNavigator from './AccountStackNavigator'
@@ -26,7 +26,7 @@ function HomeAppStack() {
               case 'SavedListingStackNavigator':
                 iconName = focused ? 'person' : 'person-outline';
                 break;
-              case 'MyMessages':
+              case 'MyMessagesStackNavigator':
                 iconName = focused ? 'chatbubble' : 'chatbubble-outline';
                 break;
               case 'Account':
@@ -58,7 +58,7 @@ function HomeAppStack() {
             headerShown: false,
           }}
         />
-        <Tab.Screen name="MyMessages" component={MyMessages} options={{ headerShown: false, tabBarLabel: 'Messages' }} />
+        <Tab.Screen name="MyMessagesStackNavigator" component={MyMessagesStackNavigator} options={{ headerShown: false, tabBarLabel: 'Messages' }} />
         <Tab.Screen name="Account" component={AccountStackNavigator} options={{ headerShown: false, tabBarLabel: 'Account' }} /> 
       </Tab.Navigator>
   );

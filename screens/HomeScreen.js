@@ -7,6 +7,7 @@ import { LocationContext } from '../components/LocationProvider';
 import ListingItem from '../components/ListingItem';
 import { useTheme } from '../components/ThemeContext';
 
+
 const HomeScreen = ({ navigation }) => {
   const [listings, setListings] = useState([]);
   const [error, setError] = useState(null);

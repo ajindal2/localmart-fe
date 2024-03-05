@@ -6,7 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 
 
-
 const MySearchBar =  ({ value, onUpdate, navigation }) => {
   const [fontsLoaded] = useFonts({
     Montserrat: require('../assets/fonts/Montserrat-Regular.ttf'), 

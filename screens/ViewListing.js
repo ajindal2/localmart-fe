@@ -13,6 +13,7 @@ import useHideBottomTab from '../utils/HideBottomTab';
 import { useTheme } from '../components/ThemeContext';
 import ButtonComponent from '../components/ButtonComponent';
 import ExpandingTextComponent from '../components/ExpandingTextComponent';
+import ChatService from '../api/ChatService';
 
 
 const ViewListing = ({ route, navigation }) => {
@@ -131,6 +132,33 @@ const ViewListing = ({ route, navigation }) => {
 
         shareListing(listingTitle, listingUrl);
     };
+
+    const handleSend = async (sellerId, buyerId, listingId) => {
+      console.log("inside message send ", sellerId, buyerId, listingId);
+      const createChatDTO = {
+        sellerId,
+        buyerId,
+        listingId,
+      };
+    
+      try {
+        const chat = await ChatService.createChat(createChatDTO);
+        navigation.navigate('ChatScreen', { chat });
+      } catch (error) {
+        console.error('Error creating chat', error);
+      }
+    };
+
+    // TODO combine into main useEffect to prevent timing issues.
+    useEffect(() => {
+      ChatService.initializeSocket();
+  
+      // TODO does return get called when navigating to ChatScreen? If not, then maybe not initialize another connection in ChatScreen.
+      // If I disconnect, will I not be able to receive a message when my app is open but socket has been closed?
+      return () => {
+        ChatService.disconnectSocket();
+      };
+    }, []);
 
     // TODO - can this code inside useEffect be optimized? Should I use 2 separate useEffect?
     useEffect(() => {
@@ -296,12 +324,14 @@ const ViewListing = ({ route, navigation }) => {
     </ScrollView>
 
     <View style={styles.buttonContainer}>
-      <ButtonComponent 
-        title="Message seller"
-        type="primary"
-        onPress={() => console.log('message seller')}
-        style={{ width: '100%', flexDirection: 'row' }}
-      />
+      {sellerProfile && (
+        <ButtonComponent 
+          title="Message Seller"
+          type="primary"
+          onPress={() => handleSend(sellerProfile.userId._id, user._id, item._id)}
+          style={{ width: '100%', flexDirection: 'row' }}
+        />
+      )}
     </View>
     </View>
   );

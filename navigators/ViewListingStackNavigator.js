@@ -2,6 +2,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import ViewListing from '../screens/ViewListing';
 import SellerDetails from '../screens/SellerDetails';
 import AllReviewsScreen from '../screens/AllReviewsScreen';
+import ChatScreen from '../screens/ChatScreen';
 
 const ViewListingStack = createStackNavigator();
 
@@ -32,6 +33,11 @@ function ViewListingStackNavigator() {
           title: 'Listing Details',
         }} 
       />
+      <ViewListingStack.Screen name="ChatScreen" component={ChatScreen} 
+       options={{ 
+          headerShown: true,
+          title: 'Message',
+        }} />
     </ViewListingStack.Navigator>
   );
 }
