@@ -157,6 +157,8 @@ const ViewListing = ({ route, navigation }) => {
       // If I disconnect, will I not be able to receive a message when my app is open but socket has been closed?
       return () => {
         ChatService.disconnectSocket();
+        ChatService.disconnectCreateChatSockets();
+        ChatService.disconnectSendMessageSockets();
       };
     }, []);
 
@@ -324,7 +326,7 @@ const ViewListing = ({ route, navigation }) => {
     </ScrollView>
 
     <View style={styles.buttonContainer}>
-      {sellerProfile && (
+      {sellerProfile && sellerProfile.userId._id !== user._id && (
         <ButtonComponent 
           title="Message Seller"
           type="primary"

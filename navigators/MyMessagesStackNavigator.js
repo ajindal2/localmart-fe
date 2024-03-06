@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import MyMessages from '../screens/MyMessages';
 import ChatScreen from '../screens/ChatScreen';
+import ViewListingStackNavigator from './ViewListingStackNavigator';
 
 const MyMessagesStack = createStackNavigator();
 
@@ -17,6 +18,13 @@ function MyMessagesStackNavigator() {
           headerShown: true,
           title: 'Message' 
         }} /> 
+        <MyMessagesStack.Screen
+        name="ViewListingStack"
+        component={ViewListingStackNavigator}
+        options={{ 
+          headerShown: false,
+        }} 
+      />
       </MyMessagesStack.Navigator>
     );
   }

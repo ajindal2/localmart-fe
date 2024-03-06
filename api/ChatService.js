@@ -24,24 +24,15 @@ class ChatService {
         return;
       }
 
-
-      /*this.socket.emit("createChat", createChatDTO, (response) => {
-        // Handle the response here
-        if (response.error) {
-          console.error('Error creating chat:', response.error);
-          reject(response.error);
-        } else {
-          resolve(response); // Assuming the server sends back some sort of success response
-        }
-      });*/
-
       this.socket.emit('createChat', createChatDTO);
+
       // Listen for 'chatCreated' event from the server
       // TODO do I need to close 'chatCreated' also at disconnect?
       this.socket.once('chatCreated', (chat) => {
         console.log('Chat created:', chat);
         resolve(chat);
       });
+
       // Listen for 'error' event from the server
       this.socket.once('error', (error) => {
         console.error('Error creating chat:', error);
@@ -80,7 +71,6 @@ class ChatService {
 
       // Listen for 'chatsToClient' event for response
       this.socket.once('chatsToClient', (chats) => {
-        console.log('Received chats:', chats);
         resolve(chats);
       });
 
@@ -104,6 +94,20 @@ class ChatService {
         // Disconnect the socket
         this.socket.disconnect();
     }
+  }
+
+  disconnectCreateChatSockets() {
+    this.socket.off('chatCreated');
+    this.socket.off('error');
+  }
+
+  disconnectSendMessageSockets() {
+    this.socket.off('error');
+  }
+
+  disconnectGetChatSockets() {
+    this.socket.off('chatsToClient');
+    this.socket.off('error');
   }
 }
 

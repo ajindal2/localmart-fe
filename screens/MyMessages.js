@@ -12,18 +12,24 @@ const MyMessages = ({ navigation }) => {
   
     const fetchChats = async () => {
       try {
-        const userId = user._id; // Assuming 'user' is correctly defined in your component's scope
-        const fetchedChats = await ChatService.getChats(userId);
+        const userId = user._id; 
+        let fetchedChats = await ChatService.getChats(userId);
+    
+        // Filter chats to include only those with at least one message
+        fetchedChats = fetchedChats.filter(chat => chat.messages && chat.messages.length > 0);
+    
         setChats(fetchedChats);
       } catch (error) {
         console.error("Error fetching chats:", error);
       }
     };
-  
+
     fetchChats();
   
     return () => {
       ChatService.disconnectSocket(); // Disconnect the socket when the component unmounts
+      ChatService.disconnectSendMessageSockets();
+      ChatService.disconnectGetChatSockets();
     };
   }, []); // Empty dependency array means this effect runs only once when the component mounts
   
@@ -33,30 +39,38 @@ const MyMessages = ({ navigation }) => {
       data={chats}
       keyExtractor={item => item._id.toString()}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
-      renderItem={({ item }) => (
-        <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', { chat: item })}>
-        <View style={styles.chatItem}>
-          <Image source={{ uri: item.listingId.imageUrls[0] }} style={styles.image} />
-          <View style={styles.contentContainer}>
-            <Text style={styles.title}>
-              {item.listingId.title.length > 30
-                ? item.listingId.title.substring(0, 30) + '...'
-                : item.listingId.title} - {item.otherPartyName}
-            </Text>
-            <View style={styles.messageContainer}>
-              <Text style={styles.message}>
-                {item.messages[item.messages.length-1].content.length > 50
-                  ? item.messages[item.messages.length-1].content.substring(0, 50) + '...'
-                  : item.messages[item.messages.length-1].content}
-              </Text>
-              <Text style={styles.timestamp}>
-                {new Date(item.messages[0].sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </Text>
+      renderItem={({ item }) => {
+        // Check if there's at least one message in the array
+        const lastMessage = item.messages[item.messages.length - 1];
+        const lastMessageContent = lastMessage ? lastMessage.content : 'No messages';
+        const lastMessageSenderName = lastMessage?.senderId?.userName ?? 'Unknown';
+        const lastMessageTimestamp = lastMessage ? lastMessage.sentAt : new Date();
+      
+        return (
+          <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', { chat: item })}>
+            <View style={styles.chatItem}>
+              <Image source={{ uri: item.listingId.imageUrls[0] }} style={styles.image} />
+              <View style={styles.contentContainer}>
+                <Text style={styles.title}>
+                {lastMessageSenderName} · {item.listingId.title.length > 30
+                    ? item.listingId.title.substring(0, 30) + '...'
+                    : item.listingId.title}
+                </Text>
+                <View style={styles.messageContainer}>
+                  <Text style={styles.message}>
+                    {lastMessageContent.length > 50
+                      ? lastMessageContent.substring(0, 50) + '...'
+                      : lastMessageContent}
+                  </Text>
+                  <Text style={styles.timestamp}>
+                    {new Date(lastMessageTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </Text>
+                </View>
+              </View>
             </View>
-          </View>
-        </View>
-        </TouchableOpacity>
-      )}
+          </TouchableOpacity>
+        );
+      }}
     />
   );
 };
