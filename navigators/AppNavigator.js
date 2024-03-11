@@ -1,66 +1,79 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
+import * as Notifications from 'expo-notifications';
+import { Notifications as Notifications2 } from 'expo';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeAppStack from './HomeAppStack';
 import AuthStack from './AuthStack';
 import { LocationProvider } from '../components/LocationProvider';
 import { ThemeProvider } from '../components/ThemeContext';
-
-
-import { AuthProvider, AuthContext } from '../AuthContext';
-//import { Linking } from 'react-native';
-import * as Linking from 'expo-linking';
-
-
-const prefix = Linking.makeUrl('/');
+import { AuthContext } from '../AuthContext';
+import { useUnreadMessages } from '../UnreadMessagesContext';
 
 const Stack = createStackNavigator();
 
-// TODO Setup deep linking
-const linking = {
-  //prefixes: ['https://www.localmart.com', 'localmart://'],
-  prefixes:[prefix],
-  config: {
-    screens: {
-      HomeApp: {
-        screens: {
-          MyMessages: 'messages',
-        }
-      }
-     
-     // HomeScreen: 'home',
-     // ViewListing: 'listing/:listingId',
-    },
-  },
-};
-
 const AppStack = () => {
   const { user } = useContext(AuthContext);
+  const { addUnreadMessage } = useUnreadMessages();
 
-return (
-  <NavigationContainer linking={linking}>
-    <Stack.Navigator>
-      {user ? (
-        <Stack.Screen name="HomeApp" component={HomeAppStack} options={{ headerShown: false }} />
-      ) : (
-        <Stack.Screen name="Auth" component={AuthStack} options={{ headerShown: false }} />
-      )}
-    </Stack.Navigator>
+  useEffect(() => {
+    // Existing setup for notification listeners...
+    const subscription = Notifications.addNotificationReceivedListener((notification) => {
+      try {
 
-  </NavigationContainer>
-);
+        /*console.log('Received in-app notification:', notification);
+
+        const replacer = (key, value) => {
+          // Prevent circular references
+          if (typeof value === 'object' && value !== null) {
+            if (seen.has(value)) {
+              return;
+            }
+            seen.add(value);
+          }
+          return value;
+        };
+      
+        const seen = new WeakSet(); // To track seen objects and avoid circular references
+        console.log('Received in-app notification:', JSON.stringify(notification, replacer, 2));*/
+      
+        const notificationData = notification.data || notification.request.content.data || notification.request.trigger?.remoteMessage?.data;
+        console.log('notificationData is: ', notificationData);
+    
+        if (notificationData && notificationData.type === 'NEW_MESSAGE') {
+          addUnreadMessage(); // Increment the unread message count
+        }
+      } catch (error) {
+        console.error('Error handling in-app notification:', error);
+      }
+    });
+
+    return () => {
+      // Cleanup
+      Notifications.removeNotificationSubscription(subscription);
+    };
+  }, []);
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        {user ? (
+          <Stack.Screen name="HomeApp" component={HomeAppStack} options={{ headerShown: false }} />
+        ) : (
+          <Stack.Screen name="Auth" component={AuthStack} options={{ headerShown: false }} />
+        )}
+      </Stack.Navigator>
+
+    </NavigationContainer>
+  );
 };
 
 export default function AppNavigator() {
   return (
-    <AuthProvider>
-      <LocationProvider>
-        <ThemeProvider>
-         <AppStack />
-        </ThemeProvider>
-      </LocationProvider>
-    </AuthProvider>
+    <LocationProvider>
+      <ThemeProvider>
+        <AppStack />
+      </ThemeProvider>
+    </LocationProvider>
   );
 }
-
-

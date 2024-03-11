@@ -1,18 +1,18 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import ChatService from '../api/ChatService';
+import { useUnreadMessages } from '../UnreadMessagesContext';
 import {getChats} from '../api/ChatRestService';
 import { AuthContext } from '../AuthContext';
 
 const MyMessages = ({ navigation }) => {
   const [chats, setChats] = useState([]);
   const { user } = useContext(AuthContext);
+  const { resetUnreadMessages } = useUnreadMessages();
 
   const fetchChats = async () => {
     try {
       const userId = user._id;
-      //let fetchedChats = await ChatService.getChats(userId);
       let fetchedChats = await getChats(userId);
       fetchedChats = fetchedChats.filter(chat => chat.messages && chat.messages.length > 0);
       /*fetchedChats.forEach(chat => {
@@ -26,25 +26,21 @@ const MyMessages = ({ navigation }) => {
       console.error("Error fetching chats:", error);
     }
   };
-
-  /*useEffect(() => {  
-    ChatService.initializeSocket(); // Initialize the socket connection  
-
-    return () => {
-      ChatService.turnOffSockets();
-      
-      ChatService.disconnectSendMessageSockets();
-      ChatService.disconnectGetChatSockets();
-
-      ChatService.disconnectSocket(); // Disconnect the socket when the component unmounts
-    };
-  }, []);*/
   
   useFocusEffect(
     React.useCallback(() => {
       fetchChats(); // Fetch chats when the screen comes into focus
     }, [user._id])
   );
+
+  useEffect(() => {
+    // Reset unread message count when the screen is focused
+    const unsubscribe = navigation.addListener('focus', () => {
+      resetUnreadMessages();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <FlatList

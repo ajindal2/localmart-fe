@@ -17,7 +17,6 @@ class ChatService {
   }
 
   turnOffSockets() {
-    console.log('Inside initializeSocket');
     if (this.socket) {
       this.socket.off('connect');
       this.socket.off('disconnect');

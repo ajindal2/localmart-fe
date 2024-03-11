@@ -1,23 +1,20 @@
-// App.js
 import React from 'react';
 import AppNavigator from './navigators/AppNavigator';
 import Toast from 'react-native-toast-message';
-import { ActionSheetProvider } from '@expo/react-native-action-sheet';
-
+import { AuthProvider } from './AuthContext';
+import { UnreadMessagesProvider } from './UnreadMessagesContext';
 
 const App = () => {
   return (
-    <ActionSheetProvider>
-    <>
-      <AppNavigator />
-      <Toast />
-    </>
-  </ActionSheetProvider>
+    <UnreadMessagesProvider>
+    <AuthProvider>
+      <>
+        <AppNavigator />
+        <Toast />
+      </>
+    </AuthProvider>
+    </UnreadMessagesProvider>
   );
 }
 
 export default App;
-
-/*const App = () => {
-  return <AppNavigator />;
-};*/

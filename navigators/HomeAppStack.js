@@ -8,10 +8,13 @@ import AccountStackNavigator from './AccountStackNavigator'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import colors from '../constants/colors';
 import CameraButton from '../components/CameraButton'
+import { useUnreadMessages } from '../UnreadMessagesContext';
 
 const Tab = createBottomTabNavigator();
 
 function HomeAppStack() {
+  const { unreadCount } = useUnreadMessages(); // Use the unread message count from context
+
   return (
   <Tab.Navigator
         initialRouteName="Home"
@@ -58,8 +61,16 @@ function HomeAppStack() {
             headerShown: false,
           }}
         />
-        <Tab.Screen name="MyMessagesStackNavigator" component={MyMessagesStackNavigator} options={{ headerShown: false, tabBarLabel: 'Messages' }} />
-        <Tab.Screen name="Account" component={AccountStackNavigator} options={{ headerShown: false, tabBarLabel: 'Account' }} /> 
+        <Tab.Screen
+          name="MyMessagesStackNavigator"
+          component={MyMessagesStackNavigator}
+          options={{
+            headerShown: false,
+            tabBarLabel: 'Messages',
+            tabBarBadge: unreadCount > 0 ? unreadCount : null, // Show badge with unread count
+          }}
+        />
+       <Tab.Screen name="Account" component={AccountStackNavigator} options={{ headerShown: false, tabBarLabel: 'Account' }} /> 
       </Tab.Navigator>
   );
 }
