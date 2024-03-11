@@ -6,9 +6,15 @@ import LocationInfoDisplay from '../components/LocationInfoDisplay';
 import { LocationContext } from '../components/LocationProvider';
 import ListingItem from '../components/ListingItem';
 import { useTheme } from '../components/ThemeContext';
-
+import { AppState } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+import {sendPushToken} from '../api/AppService';
+import { AuthContext } from '../AuthContext';
 
 const HomeScreen = ({ navigation }) => {
+  const { user } = useContext(AuthContext);
   const [listings, setListings] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -47,6 +53,83 @@ const HomeScreen = ({ navigation }) => {
       });
     }
   }, [location]);
+
+  useEffect(() => {
+    console.log('inside useEffect');
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  const handleAppStateChange = async (nextAppState) => {
+    console.log('inside handleAppStateChange');
+    if (nextAppState === 'active') {
+      console.log('app state is active');
+      registerForPushNotificationsAsync();
+    }
+  };
+
+  const registerForPushNotificationsAsync = async () => {
+    let token;
+    console.log('userId: ', user._id);
+    // Check if the token already exists
+    //await AsyncStorage.removeItem('pushToken');
+
+    token = await AsyncStorage.getItem('pushToken');
+
+    if (token) {
+      console.log('Push token already exists:', token);
+      return;
+    }
+
+    //await AsyncStorage.removeItem('askedForNotificationPermission');
+    
+    const askedForPermission = await AsyncStorage.getItem('askedForNotificationPermission');
+    console.log('askedForNotificationPermission: ', askedForPermission);
+
+    try {
+        if (!askedForPermission) {
+            if (Constants.isDevice) {
+                const { status: existingStatus } = await Notifications.getPermissionsAsync();
+                let finalStatus = existingStatus;
+                if (existingStatus !== 'granted') {
+                    const { status } = await Notifications.requestPermissionsAsync();
+                    finalStatus = status;
+                }
+                if (finalStatus !== 'granted') {
+                    alert('Failed to get push token for push notification!');
+                    return;
+                }
+                token = (await Notifications.getExpoPushTokenAsync({
+                  projectId: Constants.expoConfig?.extra?.eas?.projectId,
+                })).data;
+            } else {
+                alert('Must use physical device for Push Notifications');
+            }
+
+            if (Platform.OS === 'android') {
+                Notifications.setNotificationChannelAsync('default', {
+                    name: 'default',
+                    importance: Notifications.AndroidImportance.MAX,
+                    vibrationPattern: [0, 250, 250, 250],
+                    lightColor: '#FF231F7C',
+                });
+            }
+            // Save a flag to local storage so we don't ask again
+            await AsyncStorage.setItem('askedForNotificationPermission', 'true');
+        } 
+    } catch (error) {
+        console.error('Error getting push token:', error);
+        //throw error; // Re-throw the error so it can be handled by the calling code
+    }
+
+    // Save the token to local storage after it's generated
+    await AsyncStorage.setItem('pushToken', token);
+    console.log('calling AppService for user: ', token);
+    await sendPushToken(user._id, token);
+}
 
   const fetchListings = async (searchKey = '') => {
     setError(null); // Reset the error state

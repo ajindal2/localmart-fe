@@ -3,10 +3,13 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { GiftedChat, Bubble, Time } from 'react-native-gifted-chat';
 import ChatService from '../api/ChatService';
 import { AuthContext } from '../AuthContext';
+import useHideBottomTab from '../utils/HideBottomTab'; 
 
 const ChatScreen = ({ route, navigation }) => {
   const { chat } = route.params; // Extract chat from route.params
   const { user } = useContext(AuthContext);
+
+  useHideBottomTab(navigation, true);
 
   const transformMessages = (messages) => {
     // Deduplicate messages based on _id
@@ -33,7 +36,10 @@ const ChatScreen = ({ route, navigation }) => {
     return transformedMessages;
   };
 
-  const [messages, setMessages] = useState(transformMessages(chat && chat.messages ? chat.messages : []));
+  // Use the messages from the chat object to set the initial state
+  // Transform them to fit GiftedChat's format
+  const initialMessages = transformMessages(chat.messages || []);
+  const [messages, setMessages] = useState(initialMessages);
 
   const ChatHeader = ({ listing }) => {  
     if (!listing) return null; // Return null if listing details aren't provided
@@ -59,7 +65,6 @@ const ChatScreen = ({ route, navigation }) => {
   };
 
   const renderBubble = (props) => {
-
     const isCurrentUser = props.currentMessage.user._id === user._id;
     const senderName = isCurrentUser ? 'You' : props.currentMessage.user.name; // Show 'You' for current user, else show sender's name
 
@@ -87,36 +92,48 @@ const ChatScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
+    console.log('Setting up socket listener for chat: ', chat);
+    ChatService.initializeSocket();
+  
+    // Join the chat room
+    ChatService.socket.emit('joinRoom', chat._id);
+  
     const handleNewMessages = (newMessages) => {
-      setMessages(previousMessages => {
-        // Transform and deduplicate new messages
-        const transformedNewMessages = transformMessages(newMessages);
+    setMessages(previousMessages => {
+        // Immediately deduplicate new messages based on _id
+        const deduplicatedNewMessages = newMessages.filter(newMsg => 
+          !previousMessages.some(prevMsg => prevMsg._id === newMsg._id)
+        );
     
-        // Combine new and old messages
+        // Transform deduplicated new messages
+        const transformedNewMessages = transformMessages(deduplicatedNewMessages);
+    
+        // Combine with previous messages and sort (if sorting is needed)
         const combinedMessages = [...previousMessages, ...transformedNewMessages];
+        combinedMessages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     
-        // Deduplicate combined messages
-        const uniqueIds = Array.from(new Set(combinedMessages.map(message => message._id)));
-        const uniqueCombinedMessages = uniqueIds.map(id => combinedMessages.find(message => message._id === id));
-    
-        // Sort messages by createdAt in ascending order (optional, if needed)
-        uniqueCombinedMessages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    
-        return uniqueCombinedMessages;
+        return combinedMessages;
       });
     };
-
-    ChatService.socket.on('chat', handleNewMessages);
-
-    // Cleanup function to remove the event listener
+  
+    // Listen for new messages
+    ChatService.socket.on('messageRcvd', handleNewMessages);
+  
+    // Cleanup function to leave the room and remove the event listener
     return () => {
-      ChatService.socket.off('chat', handleNewMessages);
+      console.log('Leaving chat room and removing socket listener');
+      
+      // Emit an event to leave the room when the component unmounts or chat changes
+      ChatService.socket.emit('leaveRoom', chat._id);
+  
+      // Remove the message listener
+      ChatService.socket.off('messageRcvd', handleNewMessages);
+      ChatService.turnOffSockets();
     };
-  }, []);
+  }, [chat]); // Depend on `chat` to re-run this effect if the chat changes
+  
 
   const onSend = (newMessages = []) => {
-    setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
-  
     newMessages.forEach((message) => {
       const createMessageDTO = {
         senderId: user._id,
@@ -125,6 +142,13 @@ const ChatScreen = ({ route, navigation }) => {
       };
       ChatService.sendMessage(createMessageDTO, chat._id);
     });
+    // Update the local state with the new message so it renders immediately
+    /*setMessages(previousMessages => {
+      const newUniqueMessages = newMessages.filter(newMsg => 
+        !previousMessages.some(prevMsg => prevMsg._id === newMsg._id)
+      );
+      return GiftedChat.append(previousMessages, newUniqueMessages);
+    });*/
   };
 
   return (

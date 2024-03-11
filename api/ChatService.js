@@ -6,6 +6,7 @@ class ChatService {
   }
 
   initializeSocket() {
+    console.log('Inside initializeSocket');
     this.socket = io("http://192.168.86.24:3000", {
       //transports: ['websocket'], // Uncomment if you want to force WebSocket transport
     });
@@ -13,7 +14,64 @@ class ChatService {
     this.socket.on('connect', () => console.log('Connected to server'));
     this.socket.on('disconnect', () => console.log('Disconnected from server'));
     this.socket.on('connect_error', (error) => console.log('Connection error:', error));
-    // Add more event listeners as needed
+  }
+
+  turnOffSockets() {
+    console.log('Inside initializeSocket');
+    if (this.socket) {
+      this.socket.off('connect');
+      this.socket.off('disconnect');
+      this.socket.off('connect_error');
+      this.socket.off('error');
+
+      this.socket.disconnect();
+    }
+  }
+
+  disconnectSocket() {
+    console.log('Inside disconnectSocket');
+    if (this.socket) {
+      console.log('Disconnecting socket');
+      this.socket.disconnect(() => {
+        console.log('Disconnect callback: Socket has been disconnected');
+      });
+    }
+  }
+
+  /*
+  disconnectSocket() {
+  if (this.socket) {
+    console.log('Disconnecting socket');
+
+    // Listen for the 'disconnect' event to confirm disconnection
+    this.socket.once('disconnect', () => {
+      console.log('Socket has been disconnected');
+      this.turnOffSockets(); // Call turnOffSockets() after disconnection is confirmed
+    });
+
+    this.socket.disconnect();
+  }
+  }
+  */
+
+  disconnectCreateChatSockets() {
+    if (this.socket) {
+      this.socket.off('chatCreated');
+      this.socket.off('error');
+    }
+  }
+
+  disconnectSendMessageSockets() {
+    if (this.socket) {
+      this.socket.off('error');
+    }
+  }
+
+  disconnectGetChatSockets() {
+    if (this.socket) {
+      this.socket.off('chatsToClient');
+      this.socket.off('error');
+    }
   }
 
   createChat(createChatDTO) {
@@ -29,7 +87,7 @@ class ChatService {
       // Listen for 'chatCreated' event from the server
       // TODO do I need to close 'chatCreated' also at disconnect?
       this.socket.once('chatCreated', (chat) => {
-        console.log('Chat created:', chat);
+        //console.log('Chat created:', chat);
         resolve(chat);
       });
 
@@ -82,32 +140,28 @@ class ChatService {
     });
   }
 
-  disconnectSocket() {
-    if (this.socket) {
-        this.socket.off('connect');
-        this.socket.off('disconnect');
-        this.socket.off('connect_error');
-        //this.socket.off('chatCreated');
-        this.socket.off('error');
-        // Add any other event listeners you need to remove here
-    
-        // Disconnect the socket
-        this.socket.disconnect();
-    }
-  }
-
-  disconnectCreateChatSockets() {
-    this.socket.off('chatCreated');
-    this.socket.off('error');
-  }
-
-  disconnectSendMessageSockets() {
-    this.socket.off('error');
-  }
-
-  disconnectGetChatSockets() {
-    this.socket.off('chatsToClient');
-    this.socket.off('error');
+  getChat(chatId) {
+    return new Promise((resolve, reject) => {
+      if (!this.socket) {
+        console.log('Socket not initialized');
+        reject('Socket not initialized');
+        return;
+      }
+  
+      // Emit 'getChat' event with chatId
+      this.socket.emit('getChat', chatId);
+  
+      // Listen for 'chatToClient' event for response
+      this.socket.once('chatToClient', (chat) => {
+        resolve(chat);
+      });
+  
+      // Listen for 'error' event from the server
+      this.socket.once('error', (error) => {
+        console.error('Error fetching chat:', error);
+        reject(error);
+      });
+    });
   }
 }
 

@@ -7,6 +7,7 @@ import StarRating from '../components/StarRating';
 import Toast from 'react-native-toast-message';
 import { createSavedListing, deleteSavedListing, checkSavedStatus } from '../api/SavedListingService';
 import { getListingFromId } from '../api/ListingsService';
+import {createOrGetChat} from '../api/ChatRestService';
 import shareListing from '../utils/ShareListing';
 import FullScreenImageModal from '../components/FullScreenImageModal'; 
 import useHideBottomTab from '../utils/HideBottomTab'; 
@@ -134,7 +135,6 @@ const ViewListing = ({ route, navigation }) => {
     };
 
     const handleSend = async (sellerId, buyerId, listingId) => {
-      console.log("inside message send ", sellerId, buyerId, listingId);
       const createChatDTO = {
         sellerId,
         buyerId,
@@ -142,25 +142,27 @@ const ViewListing = ({ route, navigation }) => {
       };
     
       try {
-        const chat = await ChatService.createChat(createChatDTO);
-        navigation.navigate('ChatScreen', { chat });
+        //const item = await ChatService.createChat(createChatDTO);
+        const item = await createOrGetChat(createChatDTO);
+        console.log('logging the chat object in VL page: ', item);
+        navigation.navigate('ChatScreen', { chat : item });
       } catch (error) {
         console.error('Error creating chat', error);
       }
     };
 
-    // TODO combine into main useEffect to prevent timing issues.
-    useEffect(() => {
+   /*useEffect(() => {
       ChatService.initializeSocket();
-  
-      // TODO does return get called when navigating to ChatScreen? If not, then maybe not initialize another connection in ChatScreen.
-      // If I disconnect, will I not be able to receive a message when my app is open but socket has been closed?
+
       return () => {
-        ChatService.disconnectSocket();
+        ChatService.turnOffSockets();
+
         ChatService.disconnectCreateChatSockets();
         ChatService.disconnectSendMessageSockets();
+
+        ChatService.disconnectSocket();
       };
-    }, []);
+    }, []);*/
 
     // TODO - can this code inside useEffect be optimized? Should I use 2 separate useEffect?
     useEffect(() => {

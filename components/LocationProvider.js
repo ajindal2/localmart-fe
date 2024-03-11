@@ -24,7 +24,7 @@ export const LocationProvider = ({ children }) => {
       // Think about the need to add a dialog similar to SearchLocationPreferenceScreen to educate user why we need location
       const locationPermissionAsked = await AsyncStorage.getItem('locationPermissionAsked');
       //await AsyncStorage.removeItem('locationPermissionAsked');
-      console.log('locationPermissionAsked: ', locationPermissionAsked);
+      //console.log('locationPermissionAsked: ', locationPermissionAsked);
 
       // Ask for permission only once.
       if (locationPermissionAsked !== 'true') {

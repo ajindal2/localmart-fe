@@ -1,38 +1,50 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import ChatService from '../api/ChatService';
+import {getChats} from '../api/ChatRestService';
 import { AuthContext } from '../AuthContext';
 
 const MyMessages = ({ navigation }) => {
   const [chats, setChats] = useState([]);
   const { user } = useContext(AuthContext);
 
-  useEffect(() => {
-    ChatService.initializeSocket(); // Initialize the socket connection
-  
-    const fetchChats = async () => {
-      try {
-        const userId = user._id; 
-        let fetchedChats = await ChatService.getChats(userId);
-    
-        // Filter chats to include only those with at least one message
-        fetchedChats = fetchedChats.filter(chat => chat.messages && chat.messages.length > 0);
-    
-        setChats(fetchedChats);
-      } catch (error) {
-        console.error("Error fetching chats:", error);
-      }
-    };
+  const fetchChats = async () => {
+    try {
+      const userId = user._id;
+      //let fetchedChats = await ChatService.getChats(userId);
+      let fetchedChats = await getChats(userId);
+      fetchedChats = fetchedChats.filter(chat => chat.messages && chat.messages.length > 0);
+      /*fetchedChats.forEach(chat => {
+          console.log(`Chat ID: ${chat._id}`);
+          chat.messages.forEach((message, index) => {
+            console.log(`Message ${index + 1}: ${message.content}`);
+          });
+        });*/
+      setChats(fetchedChats);
+    } catch (error) {
+      console.error("Error fetching chats:", error);
+    }
+  };
 
-    fetchChats();
-  
+  /*useEffect(() => {  
+    ChatService.initializeSocket(); // Initialize the socket connection  
+
     return () => {
-      ChatService.disconnectSocket(); // Disconnect the socket when the component unmounts
+      ChatService.turnOffSockets();
+      
       ChatService.disconnectSendMessageSockets();
       ChatService.disconnectGetChatSockets();
+
+      ChatService.disconnectSocket(); // Disconnect the socket when the component unmounts
     };
-  }, []); // Empty dependency array means this effect runs only once when the component mounts
+  }, []);*/
   
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchChats(); // Fetch chats when the screen comes into focus
+    }, [user._id])
+  );
 
   return (
     <FlatList
@@ -47,7 +59,8 @@ const MyMessages = ({ navigation }) => {
         const lastMessageTimestamp = lastMessage ? lastMessage.sentAt : new Date();
       
         return (
-          <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', { chat: item })}>
+          // TODO remove the timeout
+          <TouchableOpacity onPress={() => setTimeout(() => navigation.navigate('ChatScreen', { chat: item }), 100)}> 
             <View style={styles.chatItem}>
               <Image source={{ uri: item.listingId.imageUrls[0] }} style={styles.image} />
               <View style={styles.contentContainer}>
