@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -8,34 +8,18 @@ import { LocationProvider } from '../components/LocationProvider';
 import { ThemeProvider } from '../components/ThemeContext';
 import { AuthContext } from '../AuthContext';
 import { useMessagesBadgeCount } from '../MessagesBadgeCountContext';
+import { AppState } from 'react-native';
+import {fetchNotificationCount, updateNotificationCount} from '../api/ChatRestService';
 
 const Stack = createStackNavigator();
 
 const AppStack = () => {
   const { user } = useContext(AuthContext);
-  const { addMessagesBadgeCount } = useMessagesBadgeCount();
+  const { addMessagesBadgeCount, messagesBadgeCount, setMessagesBadgeCount } = useMessagesBadgeCount();
 
   useEffect(() => {
-    // Existing setup for notification listeners...
     const subscription = Notifications.addNotificationReceivedListener((notification) => {
       try {
-
-        /*console.log('Received in-app notification:', notification);
-
-        const replacer = (key, value) => {
-          // Prevent circular references
-          if (typeof value === 'object' && value !== null) {
-            if (seen.has(value)) {
-              return;
-            }
-            seen.add(value);
-          }
-          return value;
-        };
-      
-        const seen = new WeakSet(); // To track seen objects and avoid circular references
-        console.log('Received in-app notification:', JSON.stringify(notification, replacer, 2));*/
-      
         const notificationData = notification.data || notification.request.content.data || notification.request.trigger?.remoteMessage?.data;
         console.log('notificationData is: ', notificationData);
     
@@ -48,10 +32,53 @@ const AppStack = () => {
     });
 
     return () => {
-      // Cleanup
       Notifications.removeNotificationSubscription(subscription);
     };
   }, []);
+
+  // useEffect for setting badge count when app loads/comes to active state
+  useEffect(() => {
+    if (user) {
+      const updateBadgeCount = async () => {
+        const count = await fetchNotificationCount(user._id);
+        setMessagesBadgeCount(count);
+      };
+  
+      updateBadgeCount();
+  
+      const appStateSubscription = AppState.addEventListener('change', nextAppState => {
+        if (nextAppState === 'active') {
+          updateBadgeCount();
+        }
+      });
+  
+      return () => {
+        appStateSubscription.remove();
+      };
+    }
+  }, [user, setMessagesBadgeCount]);
+
+  const messagesBadgeCountRef = useRef(messagesBadgeCount);
+
+  useEffect(() => {
+    messagesBadgeCountRef.current = messagesBadgeCount;
+  }, [messagesBadgeCount]);
+
+  useEffect(() => {
+    let lastAppState = AppState.currentState;
+
+    const appStateSubscription = AppState.addEventListener('change', nextAppState => {
+      if (user && lastAppState === 'active' && (nextAppState === 'background' || nextAppState === 'inactive')) {
+        const currentBadgeCount = messagesBadgeCountRef.current; // Use the ref's current value
+        updateNotificationCount(user._id, currentBadgeCount);
+      }
+      lastAppState = nextAppState;
+    });
+
+    return () => {
+      appStateSubscription.remove();
+    };
+  }, [user]);
 
   return (
     <NavigationContainer>

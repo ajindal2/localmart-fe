@@ -1,5 +1,4 @@
 export const sendPushToken = async (userId, token) => {
-  console.log('token for user: ', token);
   try {
     const response = await fetch(`http://192.168.86.24:3000/users/${userId}/pushToken`, {
       method: 'POST',

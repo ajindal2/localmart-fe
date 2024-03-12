@@ -55,16 +55,13 @@ const HomeScreen = ({ navigation }) => {
   }, [location]);
 
   useEffect(() => {
-    console.log('inside useEffect');
     const subscription = AppState.addEventListener('change', handleAppStateChange);
-
     return () => {
       subscription.remove();
     };
   }, []);
 
   const handleAppStateChange = async (nextAppState) => {
-    console.log('inside handleAppStateChange');
     if (nextAppState === 'active') {
       console.log('app state is active');
       registerForPushNotificationsAsync();
@@ -73,10 +70,8 @@ const HomeScreen = ({ navigation }) => {
 
   const registerForPushNotificationsAsync = async () => {
     let token;
-    console.log('userId: ', user._id);
     // Check if the token already exists
     //await AsyncStorage.removeItem('pushToken');
-
     token = await AsyncStorage.getItem('pushToken');
 
     if (token) {
@@ -127,7 +122,6 @@ const HomeScreen = ({ navigation }) => {
 
     // Save the token to local storage after it's generated
     await AsyncStorage.setItem('pushToken', token);
-    console.log('calling AppService for user: ', token);
     await sendPushToken(user._id, token);
 }
 

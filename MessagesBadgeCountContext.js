@@ -9,7 +9,7 @@ export const MessagesBadgeCountProvider = ({ children }) => {
   const resetMessagesBadgeCount = () => setMessagesBadgeCount(0);
 
   return (
-    <MessagesBadgeCountContext.Provider value={{ messagesBadgeCount, addMessagesBadgeCount, resetMessagesBadgeCount }}>
+    <MessagesBadgeCountContext.Provider value={{ messagesBadgeCount, setMessagesBadgeCount, addMessagesBadgeCount, resetMessagesBadgeCount }}>
       {children}
     </MessagesBadgeCountContext.Provider>
   );

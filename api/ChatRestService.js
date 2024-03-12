@@ -59,4 +59,38 @@ export const getChats = async (userId) => {
       console.error('Error marking messages as read:', error);
     }
   };
+
+  export const fetchNotificationCount = async (userId) => {
+    try {
+      const response = await fetch(`http://192.168.86.24:3000/chat/${userId}/notificationCount`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch notification count');
+      }
+      const data = await response.json();
+      return data;
+      //return data.count; // Assuming the backend returns an object with a 'count' property
+    } catch (error) {
+      console.error('Error fetching notification count:', error);
+      return 0; // Return 0 as a fallback
+    }
+}
+
+export const updateNotificationCount = async (userId, count) => {
+  try {
+    const response = await fetch(`http://192.168.86.24:3000/chat/${userId}/updateNotificationCount`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId, count }),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to update notification count');
+    }
+    console.log('Notification count updated successfully');
+  } catch (error) {
+    console.error('Error updating notification count:', error);
+  }
+}
+
   
