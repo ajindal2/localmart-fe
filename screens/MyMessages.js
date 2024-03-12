@@ -1,26 +1,38 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { useUnreadMessages } from '../UnreadMessagesContext';
+import { useMessagesBadgeCount } from '../MessagesBadgeCountContext';
 import {getChats} from '../api/ChatRestService';
 import { AuthContext } from '../AuthContext';
 
 const MyMessages = ({ navigation }) => {
   const [chats, setChats] = useState([]);
   const { user } = useContext(AuthContext);
-  const { resetUnreadMessages } = useUnreadMessages();
+  const { resetMessagesBadgeCount } = useMessagesBadgeCount();
 
   const fetchChats = async () => {
     try {
       const userId = user._id;
       let fetchedChats = await getChats(userId);
+
+      // TODO add a check for null whihc is no messages for this user.
+      if (!fetchedChats || fetchedChats.length === 0) {
+        // Handle the case where there are no chats
+        console.log('No chats available');
+        setChats([]); // Set chats to an empty array to indicate no chats
+        return; 
+      }
+  
+      // Filter out any chats that don't have messages
       fetchedChats = fetchedChats.filter(chat => chat.messages && chat.messages.length > 0);
+  
       /*fetchedChats.forEach(chat => {
           console.log(`Chat ID: ${chat._id}`);
           chat.messages.forEach((message, index) => {
             console.log(`Message ${index + 1}: ${message.content}`);
           });
         });*/
+
       setChats(fetchedChats);
     } catch (error) {
       console.error("Error fetching chats:", error);
@@ -34,9 +46,9 @@ const MyMessages = ({ navigation }) => {
   );
 
   useEffect(() => {
-    // Reset unread message count when the screen is focused
+    // Reset message badge count when the screen is focused
     const unsubscribe = navigation.addListener('focus', () => {
-      resetUnreadMessages();
+      resetMessagesBadgeCount();
     });
 
     return unsubscribe;
@@ -53,6 +65,7 @@ const MyMessages = ({ navigation }) => {
         const lastMessageContent = lastMessage ? lastMessage.content : 'No messages';
         const lastMessageSenderName = lastMessage?.senderId?.userName ?? 'Unknown';
         const lastMessageTimestamp = lastMessage ? lastMessage.sentAt : new Date();
+        const isLastMessageUnread = item.unreadCount > 0 && !item.lastMessageRead;
       
         return (
           // TODO remove the timeout
@@ -66,7 +79,7 @@ const MyMessages = ({ navigation }) => {
                     : item.listingId.title}
                 </Text>
                 <View style={styles.messageContainer}>
-                  <Text style={styles.message}>
+                <Text style={[styles.message, isLastMessageUnread && styles.boldMessage]}>
                     {lastMessageContent.length > 50
                       ? lastMessageContent.substring(0, 50) + '...'
                       : lastMessageContent}
@@ -123,6 +136,9 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#EEE',
     marginLeft: 60, // To align with the text next to the image
+  },
+  boldMessage: {
+    fontWeight: 'bold',
   },
 });
 

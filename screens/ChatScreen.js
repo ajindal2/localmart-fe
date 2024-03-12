@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { GiftedChat, Bubble, Time } from 'react-native-gifted-chat';
+import {markMessagesAsRead} from '../api/ChatRestService';
 import ChatService from '../api/ChatService';
 import { AuthContext } from '../AuthContext';
 import useHideBottomTab from '../utils/HideBottomTab'; 
@@ -92,7 +93,7 @@ const ChatScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    console.log('Setting up socket listener for chat: ', chat);
+    //console.log('Setting up socket listener for chat: ', chat);
     ChatService.initializeSocket();
   
     // Join the chat room
@@ -132,6 +133,14 @@ const ChatScreen = ({ route, navigation }) => {
     };
   }, [chat]); // Depend on `chat` to re-run this effect if the chat changes
   
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // Call the function to mark messages as read
+      markMessagesAsRead(chat._id, user._id);
+    });
+  
+    return unsubscribe;
+  }, [navigation]);
 
   const onSend = (newMessages = []) => {
     newMessages.forEach((message) => {

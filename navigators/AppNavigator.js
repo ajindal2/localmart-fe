@@ -1,6 +1,5 @@
 import React, { useContext, useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
-import { Notifications as Notifications2 } from 'expo';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeAppStack from './HomeAppStack';
@@ -8,13 +7,13 @@ import AuthStack from './AuthStack';
 import { LocationProvider } from '../components/LocationProvider';
 import { ThemeProvider } from '../components/ThemeContext';
 import { AuthContext } from '../AuthContext';
-import { useUnreadMessages } from '../UnreadMessagesContext';
+import { useMessagesBadgeCount } from '../MessagesBadgeCountContext';
 
 const Stack = createStackNavigator();
 
 const AppStack = () => {
   const { user } = useContext(AuthContext);
-  const { addUnreadMessage } = useUnreadMessages();
+  const { addMessagesBadgeCount } = useMessagesBadgeCount();
 
   useEffect(() => {
     // Existing setup for notification listeners...
@@ -41,7 +40,7 @@ const AppStack = () => {
         console.log('notificationData is: ', notificationData);
     
         if (notificationData && notificationData.type === 'NEW_MESSAGE') {
-          addUnreadMessage(); // Increment the unread message count
+          addMessagesBadgeCount(); // Increment the unread message count
         }
       } catch (error) {
         console.error('Error handling in-app notification:', error);

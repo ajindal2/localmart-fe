@@ -43,4 +43,20 @@ export const getChats = async (userId) => {
       throw error; // Re-throw to allow further handling in the calling code
     }
   };
+
+  export const markMessagesAsRead = async (chatId, userId) => {
+    try {
+      const response = await fetch('http://192.168.86.24:3000/chat/markAsRead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chatId: chatId, userId: userId }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to mark messages as read');
+      }
+    } catch (error) {
+      console.error('Error marking messages as read:', error);
+    }
+  };
   

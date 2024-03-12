@@ -2,18 +2,18 @@ import React from 'react';
 import AppNavigator from './navigators/AppNavigator';
 import Toast from 'react-native-toast-message';
 import { AuthProvider } from './AuthContext';
-import { UnreadMessagesProvider } from './UnreadMessagesContext';
+import { MessagesBadgeCountProvider } from './MessagesBadgeCountContext';
 
 const App = () => {
   return (
-    <UnreadMessagesProvider>
+    <MessagesBadgeCountProvider>
     <AuthProvider>
       <>
         <AppNavigator />
         <Toast />
       </>
     </AuthProvider>
-    </UnreadMessagesProvider>
+    </MessagesBadgeCountProvider>
   );
 }
 
