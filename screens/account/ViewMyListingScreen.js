@@ -8,6 +8,8 @@ import CustomActionSheet from '../../components/CustomActionSheet';
 import { useTheme } from '../../components/ThemeContext';
 import ButtonComponent from '../../components/ButtonComponent';
 import { useFocusEffect } from '@react-navigation/native'; 
+import shareListing from '../../utils/ShareListing';
+
 
 const ViewMyListingScreen = ({navigation}) => {
   const [listings, setListings] = useState([]);
@@ -93,12 +95,20 @@ const ViewMyListingScreen = ({navigation}) => {
     }
   };
 
+  // Handle share listing action
+  const handleShareListing = (listingId) => {
+    const listingTitle = 'Check this Item for Sale!';
+    const listingUrl = getListingUrl(listingId);
+    shareListing(listingTitle, listingUrl);
+};
+
   const getActionSheetOptions = (item) => [
     {
       icon: 'share-social-outline',
       text: 'Share Listing',
       onPress: () => {
         console.log('Sharing listing:', item._id);
+        handleShareListing(item._id);
         setActiveItemId(null);
       },
     },
@@ -308,6 +318,11 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     paddingHorizontal: 20, // Add some horizontal padding for better readability
   },
 });
+
+const getListingUrl = (listingId) => {
+  return `localmart://listing/view/${listingId}`;
+  //return `https://www.localmart.com/listing/${listingId}`;
+};
 
 export default ViewMyListingScreen;
 

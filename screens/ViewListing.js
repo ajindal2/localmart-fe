@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../AuthContext';
@@ -14,11 +14,11 @@ import useHideBottomTab from '../utils/HideBottomTab';
 import { useTheme } from '../components/ThemeContext';
 import ButtonComponent from '../components/ButtonComponent';
 import ExpandingTextComponent from '../components/ExpandingTextComponent';
-import ChatService from '../api/ChatService';
 
 
 const ViewListing = ({ route, navigation }) => {
     //const { item } = route.params;
+    const hasFetchedData = useRef(false);
     const screenWidth = Dimensions.get('window').width;
     const [currentIndex, setCurrentIndex] = useState(0);
     const { user, logout } = useContext(AuthContext);
@@ -127,10 +127,9 @@ const ViewListing = ({ route, navigation }) => {
 
     // Handle share listing action
     const handleShareListing = () => {
-        const listingId = item._id; // Example listing ID
-        const listingTitle = 'Awesome Item for Sale!';
+        const listingId = item._id; 
+        const listingTitle = 'Check this Item for Sale!';
         const listingUrl = getListingUrl(listingId);
-
         shareListing(listingTitle, listingUrl);
     };
 
@@ -151,20 +150,6 @@ const ViewListing = ({ route, navigation }) => {
       }
     };
 
-   /*useEffect(() => {
-      ChatService.initializeSocket();
-
-      return () => {
-        ChatService.turnOffSockets();
-
-        ChatService.disconnectCreateChatSockets();
-        ChatService.disconnectSendMessageSockets();
-
-        ChatService.disconnectSocket();
-      };
-    }, []);*/
-
-    // TODO - can this code inside useEffect be optimized? Should I use 2 separate useEffect?
     useEffect(() => {
        
         const fetchSellerRatings = async () => {
@@ -190,14 +175,30 @@ const ViewListing = ({ route, navigation }) => {
           }
         };
 
-        if (route.params?.item) {
+        /*if (route.params?.item) {
           // Navigated from within the app
           setItem(route.params.item);
         } else if (route.params?.listingId) {
           // Navigated from a deep link
+          console.log('Navigated from a deep link');
           const listingId = route.params.listingId;
           // Fetch the listing details from your backend using the listingId
           getListingFromId(listingId).then(data => setItem(data));
+        }*/
+
+        if (route.params?.item) {
+          // Navigated from within the app
+          setItem(route.params.item);
+          hasFetchedData.current = true;
+          console.log('Navigated from within app');
+        } else if (route.params?.listingId && !hasFetchedData.current) {
+          // Navigated from a deep link and haven't fetched data yet
+          console.log('Navigated from a deep link');
+          const listingId = route.params.listingId;
+          getListingFromId(listingId).then(data => {
+            setItem(data);
+            hasFetchedData.current = true; // Set to true to avoid refetching on subsequent renders
+          });
         }
         
         if(item && user) {
@@ -530,7 +531,8 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
 });
 
 const getListingUrl = (listingId) => {
-  return `https://www.localmart.com/listing/${listingId}`;
+  return `localmart://listing/view/${listingId}`;
+  //return `https://www.localmart.com/listing/${listingId}`;
 };
 
 export default ViewListing;

@@ -1,11 +1,9 @@
 import { Share } from 'react-native';
 
-const shareListing = async (listingTitle, listingUrl) => {
-  const message = `Check out this listing on our app: ${listingTitle}\n${listingUrl}`;
-  
+const shareListing = async (listingTitle, listingUrl) => {  
   try {
     const result = await Share.share({
-      message: message,
+      message: `${listingTitle}\n\nCheck it out here: ${listingUrl}`,
     });
 
     if (result.action === Share.sharedAction) {
