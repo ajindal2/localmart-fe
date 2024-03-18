@@ -43,7 +43,8 @@ function HomeAppStack() {
           tabBarInactiveTintColor: colors.greyColor,
           tabBarStyle: {
             height: 60, // Increase tab bar height if necessary
-            paddingBottom: 20, // Add padding to bottom to center the icons vertically
+            paddingBottom: 10, // Add padding to bottom to center the icons vertically
+            paddingTop: 5,
             // Add other styling if necessary
           },
         })}

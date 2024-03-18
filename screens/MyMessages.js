@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { useTheme } from '../components/ThemeContext';
 import { useFocusEffect } from '@react-navigation/native';
 import { useMessagesBadgeCount } from '../MessagesBadgeCountContext';
 import {getChats} from '../api/ChatRestService';
@@ -9,6 +10,8 @@ const MyMessages = ({ navigation }) => {
   const [chats, setChats] = useState([]);
   const { user } = useContext(AuthContext);
   const { resetMessagesBadgeCount } = useMessagesBadgeCount();
+  const { colors, typography, spacing } = useTheme();
+  const styles = getStyles(colors, typography, spacing);
 
   const fetchChats = async () => {
     try {
@@ -55,10 +58,10 @@ const MyMessages = ({ navigation }) => {
   }, [navigation]);
 
   return (
+    <View style={styles.container}>
     <FlatList
       data={chats}
       keyExtractor={item => item._id.toString()}
-      ItemSeparatorComponent={() => <View style={styles.separator} />}
       renderItem={({ item }) => {
         // Check if there's at least one message in the array
         const lastMessage = item.messages[item.messages.length - 1];
@@ -68,8 +71,7 @@ const MyMessages = ({ navigation }) => {
         const isLastMessageUnread = item.unreadCount > 0 && !item.lastMessageRead;
       
         return (
-          // TODO remove the timeout
-          <TouchableOpacity onPress={() => setTimeout(() => navigation.navigate('ChatScreen', { chat: item }), 100)}> 
+          <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', { chat: item })}>
             <View style={styles.chatItem}>
               <Image source={{ uri: item.listingId.imageUrls[0] }} style={styles.image} />
               <View style={styles.contentContainer}>
@@ -94,14 +96,30 @@ const MyMessages = ({ navigation }) => {
         );
       }}
     />
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  chatItem: {
-    flexDirection: 'row',
+const getStyles = (colors, typography, spacing) => StyleSheet.create({
+  container: {
+    flex: 1,
     padding: 10,
+  },
+  chatItem: {
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    borderRadius: 8, // Rounded corners for the card
+    padding: spacing.size10,
     alignItems: 'center',
+    shadowColor: '#000', // Shadow color
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2, // Shadow opacity
+    shadowRadius: 1.41, // Shadow blur radius
+    elevation: 2, // Elevation for Android
+    marginBottom: spacing.size10, // Space between cards
   },
   image: {
     width: 50,

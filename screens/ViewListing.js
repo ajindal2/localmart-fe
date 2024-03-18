@@ -175,17 +175,6 @@ const ViewListing = ({ route, navigation }) => {
           }
         };
 
-        /*if (route.params?.item) {
-          // Navigated from within the app
-          setItem(route.params.item);
-        } else if (route.params?.listingId) {
-          // Navigated from a deep link
-          console.log('Navigated from a deep link');
-          const listingId = route.params.listingId;
-          // Fetch the listing details from your backend using the listingId
-          getListingFromId(listingId).then(data => setItem(data));
-        }*/
-
         if (route.params?.item) {
           // Navigated from within the app
           setItem(route.params.item);
@@ -219,54 +208,52 @@ const ViewListing = ({ route, navigation }) => {
     <View style={styles.container}>
       <ScrollView style={styles.topContainer}>
       <View style={styles.imageContainer}>
-      {/* Section 1: Images, Title, and Price */}
-      <ScrollView
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        //ref={scrollViewRef}
-      >
-      {
-        item && item.imageUrls && item.imageUrls.length > 0 ? (
-          item.imageUrls.map((url, index) => (
-            <View key={index} style={[styles.imageWrapper, { width: screenWidth }]}>
-              <TouchableOpacity activeOpacity={1} onPress={() => openImageModal(url)}>
-                <Image source={{ uri: url }} style={styles.image} />
-              </TouchableOpacity>
-              <View style={styles.iconsContainer}>
-                <TouchableOpacity onPress={handleShareListing} style={styles.iconCircle}>
-                  <Ionicons name="share-social" size={24} color="white" />
+        {/* Section 1: Images, Title, and Price */}
+        <ScrollView
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          //ref={scrollViewRef}
+        >
+        {
+          item && item.imageUrls && item.imageUrls.length > 0 ? (
+            item.imageUrls.map((url, index) => (
+              <View key={index} style={[styles.imageWrapper, { width: screenWidth }]}>
+                <TouchableOpacity activeOpacity={1} onPress={() => openImageModal(url)}>
+                  <Image source={{ uri: url }} style={styles.image} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleSaveListing} style={styles.iconCircle}>
-                  <Ionicons name={isSaved ? "heart" : "heart-outline"} size={24} color={isSaved ? "orange" : "white"} />
-                </TouchableOpacity>
+                <View style={styles.iconsContainer}>
+                  <TouchableOpacity onPress={handleShareListing} style={styles.iconCircle}>
+                    <Ionicons name="share-social" size={24} color="white" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleSaveListing} style={styles.iconCircle}>
+                    <Ionicons name={isSaved ? "heart" : "heart-outline"} size={24} color={isSaved ? "orange" : "white"} />
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.dotContainer}>{renderScrollDots()}</View>
               </View>
-              <View style={styles.dotContainer}>{renderScrollDots()}</View>
+            ))
+          ) : (
+            // Render a placeholder or message if no images are available
+            <View style={[styles.imageWrapper, { width: screenWidth }]}>
+              <Image source={STOCK_LISTING_IMAGE_URI} style={styles.image} />
             </View>
-          ))
-        ) : (
-          // Render a placeholder or message if no images are available
-          <View style={[styles.imageWrapper, { width: screenWidth }]}>
-            <Image source={STOCK_LISTING_IMAGE_URI} style={styles.image} />
-          </View>
-        )
-      }
-      </ScrollView>
+          )
+        }
+        </ScrollView>
 
-      <FullScreenImageModal
-        isVisible={isModalVisible}
-        onClose={closeModal}
-        imageUrls={item.imageUrls} // Pass all image URLs
-        initialIndex={currentIndex}  // Pass the current index
-      />
-      </View>
-
-      <View style={styles.textContainer}>
+        <FullScreenImageModal
+          isVisible={isModalVisible}
+          onClose={closeModal}
+          imageUrls={item.imageUrls} // Pass all image URLs
+          initialIndex={currentIndex}  // Pass the current index
+        />
+      
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.price}>${item.price}</Text>
-        <View style={styles.separator} />
+      </View>
 
         {/* Section 2: Seller Details */}
         <View style={styles.section}>
@@ -307,25 +294,27 @@ const ViewListing = ({ route, navigation }) => {
           }
           </View>
 
-        <View style={styles.separator} />
 
         {/* Section 3: Listing Description */}
-        <Text style={styles.sectionTitle}>Description</Text>
-        <ExpandingTextComponent description={item.description} />
-        <View style={styles.separator} />
+          <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Description</Text>
+          <ExpandingTextComponent description={item.description} />
+        </View>
+
 
         {/* Section 4: Location */}
-        <Text style={styles.sectionTitle}>Location</Text>
-        <Text style={styles.locationText}>
-          {item.location ? 
-              (
-                item.location.city && item.location.state ? `${item.location.city}, ${item.location.state}` :
-                item.location.city || item.location.postalCode || 'Location not specified'
-              ) : 
-              'Unable to load location'
-          }
-          </Text>
-       </View>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Location</Text>
+          <Text style={styles.locationText}>
+            {item.location ? 
+                (
+                  item.location.city && item.location.state ? `${item.location.city}, ${item.location.state}` :
+                  item.location.city || item.location.postalCode || 'Location not specified'
+                ) : 
+                'Unable to load location'
+            }
+            </Text>
+          </View>
     </ScrollView>
 
     <View style={styles.buttonContainer}>
@@ -347,14 +336,26 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     flex: 1, 
   },
   section: {
-    marginTop: 1,
+    margin: 5,
+    backgroundColor: '#fff', // Use a light color for the section background
+    borderRadius: 8, // Rounded corners for the section
+    padding: spacing.size10, // Internal padding for the section content
+    marginBottom: spacing.size10, // Space between sections
+    shadowColor: '#000', // Shadow color
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22, // Shadow opacity
+    shadowRadius: 2.22, // Shadow blur radius
+    elevation: 3, // Elevation for Android
   },
   topContainer: {
     flex: 1,
     marginBottom: 60, 
   },
   textContainer: {
-    padding: spacing.size10,
+    //padding: spacing.size10,
   },
   imageWrapper: {
     position: 'relative',
@@ -422,16 +423,29 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   },
   imageContainer: {
     position: 'relative',
-    marginBottom: 10
+    marginBottom: 10,
+    backgroundColor: '#fff',
+    shadowColor: '#000', // Shadow color
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22, // Shadow opacity
+    shadowRadius: 2.22, // Shadow blur radius
+    elevation: 3, // Elevation for Android
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
+    paddingTop: 5,
     paddingBottom: 5,
+    paddingLeft: 10,
   },
   price: {
     fontSize: 18,
     color: colors.secondaryText,
+    paddingLeft: 10,
+    paddingBottom: 5,
   },
   separator: {
     height: 2,
@@ -443,7 +457,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     fontSize: typography.heading,
     fontWeight: 'bold',
     color: colors.headingColor, 
-    paddingBottom: spacing.size10,
+    paddingBottom: 5,
   },
   sellerDetailsContainer: {
     flexDirection: 'row',
@@ -464,7 +478,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     marginBottom: 5, 
   },
   dateJoined: {
-    fontSize: 16,
+    fontSize: 14,
     //fontWeight: 'bold',
     marginBottom: 5, 
   },

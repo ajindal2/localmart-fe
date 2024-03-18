@@ -10,7 +10,6 @@ const sections = [
       data: [
         { key: 'MyProfile', text: 'My Profile' },
         { key: 'SavedListingStackNavigator', text: 'Saved Items' },
-        { key: 'messages', text: 'Messages' },
       ],
     },
     {

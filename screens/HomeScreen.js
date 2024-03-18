@@ -37,20 +37,13 @@ const HomeScreen = ({ navigation }) => {
   }, [search]);
 
   useEffect(() => {
+    //setListings([]);
     fetchListings(debouncedSearch);
   }, [debouncedSearch]);
 
   useEffect(() => {
     if (location) {
-      getListings(null, {
-        latitude: location.coordinates[0].latitude,
-        longitude: location.coordinates[0].longitude,
-        maxDistance: 50000 // 500 meters TODO adjust
-      }).then(data => {
-        setListings(data);
-      }).catch(error => {
-        console.error('Error fetching listings:', error);
-      });
+      fetchListings(); // fetchListings will pick up the location from the context
     }
   }, [location]);
 
@@ -125,27 +118,27 @@ const HomeScreen = ({ navigation }) => {
     await sendPushToken(user._id, token);
 }
 
-  const fetchListings = async (searchKey = '') => {
-    setError(null); // Reset the error state
+const fetchListings = async (searchKey = '') => {
+  setError(null); // Reset the error state
     setLoading(true);
     setLoaded(false); // Reset loaded before fetching
-    try {
-      let data;
-      if(location) {
-       data = await getListings(searchKey, {
-          latitude: location.coordinates[0].latitude,
-          longitude: location.coordinates[0].longitude,
-          maxDistance: 50000 // 500 meters TODO adjust
-        });
-      } else {
-       data = await getListings(searchKey, {});
-      }
-      let modifiedData = data;
 
-      // Check if the number of listings is odd
-      if (data.length % 2 !== 0) {
-        modifiedData = [...data, {}]; // Create a new array with an extra empty object
-      } 
+    try {  
+      let paginatedResult;
+      if(location) {
+        paginatedResult = await getListings(
+          searchKey,{
+            latitude: location.coordinates[0].latitude,
+            longitude: location.coordinates[0].longitude,
+            maxDistance: 50000 // 500 meters TODO adjust
+          });
+      } else {
+        paginatedResult = getListings(searchKey, {});
+      }
+      
+      const { listings } = paginatedResult; // Destructure to get the listings array
+      let modifiedData = listings.length % 2 !== 0 ? [...listings, {}] : listings;
+
       setListings(modifiedData);
       setLoading(false);
     } catch (error) {
@@ -162,6 +155,13 @@ const HomeScreen = ({ navigation }) => {
       setLoaded(true); // Set loaded to true after fetching, regardless of the outcome
     }
   };
+
+  const handlePress = React.useCallback((item) => {
+    navigation.navigate('ViewListingStack', { 
+      screen: 'ViewListing', 
+      params: { item }
+    });
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -189,13 +189,11 @@ const HomeScreen = ({ navigation }) => {
         renderItem={({ item }) => (
           <ListingItem
             item={item}
-            onPress={() => navigation.navigate('ViewListingStack', { 
-              screen: 'ViewListing', 
-              params: { item }
-            })}
+            onPress={() => handlePress(item)}
           />
         )}
-        keyExtractor={item => item._id ? item._id.toString() : Math.random().toString()}
+        // Using index condition because of the dummy item insertged when odd listings since taht wont have _id field.
+        keyExtractor={(item, index) => item._id ? item._id.toString() : index.toString()}
         numColumns={2}
       />
       )}

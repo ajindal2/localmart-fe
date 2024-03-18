@@ -86,7 +86,7 @@ const SellerDetails = ({ route, navigation }) => {
 
     const ListHeader = () => (
       <>
-        <View style={styles.section}>
+        <View style={styles.topSection}>
         <TouchableOpacity  activeOpacity={1} onPress={openImageModal} style={styles.imageContainer}>
             <Image 
               source={
@@ -105,7 +105,6 @@ const SellerDetails = ({ route, navigation }) => {
           )}
         </View>
 
-        <View style={styles.separator} />
 
         {/* Section 2: Seller Ratings Info */}
         <View style={styles.bottomContainer}>
@@ -228,11 +227,23 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
       flex: 1,
     },
+    topSection: {
+      backgroundColor: '#fff',
+      paddingTop: 10,
+      shadowColor: '#000', // Shadow color
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+      shadowOpacity: 0.22, // Shadow opacity
+      shadowRadius: 2.22, // Shadow blur radius
+      elevation: 3, // Elevation for Android
+    },
     bottomContainer: {
-      padding: spacing.size10,
+      //padding: spacing.size10,
     },
     separator: {
-      height: 2,
+      height: 1,
       backgroundColor: colors.separatorColor,
       marginBottom: spacing.size10,
       marginTop: spacing.size10,
@@ -249,6 +260,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
       fontWeight: 'bold',
       color: colors.headingColor, 
       paddingBottom: spacing.size10,
+      paddingLeft: spacing.size10,
     },
     averageRatingContainer: {
         flexDirection: 'row',
@@ -272,22 +284,36 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
       paddingTop: spacing.size10,
     },
     dateJoined: {
-      fontSize: typography.body,
+      fontSize: 14,
       paddingBottom: 5,
       paddingLeft: spacing.size10,
     },
     sellerDescription: {
-      fontSize: typography.body,
+      fontSize: 14, //typography.body,
       color: colors.secondaryText,
       paddingTop: spacing.size10,
       paddingLeft: spacing.size10,
+      paddingBottom: spacing.size10,
     },
     averageRating: {
       fontSize: 16,
       fontWeight: 'bold',
     },
     ratingsSection: {
-        //padding: 10,
+        marginTop: 10,
+       // margin: 5,
+        backgroundColor: '#fff', // Use a light color for the section background
+        //borderRadius: 8, // Rounded corners for the section
+        padding: spacing.size10, // Internal padding for the section content
+        marginBottom: spacing.size10, // Space between sections
+        shadowColor: '#000', // Shadow color
+        shadowOffset: {
+          width: 0,
+          height: 1,
+        },
+        shadowOpacity: 0.22, // Shadow opacity
+        shadowRadius: 2.22, // Shadow blur radius
+        elevation: 3, // Elevation for Android
     },
     ratingItem: {
         //padding: 10,

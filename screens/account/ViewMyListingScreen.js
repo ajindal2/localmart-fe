@@ -239,7 +239,7 @@ const ViewMyListingScreen = ({navigation}) => {
         data={listings}
         renderItem={renderItem}
         keyExtractor={item => item._id}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        //ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
       )}
       <CustomActionSheet
@@ -269,9 +269,20 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     color: 'black',
   },
   listingItem: {
+    backgroundColor: '#fff',
     flexDirection: 'row',
+    borderRadius: 8, // Rounded corners for the card
     padding: spacing.size10,
     alignItems: 'center',
+    shadowColor: '#000', // Shadow color
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2, // Shadow opacity
+    shadowRadius: 1.41, // Shadow blur radius
+    elevation: 2, // Elevation for Android
+    marginBottom: spacing.size10, // Space between cards
   },
   listingImage: {
     width: imageSize,

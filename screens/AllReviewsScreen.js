@@ -35,13 +35,9 @@ const AllReviewsScreen = ({ route, navigation }) => {
           ) : (
             <>
             {/* Section 1: Reviews summary */}
-            <View style={styles.section}>
+            <View style={styles.topSection}>
               <View style={styles.header}>
                 <Text style={styles.totalReviews}>{ratingsWithProfile.length} Reviews</Text>
-                <TouchableOpacity style={styles.filterButton} onPress={() => {/* Filter logic */}}>
-                    <Ionicons name="filter" size={20} color="black" />
-                    <Text style={styles.filterText}>Filter</Text>
-                </TouchableOpacity>
                 </View>
                 <View style={styles.ratingContainer}>
                 <StarRating rating={averageRating} size={20} />
@@ -53,7 +49,6 @@ const AllReviewsScreen = ({ route, navigation }) => {
             <View style={styles.section}>
             {ratingsWithProfile.map((ratingWithProfile, index) => (
                 <View key={index} style={styles.ratingItem}>
-                    <View style={styles.separator} />
                     <View style={styles.ratingHeader}>
                       <Image
                           source={
@@ -95,10 +90,25 @@ const AllReviewsScreen = ({ route, navigation }) => {
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
       flex: 1,
-      padding: spacing.size10,
+      //padding: spacing.size10,
     },
     section: {
       //padding: 10,
+    },
+    topSection: {
+      backgroundColor: '#fff',
+      paddingTop: 10,
+      paddingLeft: 10,
+      paddingBottom: 10,
+      marginBottom: 10,
+      shadowColor: '#000', // Shadow color
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+      shadowOpacity: 0.22, // Shadow opacity
+      shadowRadius: 2.22, // Shadow blur radius
+      elevation: 3, // Elevation for Android
     },
     header: {
       flexDirection: 'row',
@@ -165,7 +175,19 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
       marginTop: 5,
     },
     ratingItem: {
-      //padding: 10,
+      margin: 5,
+      backgroundColor: '#fff', // Use a light color for the section background
+      borderRadius: 8, // Rounded corners for the section
+      padding: spacing.size10, // Internal padding for the section content
+      //marginBottom: spacing.size10, // Space between sections
+      shadowColor: '#000', // Shadow color
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+      shadowOpacity: 0.22, // Shadow opacity
+      shadowRadius: 2.22, // Shadow blur radius
+      elevation: 3, // Elevation for Android
     },
     ratingInfo: {
       // Aligns name and stars vertically

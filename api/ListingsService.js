@@ -2,10 +2,13 @@
 import * as SecureStore from 'expo-secure-store';
 import { fetchWithTokenRefresh } from '../api/FetchService';
 
-export const getListings = async (searchKey, locationParams) => {
+export const getListings = async (searchKey, locationParams, page = 1, limit = 10) => {
   try {
     let url = `http://192.168.86.24:3000/listings`;
     const queryParams = new URLSearchParams();
+
+    queryParams.append('page', page);
+    queryParams.append('limit', limit);
 
     if (searchKey) {
       queryParams.append('title', encodeURIComponent(searchKey));
@@ -30,7 +33,6 @@ export const getListings = async (searchKey, locationParams) => {
     }
 
     const response = await fetch(url);
-    
     return await handleResponse(response); 
   } catch (error) {
     console.error('Error fetching listings:', error.message);

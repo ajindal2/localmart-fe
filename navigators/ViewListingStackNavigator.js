@@ -18,13 +18,13 @@ function ViewListingStackNavigator() {
       options={{ 
         headerShown: true,
         title: 'Seller details',
-        tabBarStyle: { display: 'none' } 
+        //tabBarStyle: { display: 'none' } 
       }} />
       <ViewListingStack.Screen name="AllReviewsScreen" component={AllReviewsScreen}
       options={{ 
         headerShown: true,
         title: 'All reviews',
-        tabBarStyle: { display: 'none' } 
+        //tabBarStyle: { display: 'none' } 
       }} />
       {/* Additional ViewListing Screen for navigating from SellerDetails */}
       <ViewListingStack.Screen name="ViewListingFromSeller" component={ViewListing} 

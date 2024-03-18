@@ -162,7 +162,6 @@ const SavedItems = ({navigation, route}) => {
         data={savedListings}
         renderItem={renderItem}
         keyExtractor={(item) => item._id}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
       )}
      <CustomActionSheet
@@ -183,9 +182,26 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     padding: 10,
   },
   listingItem: {
+    backgroundColor: '#fff',
     flexDirection: 'row',
+    borderRadius: 8, // Rounded corners for the card
     padding: spacing.size10,
     alignItems: 'center',
+    shadowColor: '#000', // Shadow color
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2, // Shadow opacity
+    shadowRadius: 1.41, // Shadow blur radius
+    elevation: 2, // Elevation for Android
+    marginBottom: spacing.size10, // Space between cards
+  },
+  listingImage: {
+    width: imageSize,
+    height: imageSize,
+    borderRadius: imageSize / 8,
+    marginRight: spacing.size10,
   },
   image: {
     width: imageSize, 
@@ -214,11 +230,6 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   },
   optionsButton: {
     padding: spacing.size10,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: colors.inputBorder,
-    margin: spacing.xs
   },
   errorContainer: {
     alignItems: 'center',

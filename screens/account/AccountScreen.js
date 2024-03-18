@@ -3,11 +3,13 @@ import { FlatList, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react
 import sections from '../../constants/AccountSections';
 import { getUserRatings } from '../../api/RatingsService';
 import { AuthContext } from '../../AuthContext';
-import { useFocusEffect } from '@react-navigation/native'; 
+import { useTheme } from '../../components/ThemeContext';
 
 
 const AccountScreen = ({ navigation }) => {
   const { user, logout } = useContext(AuthContext);
+  const { colors, typography, spacing } = useTheme();
+  const styles = getStyles(colors, typography, spacing);
 
   const resetToWelcomeScreen = () => {
     let rootNavigator = navigation;
@@ -92,26 +94,34 @@ const AccountScreen = ({ navigation }) => {
 };
   
 
-  const styles = StyleSheet.create({
-    container: {
+const getStyles = (colors, typography, spacing) => StyleSheet.create({
+  container: {
       flex: 1,
-      backgroundColor: '#f0f0f0', // Set the background color for the entire screen
+      padding: 10,
+      //backgroundColor: '#f0f0f0', // Set the background color for the entire screen
     },
     sectionContainer: {
       backgroundColor: '#fff',
-      marginVertical: 8,
-      marginHorizontal: 16,
-      borderRadius: 8,
+      flexDirection: 'row',
+      borderRadius: 8, // Rounded corners for the card
+      padding: spacing.size10,
+      paddingTop: 5,
+      paddingBottom: 5,
+      alignItems: 'center',
       shadowColor: '#000', // Shadow color
-      shadowOffset: { width: 0, height: 1 }, // Shadow offset
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
       shadowOpacity: 0.2, // Shadow opacity
-      shadowRadius: 1.41, // Shadow radius
+      shadowRadius: 1.41, // Shadow blur radius
       elevation: 2, // Elevation for Android
+      marginBottom: spacing.size10, // Space between cards
     },
     item: {
       backgroundColor: '#fff',
-      paddingVertical: 15,
-      paddingHorizontal: 15,
+      paddingVertical: 10,
+      paddingHorizontal: 10,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -122,9 +132,7 @@ const AccountScreen = ({ navigation }) => {
     separator: {
       height: 1,
       backgroundColor: '#e0e0e0',
-      //marginLeft: 15,
     },
-    // ... Add styles for other components if needed
   });
 
 export default AccountScreen;
