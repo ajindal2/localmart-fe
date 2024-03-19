@@ -1,6 +1,17 @@
+import { BASE_URL } from '../constants/AppConstants';
+import * as SecureStore from 'expo-secure-store';
+import { fetchWithTokenRefresh } from '../api/FetchService';
+
 export const getChats = async (userId) => {
+  const token = await SecureStore.getItemAsync('token');
+
     try {
-      const response = await fetch(`http://192.168.86.24:3000/chat/${userId}`);
+      const response = await fetchWithTokenRefresh(`${BASE_URL}/chat/${userId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+      });
       if (response.ok) {
           const chats = await response.json();
           return chats;
@@ -19,11 +30,14 @@ export const getChats = async (userId) => {
   };
 
   export const createOrGetChat = async (createChatDTO) => {
+    const token = await SecureStore.getItemAsync('token');
+
     try {
-      const response = await fetch('http://192.168.86.24:3000/chat', {
+      const response = await fetchWithTokenRefresh(`${BASE_URL}/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(createChatDTO),
       });
@@ -45,10 +59,15 @@ export const getChats = async (userId) => {
   };
 
   export const markMessagesAsRead = async (chatId, userId) => {
+    const token = await SecureStore.getItemAsync('token');
+
     try {
-      const response = await fetch('http://192.168.86.24:3000/chat/markAsRead', {
+      const response = await fetchWithTokenRefresh(`${BASE_URL}/chat/markAsRead`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },        
         body: JSON.stringify({ chatId: chatId, userId: userId }),
       });
   
@@ -61,8 +80,15 @@ export const getChats = async (userId) => {
   };
 
   export const fetchNotificationCount = async (userId) => {
+    const token = await SecureStore.getItemAsync('token');
+
     try {
-      const response = await fetch(`http://192.168.86.24:3000/chat/${userId}/notificationCount`);
+      const response = await fetchWithTokenRefresh(`${BASE_URL}/chat/${userId}/notificationCount`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch notification count');
       }
@@ -76,11 +102,14 @@ export const getChats = async (userId) => {
 }
 
 export const updateNotificationCount = async (userId, count) => {
+  const token = await SecureStore.getItemAsync('token');
+
   try {
-    const response = await fetch(`http://192.168.86.24:3000/chat/${userId}/updateNotificationCount`, {
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/chat/${userId}/updateNotificationCount`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({ userId, count }),
     });

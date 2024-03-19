@@ -1,6 +1,8 @@
+import { BASE_URL } from '../constants/AppConstants';
+
 export const sendPushToken = async (userId, token) => {
   try {
-    const response = await fetch(`http://192.168.86.24:3000/users/${userId}/pushToken`, {
+    const response = await fetch(`${BASE_URL}/users/${userId}/pushToken`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

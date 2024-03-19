@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Dimensions, Image, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, Image, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { AuthContext } from '../AuthContext';
 import * as SecureStore from 'expo-secure-store';
 import ButtonComponent from '../components/ButtonComponent';
@@ -7,6 +7,7 @@ import { useFonts } from 'expo-font';
 import InputComponent from '../components/InputComponent';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../components/ThemeContext';
+import { BASE_URL } from '../constants/AppConstants';
 
 const LoginScreen = ({ navigation }) => {
   const [userName, setUserName] = useState('');
@@ -25,7 +26,7 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://192.168.86.24:3000/auth/login', {
+      const response = await fetch(`${BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

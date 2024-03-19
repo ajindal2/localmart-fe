@@ -1,6 +1,16 @@
+import { BASE_URL } from '../constants/AppConstants';
+import { fetchWithTokenRefresh } from '../api/FetchService';
+
 export const getSeller = async (sellerId) => {
+  const token = await SecureStore.getItemAsync('token');
+
   try {
-    const response = await fetch(`http://192.168.86.24:3000/seller/${sellerId}`);
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/seller/${sellerId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    });
     if (response.ok) {
         const seller = await response.json();
         return seller;
@@ -19,8 +29,15 @@ export const getSeller = async (sellerId) => {
 };
 
 export const getSellerLocation = async (userId) => {
+  const token = await SecureStore.getItemAsync('token');
+
   try {
-    const response = await fetch(`http://192.168.86.24:3000/seller/${userId}/location`);
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/seller/${userId}/location`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    });
     if (response.ok) {
       return await response.json();
     } else {

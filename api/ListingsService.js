@@ -1,10 +1,10 @@
-//import BASE_URL from '../constants/AppConstants';
+import { BASE_URL } from '../constants/AppConstants';
 import * as SecureStore from 'expo-secure-store';
 import { fetchWithTokenRefresh } from '../api/FetchService';
 
 export const getListings = async (searchKey, locationParams, page = 1, limit = 10) => {
   try {
-    let url = `http://192.168.86.24:3000/listings`;
+    let url = `${BASE_URL}/listings`;
     const queryParams = new URLSearchParams();
 
     queryParams.append('page', page);
@@ -41,8 +41,15 @@ export const getListings = async (searchKey, locationParams, page = 1, limit = 1
 };
 
 export const getListingsByUser = async (userId) => {
+  const token = await SecureStore.getItemAsync('token');
+
   try {
-    const response = await fetch(`http://192.168.86.24:3000/listings/user/${userId}`);
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/listings/user/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    });
     return await handleResponse(response); 
   } catch (error) {
     //return []; // Return an empty array in case of an error indicating empty seller listings for this user.
@@ -53,7 +60,7 @@ export const getListingsByUser = async (userId) => {
 
 export const getListingFromId = async (listingId) => {
   try {
-    const response = await fetch(`http://192.168.86.24:3000/listings/${listingId}`);
+    const response = await fetch(`${BASE_URL}/listings/${listingId}`);
     if (response.ok) {
         const listing = await response.json();
         return listing;
@@ -71,7 +78,7 @@ export const getListingFromId = async (listingId) => {
 export const createListing = async (userId, listingDetails) => {
   try {
     const token = await SecureStore.getItemAsync('token');
-    const url = `http://192.168.86.24:3000/listings/${userId}`;
+    const url = `${BASE_URL}/listings/${userId}`;
 
     // Prepare the form data
     const formData = new FormData();
@@ -113,9 +120,8 @@ export const createListing = async (userId, listingDetails) => {
 
 export const updateListing = async (listingId, listingDetails) => {
   try {
-    // Assuming you're using a token for authentication
     const token = await SecureStore.getItemAsync('token');
-    const url = `http://192.168.86.24:3000/listings/${listingId}`;
+    const url = `${BASE_URL}/listings/${listingId}`;
 
     // Prepare the form data
     const formData = new FormData();
@@ -153,9 +159,14 @@ export const updateListing = async (listingId, listingDetails) => {
 };
 
 export const deleteListing = async (listingId) => {
+  const token = await SecureStore.getItemAsync('token');
+
   try {
-    const response = await fetch(`http://192.168.86.24:3000/listings/${listingId}`, {
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/listings/${listingId}`, {
       method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
 
     if (!response.ok) {
@@ -163,7 +174,6 @@ export const deleteListing = async (listingId) => {
       throw new Error(errorData.message || 'Failed to delete the listing.');
     }
 
-    console.log('Listing deleted successfully:', listingId);
   } catch (error) {
     console.error('Error deleting listing:', error);
     throw error; // Re-throw to allow further handling, e.g., showing an error message in the UI
@@ -171,11 +181,14 @@ export const deleteListing = async (listingId) => {
 };
 
 export const updateListingStatus = async (listingId, status) => {
+  const token = await SecureStore.getItemAsync('token');
+
   try {
-    const response = await fetch(`http://192.168.86.24:3000/listings/${listingId}/status`, {
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/listings/${listingId}/status`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({ status }),
     });

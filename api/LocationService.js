@@ -1,6 +1,17 @@
+import { BASE_URL } from '../constants/AppConstants';
+import * as SecureStore from 'expo-secure-store';
+import { fetchWithTokenRefresh } from '../api/FetchService';
+
 export const reverseGeocode = async (lat, lng) => {
+  const token = await SecureStore.getItemAsync('token');
+
     try {
-      const response = await fetch(`http://192.168.86.24:3000/location/reverse-geocode?lat=${lat}&lng=${lng}`);
+      const response = await fetchWithTokenRefresh(`${BASE_URL}/location/reverse-geocode?lat=${lat}&lng=${lng}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+      });
       const data = await response.json();
   
       if (!response.ok) {
@@ -19,8 +30,15 @@ export const reverseGeocode = async (lat, lng) => {
   };
 
   export const validateAndGeocodePostalCode = async (postalCode) => {
+    const token = await SecureStore.getItemAsync('token');
+
     try {
-      const response = await fetch(`http://192.168.86.24:3000/location/validate-postal?postalCode=${postalCode}`);
+      const response = await fetchWithTokenRefresh(`${BASE_URL}/location/validate-postal?postalCode=${postalCode}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+      });
       const data = await response.json();
   
       if (!response.ok) {

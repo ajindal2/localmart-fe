@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
+import { BASE_URL } from '../constants/AppConstants';
 
 export const fetchWithTokenRefresh = async (url, options) => {
   try {
@@ -9,7 +10,7 @@ export const fetchWithTokenRefresh = async (url, options) => {
       console.log('Token expired');
 
       // Attempt to refresh the token
-      const refreshResponse = await fetch(`http://192.168.86.24:3000/auth/refresh`, {
+      const refreshResponse = await fetch(`${BASE_URL}/auth/refresh`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

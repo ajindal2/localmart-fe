@@ -1,7 +1,11 @@
+import { BASE_URL } from '../constants/AppConstants';
+import * as SecureStore from 'expo-secure-store';
+import { fetchWithTokenRefresh } from '../api/FetchService';
+
 export const getSellerRatings = async (sellerId) => {
+  // Not adding auth to display listing without login
   try {
-    // TODO: think if authorization is needed to fetch the ratings.
-    const response = await fetch(`http://192.168.86.24:3000/ratings/seller/${sellerId}`);
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/ratings/seller/${sellerId}`);
     if (response.ok) {
         const sellerRatings = await response.json();
         return sellerRatings;
@@ -17,9 +21,15 @@ export const getSellerRatings = async (sellerId) => {
 };
 
 export const getUserRatings = async (userId) => {
+  const token = await SecureStore.getItemAsync('token');
+
   try {
-    // TODO: think if authorization is needed to fetch the ratings.
-    const response = await fetch(`http://192.168.86.24:3000/ratings/user/${userId}`);
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/ratings/user/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    });
     if (response.ok) {
         const userRatings = await response.json();
         return userRatings;

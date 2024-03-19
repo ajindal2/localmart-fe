@@ -86,7 +86,8 @@ const SavedItems = ({navigation, route}) => {
     setActiveItemId(item._id); 
   };
 
-  const renderItem = ({ item }) => (
+  // Using callback t omemoize the component to prevent unnecessary re-renders of list items if their props haven't changed
+  const renderItem = React.useCallback(({ item }) => (
     <TouchableOpacity 
       style={styles.listingItem}
       onPress={() => {
@@ -101,20 +102,21 @@ const SavedItems = ({navigation, route}) => {
         }
       }}
     >
-      <Image source={{ uri: item.listing.imageUrls[0] }} style={styles.image} />
-      <View style={styles.listingInfo}>
-        <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
-            {item.listing.title}
-        </Text>
-        <Text style={styles.price}>${item.listing.price}</Text>
-        <Text style={styles.state}> {item.listing.state}</Text>
-      </View>
-      <TouchableOpacity style={styles.optionsButton} onPress={() => handleOpenActionSheet(item)}>
-        <Ionicons name="ellipsis-vertical" size={20} color="grey" />
-      </TouchableOpacity>
+    <Image source={{ uri: item.listing.imageUrls[0] }} style={styles.image} />
+    <View style={styles.listingInfo}>
+      <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+          {item.listing.title}
+      </Text>
+      <Text style={styles.price}>${item.listing.price}</Text>
+      <Text style={styles.state}> {item.listing.state}</Text>
+    </View>
+    <TouchableOpacity style={styles.optionsButton} onPress={() => handleOpenActionSheet(item)}>
+      <Ionicons name="ellipsis-vertical" size={20} color="grey" />
+    </TouchableOpacity>
 
     </TouchableOpacity>
-  );
+ ), [navigation]);
+
 
   const unsaveListing = async (item) => {
     try {
@@ -161,7 +163,8 @@ const SavedItems = ({navigation, route}) => {
       <FlatList
         data={savedListings}
         renderItem={renderItem}
-        keyExtractor={(item) => item._id}
+        keyExtractor={(item, index) => item._id ? item._id.toString() : index.toString()}
+
       />
       )}
      <CustomActionSheet

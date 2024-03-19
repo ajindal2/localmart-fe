@@ -1,10 +1,16 @@
-//import BASE_URL from '../constants/AppConstants';
+import { BASE_URL } from '../constants/AppConstants';
 import * as SecureStore from 'expo-secure-store';
 import { fetchWithTokenRefresh } from '../api/FetchService';
 
 export const getUserProfile = async (userId) => {
+  const token = await SecureStore.getItemAsync('token');
   try {
-    const response = await fetch(`http://192.168.86.24:3000/userProfile/${userId}`);
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/userProfile/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    });
     if (response.ok) {
         const profile = await response.json();
         return profile;
@@ -23,8 +29,15 @@ export const getUserProfile = async (userId) => {
   };
 
 export const getUserLocation = async (userId) => {
+  const token = await SecureStore.getItemAsync('token');
+
   try {
-    const response = await fetch(`http://192.168.86.24:3000/userProfile/${userId}/location`);
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/userProfile/${userId}/location`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    });
     if (response.ok) {
         const profile = await response.json();
         return profile;
@@ -49,7 +62,7 @@ export const getUserLocation = async (userId) => {
           userId: userId,
           aboutMe: ''
         };
-        const response = await fetch('http://192.168.86.24:3000/userProfile/', {
+        const response = await fetch(`${BASE_URL}/userProfile/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -71,12 +84,10 @@ export const getUserLocation = async (userId) => {
 
   // This will create the profile if it does not exist.
   export const updateUserProfile = async (userId, updatedProfileData) => {
-    console.log('Profile update for userId', userId );
-    console.log('Updated profile is: ', JSON.stringify(updatedProfileData));
     
   const token = await SecureStore.getItemAsync('token');
     try {
-      const response = await fetchWithTokenRefresh(`http://192.168.86.24:3000/userProfile/${userId}`, {
+      const response = await fetchWithTokenRefresh(`${BASE_URL}/userProfile/${userId}`, {
         method: 'PUT', // or 'PATCH' if you're updating partially
         headers: {
           'Content-Type': 'application/json',
@@ -100,7 +111,7 @@ export const getUserLocation = async (userId) => {
 
   export const uploadProfileImage = async (userId, imageUri) => {
     const token = await SecureStore.getItemAsync('token');
-    const apiUrl = `http://192.168.86.24:3000/userProfile/${userId}/image`;
+    const apiUrl = `${BASE_URL}/userProfile/${userId}/image`;
   
     // Create the form data to send to the server
     let formData = new FormData();

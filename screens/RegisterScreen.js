@@ -6,6 +6,7 @@ import { useFonts } from 'expo-font';
 import InputComponent from '../components/InputComponent';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../components/ThemeContext';
+import { BASE_URL } from '../constants/AppConstants';
 
 const RegisterScreen = ({ navigation }) => {
   const [userName, setUserName] = useState('');
@@ -66,7 +67,7 @@ const RegisterScreen = ({ navigation }) => {
     }
 
     try {
-      const response = await fetch('http://192.168.86.24:3000/auth/register', {
+      const response = await fetch(`${BASE_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

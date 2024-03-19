@@ -183,7 +183,8 @@ const ViewMyListingScreen = ({navigation}) => {
     setActiveItemId(item._id); 
   };
 
-  const renderItem = ({ item }) => (
+  // Using callback t omemoize the component to prevent unnecessary re-renders of list items if their props haven't changed
+  const renderItem = React.useCallback(({ item }) => (
     <TouchableOpacity 
       style={styles.listingItem} 
       onPress={() =>  navigation.navigate('ViewListingStack', { 
@@ -204,7 +205,7 @@ const ViewMyListingScreen = ({navigation}) => {
         <Ionicons name="ellipsis-vertical" size={20} color="grey" />
       </TouchableOpacity>
     </TouchableOpacity>
-  );
+   ), [navigation]);
 
   const actionSheetOptions = listings
   .filter(item => item._id === activeItemId)
@@ -238,7 +239,7 @@ const ViewMyListingScreen = ({navigation}) => {
       <FlatList
         data={listings}
         renderItem={renderItem}
-        keyExtractor={item => item._id}
+        keyExtractor={(item, index) => item._id ? item._id.toString() : index.toString()}
         //ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
       )}

@@ -1,12 +1,17 @@
 import * as SecureStore from 'expo-secure-store';
 import { fetchWithTokenRefresh } from '../api/FetchService';
-
-const BASE_URL = 'http://192.168.86.24:3000'; 
+import { BASE_URL } from '../constants/AppConstants';
 
 export const getSavedListings = async (userId) => {
+  const token = await SecureStore.getItemAsync('token');
+
   try {
-      // TODO: think if authorization is needed to fetch the ratings.
-    const response = await fetch(`http://192.168.86.24:3000/savedListings/${userId}`);
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/savedListings/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    });
     return await handleResponse(response); 
     } catch (error) {
       console.error('Error fetching saved listings:', error);
@@ -17,7 +22,7 @@ export const getSavedListings = async (userId) => {
 export const createSavedListing = async (userId, listingId) => {
   try {
     const token = await SecureStore.getItemAsync('token');
-    const response = await fetchWithTokenRefresh(`http://192.168.86.24:3000/savedListings`, {
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/savedListings`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +48,7 @@ export const createSavedListing = async (userId, listingId) => {
 export const deleteSavedListing = async (savedListingId) => {
   try {
     const token = await SecureStore.getItemAsync('token');
-    const response = await fetchWithTokenRefresh(`http://192.168.86.24:3000/savedListings/${savedListingId}`, {
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/savedListings/${savedListingId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -64,9 +69,9 @@ export const deleteSavedListing = async (savedListingId) => {
 };
 
 export const checkSavedStatus = async (userId, listingId) => {
-
+  // Not adding auth for user to be able to view listing without login.
   try {
-    const response = await fetch(`http://192.168.86.24:3000/savedlistings/check-status/${userId}/${listingId}`);
+    const response = await fetch(`${BASE_URL}/savedlistings/check-status/${userId}/${listingId}`);
     if (response.ok) {
         const data = await response.json();
         return data;

@@ -21,6 +21,8 @@ const HomeScreen = ({ navigation }) => {
   const [loaded, setLoaded] = useState(false); // Track whether listings have been loaded
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState(''); 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(null);
   const { location } = useContext(LocationContext);
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
@@ -37,13 +39,21 @@ const HomeScreen = ({ navigation }) => {
   }, [search]);
 
   useEffect(() => {
-    //setListings([]);
-    fetchListings(debouncedSearch);
+    setListings([]);
+    setCurrentPage(1); // Reset to first page
+    setTotalPages(null); // Reset total pages
+
+    fetchListings(debouncedSearch, currentPage);
   }, [debouncedSearch]);
 
   useEffect(() => {
     if (location) {
-      fetchListings(); // fetchListings will pick up the location from the context
+       // Reset listings and current page when location changes
+      setListings([]);
+      setCurrentPage(1); // Reset to first page
+      setTotalPages(null); // Reset total pages
+
+      fetchListings(null, currentPage); // fetchListings will pick up the location from the context
     }
   }, [location]);
 
@@ -118,7 +128,7 @@ const HomeScreen = ({ navigation }) => {
     await sendPushToken(user._id, token);
 }
 
-const fetchListings = async (searchKey = '') => {
+const fetchListings = async (searchKey = '', page = currentPage) => {
   setError(null); // Reset the error state
     setLoading(true);
     setLoaded(false); // Reset loaded before fetching
@@ -131,12 +141,17 @@ const fetchListings = async (searchKey = '') => {
             latitude: location.coordinates[0].latitude,
             longitude: location.coordinates[0].longitude,
             maxDistance: 50000 // 500 meters TODO adjust
-          });
+            },  
+            page,
+            10, // Set your desired limit or make it configurable
+          );
       } else {
-        paginatedResult = getListings(searchKey, {});
+        paginatedResult = await getListings(searchKey, {}, page, 10);
       }
       
-      const { listings } = paginatedResult; // Destructure to get the listings array
+      const { listings, pagination } = paginatedResult; // Destructure to get the listings array
+      setTotalPages(pagination.totalPages);
+
       let modifiedData = listings.length % 2 !== 0 ? [...listings, {}] : listings;
 
       setListings(modifiedData);
@@ -192,6 +207,12 @@ const fetchListings = async (searchKey = '') => {
             onPress={() => handlePress(item)}
           />
         )}
+        onEndReached={() => {
+          if ( !loading && currentPage < totalPages) {
+            setCurrentPage(prevPage => prevPage + 1);
+          }
+        }}
+        onEndReachedThreshold={0.5}
         // Using index condition because of the dummy item insertged when odd listings since taht wont have _id field.
         keyExtractor={(item, index) => item._id ? item._id.toString() : index.toString()}
         numColumns={2}
