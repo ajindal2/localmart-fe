@@ -71,6 +71,12 @@ const LoginScreen = ({ navigation }) => {
       />
     </View>
 
+    <TouchableOpacity
+      style={styles.forgotUsername}
+      onPress={() => navigation.navigate('ForgotUserNameScreen')} >
+      <Text style={styles.forgotPasswordText}>Forgot User Name?</Text>
+    </TouchableOpacity>
+
     <View style={styles.inputContainer}>
       <Ionicons name="lock-closed-outline" size={20} color="#666" />
       <InputComponent
@@ -84,15 +90,16 @@ const LoginScreen = ({ navigation }) => {
         <Ionicons name={passwordVisible ? 'eye' : 'eye-off'} size={20} color="#666" />
       </TouchableOpacity>
     </View>
-
-    <TouchableOpacity style={styles.forgotPassword}>
+    <TouchableOpacity
+      style={styles.forgotPassword}
+      onPress={() => navigation.navigate('ForgotPasswordScreen')} >
       <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
     </TouchableOpacity>
 
     <ButtonComponent title="Login" type="primary" 
       onPress={handleLogin}           
       style={{ width: '100%', flexDirection: 'row' }}
-/>
+    />
 
     <View style={styles.orContainer}>
       <View style={styles.line} />
@@ -103,6 +110,7 @@ const LoginScreen = ({ navigation }) => {
     <ButtonComponent title="Register" type="secondary" 
       onPress={() => navigation.navigate('RegisterScreen')} 
      style={{ width: '100%', flexDirection: 'row' }}/>
+
   </View>
   );
 };
@@ -140,7 +148,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     borderColor: colors.inputBorder,
     paddingLeft: spacing.size10,
     paddingRight: spacing.size10,
-    marginBottom: spacing.size10,
+    marginTop: spacing.size10,
     borderRadius: spacing.sm,
   },
   input: {
@@ -150,6 +158,11 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   forgotPassword: {
     alignSelf: 'flex-end',
     marginBottom: spacing.size20,
+  },
+  forgotUsername: {
+   alignSelf: 'flex-end',
+    //marginTop: spacing.size10,
+    marginBottom: spacing.size10,
   },
   forgotPasswordText: {
     color: 'blue',

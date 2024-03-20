@@ -275,6 +275,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           setPrice('');
           setIsFree(false);
           setPhotos([]);
+          Alert.alert('Listing created successfully');
           navigation.navigate('HomeScreen'); // Navigate to the homeScreen
       } catch (error) {
         if (error.message === 'RefreshTokenExpired') {

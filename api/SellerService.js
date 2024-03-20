@@ -1,4 +1,5 @@
 import { BASE_URL } from '../constants/AppConstants';
+import * as SecureStore from 'expo-secure-store';
 import { fetchWithTokenRefresh } from '../api/FetchService';
 
 export const getSeller = async (sellerId) => {

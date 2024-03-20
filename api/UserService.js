@@ -49,3 +49,29 @@ export const updateUser = async (userId, user) => {
       throw error;
     }
   };
+
+  export const updatePassword = async (userId, currentPassword, newPassword) => {
+    const token = await SecureStore.getItemAsync('token');
+
+    const requestBody = {
+      currentPassword,
+      newPassword,
+    };
+  
+    try {
+      const response = await fetchWithTokenRefresh(`${BASE_URL}/users/${userId}/updatePassword`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(requestBody),
+      });
+  
+      return response;
+    } catch (error) {
+      console.error('Error updating password:', error);
+      throw error; // Re-throw the error so it can be handled by the caller
+    }
+  };
+  

@@ -5,6 +5,8 @@ import ChangeProfilePicture from '../screens/account/ChangeProfilePicture';
 import ViewMyListingStackNavigator from './ViewMyListingStackNavigator';
 import SavedListingStackNavigator from './SavedListingStackNavigator';
 import AllReviewsScreen from '../screens/AllReviewsScreen';
+import UpdatePasswordScreen from '../screens/account/UpdatePasswordScreen';
+
 
 const AccountStack = createStackNavigator();
 
@@ -34,7 +36,12 @@ function AccountStackNavigator() {
             headerShown: true,
             title: 'All reviews',
             //tabBarStyle: { display: 'none' } 
-          }} />
+        }} />
+        <AccountStack.Screen name="UpdatePasswordScreen" component={UpdatePasswordScreen} 
+          options={{ 
+            headerShown: true,
+            title: 'Update Password' 
+        }}  /> 
       </AccountStack.Navigator>
     );
   }

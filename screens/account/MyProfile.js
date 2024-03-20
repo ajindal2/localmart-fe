@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, TextInput, Button, StyleSheet, Alert, ScrollView, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Dimensions } from 'react-native';
 import ProfileImageWithEditIcon from '../../components/ProfileImageWithEditIcon';
 import { getUser, updateUser } from '../../api/UserService';
 import { getUserProfile, updateUserProfile } from '../../api/UserProfileService';
@@ -9,6 +9,7 @@ import useHideBottomTab from '../../utils/HideBottomTab';
 import InputComponent from '../../components/InputComponent';
 import ButtonComponent from '../../components/ButtonComponent';
 import { useTheme } from '../../components/ThemeContext';
+import Icon from 'react-native-vector-icons/FontAwesome'; // Or any other icon set you prefer
 
 
 const MyProfile = ({ navigation }) => {
@@ -17,6 +18,7 @@ const MyProfile = ({ navigation }) => {
   const styles = getStyles(colors, typography, spacing);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isEditable, setIsEditable] = useState(false); // State to control if the input is editable
   const [userAuthDetails, setUserAuthDetails] = useState({
     emailAddress: '',
     userName: ''
@@ -129,7 +131,7 @@ const MyProfile = ({ navigation }) => {
         onEditPress={() => {
           console.log('Navigating with profile picture:', userProfileDetails.profilePicture);
             navigation.navigate('ChangeProfilePicture', {
-              profilePicture: userProfileDetails.profilePicture, // Add a key here
+              profilePicture: userProfileDetails.profilePicture, 
             })}}
         />
         <View style={styles.profileSection}>
@@ -138,41 +140,71 @@ const MyProfile = ({ navigation }) => {
       </View>
       <View style={styles.aboutSection}>
         <Text style={styles.text}>About Me</Text>
-        <InputComponent
-          placeholder="Telling about yourself lets the buyers know more about why you are here."
-          multiline
-          value={userProfileDetails.aboutMe}
-          onChangeText={(text) => {
-            setUserProfileDetails({ ...userProfileDetails, aboutMe: text });
-            setIsUserProfileDetailsChanged(true);
-          }}
-          style={styles.input}
-        />
+        <View style={styles.inputRow}>
+          <InputComponent
+            placeholder="Telling about yourself lets the buyers know more about why you are here."
+            multiline
+            value={userProfileDetails.aboutMe}
+            onChangeText={(text) => {
+              setUserProfileDetails({ ...userProfileDetails, aboutMe: text });
+              setIsUserProfileDetailsChanged(true);
+            }}
+            style={styles.input}
+          />
+         </View>
       </View>
       <View style={styles.aboutSection}>
         <Text style={styles.text}>User Name</Text>
-        <InputComponent
-          placeholder="User Name"
-          value={userAuthDetails.userName}          
-          onChangeText={(text) => {
-            setUserAuthDetails({ ...userAuthDetails, userName: text });
-            setIsUserAuthDetailsChanged(true);
-          }}
-          style={styles.input}
-        />
+        <View style={styles.inputRow}>
+          <InputComponent
+            placeholder="User Name"
+            value={userAuthDetails.userName}          
+            onChangeText={(text) => {
+              setUserAuthDetails({ ...userAuthDetails, userName: text });
+              setIsUserAuthDetailsChanged(true);
+            }}
+            editable={false}
+            style={styles.input}
+          />
+          <TouchableOpacity
+              onPress={() => Alert.alert('Information', 'User name cannot be edited. Contact us if you really need to change it.')}
+              style={styles.iconContainer}
+            >
+            <Icon name="question-circle" size={20} color="#6e6e6e" />
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.aboutSection}>
         <Text style={styles.text}>Email Address</Text>
-        <InputComponent
-          placeholder="Email"
-          keyboardType="email-address"
-          value={userAuthDetails.emailAddress}          
-          onChangeText={(text) => {
-            setUserAuthDetails({ ...userAuthDetails, emailAddress: text });
-            setIsUserAuthDetailsChanged(true);
-          }}
-          style={styles.input}
-        />
+        <View style={styles.inputRow}>
+          <InputComponent
+            placeholder="Email"
+            keyboardType="email-address"
+            value={userAuthDetails.emailAddress}          
+            onChangeText={(text) => {
+              setUserAuthDetails({ ...userAuthDetails, emailAddress: text });
+              setIsUserAuthDetailsChanged(true);
+            }}
+            editable={isEditable} // Control the editable state
+            style={styles.input}
+          />
+          <TouchableOpacity onPress={() => setIsEditable(true)} style={styles.iconContainer}>
+            <Icon name="pencil" size={20} color="#6e6e6e" />
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.aboutSection}>
+        <Text style={styles.text}>Password</Text>
+        <View style={styles.inputRow}>
+          <InputComponent
+            placeholder="#########"
+            editable={false} 
+            style={styles.input}
+          />
+          <TouchableOpacity onPress={() => navigation.navigate('UpdatePasswordScreen')} style={styles.iconContainer}>
+            <Icon name="pencil" size={20} color="#6e6e6e" />
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.aboutSection}>
       <ButtonComponent title="Update Profile" type="primary" 
@@ -212,6 +244,8 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     },
     input: {
       flex: 1,
+      paddingHorizontal: 10,
+      borderWidth: 0,
     },
     text: {
       fontSize: typography.heading,
@@ -224,7 +258,22 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
       fontWeight: 'bold',
       color: colors.secondaryText, 
       padding: spacing.xs,
-    }
+    },
+    inputRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderColor: '#cccccc',
+      borderWidth: 1,
+      borderRadius: 5,
+      paddingRight: 10,
+    },
+    editButton: {
+      marginLeft: 10,
+      // Additional styles for the edit button
+    },
+    iconContainer: {
+      // Additional styling if needed, such as padding
+    },
   });
   
 export default MyProfile;
