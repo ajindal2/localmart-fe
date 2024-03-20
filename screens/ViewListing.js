@@ -14,6 +14,7 @@ import useHideBottomTab from '../utils/HideBottomTab';
 import { useTheme } from '../components/ThemeContext';
 import ButtonComponent from '../components/ButtonComponent';
 import ExpandingTextComponent from '../components/ExpandingTextComponent';
+import ListingMap from '../components/ListingMap';
 
 
 const ViewListing = ({ route, navigation }) => {
@@ -314,6 +315,10 @@ const ViewListing = ({ route, navigation }) => {
                 'Unable to load location'
             }
             </Text>
+            {/* Check if location data exists before rendering the map */}
+            {item.location && item.location.coordinates && item.location.coordinates.coordinates && item.location.coordinates.coordinates.length == 2 &&(
+              <ListingMap location={item.location.coordinates} />
+            )}
           </View>
     </ScrollView>
 
@@ -540,6 +545,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     bottom: 30,
   },
   locationText: {
+    paddingBottom: 10,
     color: colors.secondaryText, 
   },
 });

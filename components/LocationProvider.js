@@ -57,19 +57,27 @@ export const LocationProvider = ({ children }) => {
           }         
         } else {
           // Handle the case where location is undefined or null
-          Alert.alert('Error', 'Error occured when retrieving location');
+          Alert.alert('Error', 'Error occured when retrieving user location');
           console.error('Failed to retrieve location.');
         }
       } else {
-        // Fetch location from the backend
-        const fetchedLocation = await getUserLocation(user._id);
-        const location = { 
-          city: fetchedLocation.city,
-          state: fetchedLocation.state,
-          postalCode: fetchedLocation.postalCode,
-          coordinates: [{ latitude: fetchedLocation.coordinates.coordinates[1], longitude: fetchedLocation.coordinates.coordinates[0] }],
+          try {
+          // Fetch location from the backend
+          const fetchedLocation = await getUserLocation(user._id);
+          const location = { 
+            city: fetchedLocation.city,
+            state: fetchedLocation.state,
+            postalCode: fetchedLocation.postalCode,
+            coordinates: [{ latitude: fetchedLocation.coordinates.coordinates[1], longitude: fetchedLocation.coordinates.coordinates[0] }],
+          }
+          setLocation(location);
+        } catch (error) {
+          if (error.message.includes('RefreshTokenExpired')) {
+            logout();
+          } else {
+            Alert.alert('Error', 'Error occured when retrieving user location');
+          }
         }
-        setLocation(location);
       }
     };
 

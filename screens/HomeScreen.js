@@ -14,7 +14,7 @@ import {sendPushToken} from '../api/AppService';
 import { AuthContext } from '../AuthContext';
 
 const HomeScreen = ({ navigation }) => {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const [listings, setListings] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -162,7 +162,9 @@ const fetchListings = async (searchKey = '', page = currentPage) => {
         errorMessage = emptyListingsMessage;
       } else if (error.message.includes('Internal server error')) {
         errorMessage = errorMessageDetails;
-      }
+      } else if (error.message.includes('RefreshTokenExpired')) {
+        logout();
+      } 
 
       setError(errorMessage);
       setLoading(false);

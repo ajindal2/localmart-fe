@@ -18,7 +18,8 @@ const MyProfile = ({ navigation }) => {
   const styles = getStyles(colors, typography, spacing);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [isEditable, setIsEditable] = useState(false); // State to control if the input is editable
+  const [isEmailEditable, setIsEmailEditable] = useState(false); 
+  const [isAboutMeEditable, setIsAboutMeEditable] = useState(false); 
   const [userAuthDetails, setUserAuthDetails] = useState({
     emailAddress: '',
     userName: ''
@@ -129,7 +130,7 @@ const MyProfile = ({ navigation }) => {
         <ProfileImageWithEditIcon
         imageUri={userProfileDetails.profilePicture}
         onEditPress={() => {
-          console.log('Navigating with profile picture:', userProfileDetails.profilePicture);
+          //console.log('Navigating with profile picture:', userProfileDetails.profilePicture);
             navigation.navigate('ChangeProfilePicture', {
               profilePicture: userProfileDetails.profilePicture, 
             })}}
@@ -145,12 +146,16 @@ const MyProfile = ({ navigation }) => {
             placeholder="Telling about yourself lets the buyers know more about why you are here."
             multiline
             value={userProfileDetails.aboutMe}
+            editable={isAboutMeEditable}
             onChangeText={(text) => {
               setUserProfileDetails({ ...userProfileDetails, aboutMe: text });
               setIsUserProfileDetailsChanged(true);
             }}
             style={styles.input}
           />
+          <TouchableOpacity onPress={() => setIsAboutMeEditable(true)} style={styles.iconContainer}>
+            <Icon name="pencil" size={20} color="#6e6e6e" />
+          </TouchableOpacity>
          </View>
       </View>
       <View style={styles.aboutSection}>
@@ -185,10 +190,10 @@ const MyProfile = ({ navigation }) => {
               setUserAuthDetails({ ...userAuthDetails, emailAddress: text });
               setIsUserAuthDetailsChanged(true);
             }}
-            editable={isEditable} // Control the editable state
+            editable={isEmailEditable} // Control the editable state
             style={styles.input}
           />
-          <TouchableOpacity onPress={() => setIsEditable(true)} style={styles.iconContainer}>
+          <TouchableOpacity onPress={() => setIsEmailEditable(true)} style={styles.iconContainer}>
             <Icon name="pencil" size={20} color="#6e6e6e" />
           </TouchableOpacity>
         </View>

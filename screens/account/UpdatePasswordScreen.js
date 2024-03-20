@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, Alert, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Alert, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import useHideBottomTab from '../../utils/HideBottomTab'; 
 import { updatePassword } from '../../api/UserService';
 import { AuthContext } from '../../AuthContext';
@@ -132,18 +132,24 @@ const UpdatePasswordScreen = ({navigation}) => {
       </View>
       {errors.confirmNewPassword && <Text style={styles.errorText}>{errors.confirmNewPassword}</Text>}
 
-      <ButtonComponent title="Update Password" type="primary"  
-        onPress={handleUpdatePassword} 
-        style={{ width: '100%', flexDirection: 'row' }} />
+      <View style={styles.bottomButtonContainer}>
+        <ButtonComponent title="Update Password" type="primary"  
+          onPress={handleUpdatePassword} 
+          style={{ width: '100%', flexDirection: 'row' }} />
+      </View>
     </View>
   );
 };
 
+const screenHeight = Dimensions.get('window').height; // Get the screen height
+const marginBottom = screenHeight * 0.04; // 5% of screen height for bottom margin
+const marginTop = screenHeight * 0.05; 
+
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    padding: 20,
+    alignItems: 'center',
+    padding: spacing.size10,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -154,7 +160,6 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     paddingRight: spacing.size10,
     marginBottom: spacing.size10,
     borderRadius: spacing.sm,
-    
   },
   input: {
     flex: 1,
@@ -163,6 +168,10 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 5,
+    marginTop:10,
+    textAlign: 'left',
+    width: '100%',
+
   },
   errorText: {
     color: 'red',
@@ -171,7 +180,12 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     textAlign: 'left',
     //marginTop: 5,
     marginBottom: 20,
-  }
+  },
+  bottomButtonContainer: {
+    position: 'absolute',
+    bottom: marginBottom,
+    width: '100%',
+  },
 });
 
 export default UpdatePasswordScreen;
