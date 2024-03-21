@@ -9,7 +9,7 @@ import useHideBottomTab from '../../utils/HideBottomTab';
 import InputComponent from '../../components/InputComponent';
 import ButtonComponent from '../../components/ButtonComponent';
 import { useTheme } from '../../components/ThemeContext';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Or any other icon set you prefer
+import Icon from 'react-native-vector-icons/FontAwesome'; 
 
 
 const MyProfile = ({ navigation }) => {
@@ -43,8 +43,6 @@ const MyProfile = ({ navigation }) => {
     const fetchUserProfile = async () => {
       setIsLoading(true);
       try {
-        console.log('Logging user id in MyProfile: ', user._id)
-
         const userAuthProfile = await getUser(user._id);
         let userProfile = await getUserProfile(user._id);
 
@@ -68,6 +66,11 @@ const MyProfile = ({ navigation }) => {
         
         setIsLoading(false);
       } catch (error) {
+        if (error.message === 'RefreshTokenExpired') {
+          logout();
+        } else {
+          Alert.alert('Error', 'Error fetching profile, please try again later');
+        }
         setError(error.message);
         setIsLoading(false);
       }
@@ -130,7 +133,6 @@ const MyProfile = ({ navigation }) => {
         <ProfileImageWithEditIcon
         imageUri={userProfileDetails.profilePicture}
         onEditPress={() => {
-          //console.log('Navigating with profile picture:', userProfileDetails.profilePicture);
             navigation.navigate('ChangeProfilePicture', {
               profilePicture: userProfileDetails.profilePicture, 
             })}}

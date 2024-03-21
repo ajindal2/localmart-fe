@@ -1,11 +1,10 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Switch, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Switch, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { createListing, updateListing } from '../api/ListingsService';
 import { getSellerLocation } from '../api/SellerService';
 import { AuthContext } from '../AuthContext';
 import * as ImagePicker from 'expo-image-picker';
-import { Alert } from 'react-native'; 
 import { useFocusEffect } from '@react-navigation/native';
 import {reverseGeocode} from '../api/LocationService'
 import useHideBottomTab from '../utils/HideBottomTab'; 
@@ -65,6 +64,9 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           }
         };       
       } catch (error) {
+        if (error.message === 'RefreshTokenExpired') {
+          logout();
+        }
         console.error('Failed to retrieve location details:', error);
         Alert.alert('Error', error.message);
       }
@@ -113,6 +115,9 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           setPickupLocation(location); 
         }
       } catch (error) {
+        if (error.message === 'RefreshTokenExpired') {
+          logout();
+        }
         console.error('Error fetching seller location:', error);
       }
     };
@@ -280,8 +285,9 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
       } catch (error) {
         if (error.message === 'RefreshTokenExpired') {
           logout();
-        } 
-        Alert.alert('Error', 'An unknown error occured, please try again later.');
+        } else {
+          Alert.alert('Error', 'An unknown error occured, please try again later.');
+        }
         console.error(error);
         setShouldCreateListing(false); // Reset the flag
       }

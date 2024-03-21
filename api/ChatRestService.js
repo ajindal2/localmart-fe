@@ -72,10 +72,13 @@ export const getChats = async (userId) => {
       });
   
       if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Failed to mark messages as read:', errorData);
         throw new Error('Failed to mark messages as read');
       }
     } catch (error) {
       console.error('Error marking messages as read:', error);
+      throw error;
     }
   };
 
@@ -116,7 +119,6 @@ export const updateNotificationCount = async (userId, count) => {
     if (!response.ok) {
       throw new Error('Failed to update notification count');
     }
-    console.log('Notification count updated successfully');
   } catch (error) {
     console.error('Error updating notification count:', error);
   }

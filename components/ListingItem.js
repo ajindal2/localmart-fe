@@ -15,6 +15,18 @@ const ListingItem = ({ item, onPress }) => {
         return <View style={styles.invisibleItem} />;
     }
 
+    const renderDistance = () => {
+      if (item.distance) {
+        return (
+          <>
+            <Text style={styles.dot}> · </Text>
+            <Text style={styles.distance}>{convertMetersToMiles(item.distance).toFixed(2)} mi</Text>
+          </>
+        );
+      }
+      return null;
+    };
+
     return (
       <TouchableOpacity activeOpacity={1} onPress={onPress} style={styles.itemContainer}>
         <View style={styles.infoContainer}>
@@ -30,12 +42,7 @@ const ListingItem = ({ item, onPress }) => {
               <Text style={styles.price}>${item.price}</Text>
             )}
             {/* Conditional rendering for distance */}
-            {/*item.distance && (
-              <>
-                <Text style={styles.dot}> · </Text>
-                <Text style={styles.distance}>{convertMetersToMiles(item.distance).toFixed(2)} mi</Text>
-              </>
-            )*/}
+            {renderDistance()}    
           </View>
         </View>
       </TouchableOpacity>
@@ -92,9 +99,9 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     paddingBottom: 5,
   },
   dot: {
-    fontSize: typography.price,
+    fontSize: typography.body,
     color: colors.secondaryText,
-    //paddingLeft: 5,
+    fontWeight: 'bold',
     paddingBottom: 5,
   },
   distance: {

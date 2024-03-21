@@ -71,7 +71,7 @@ export const getListingFromId = async (listingId) => {
       }
     } catch (error) {
       console.error('Error fetching listing:', error);
-      // TODO think how to handle this error, return empty?
+      throw error;
     }
 };
 
@@ -197,8 +197,6 @@ export const updateListingStatus = async (listingId, status) => {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to update listing status.');
     }
-
-    console.log('Listing status updated successfully:', listingId, status);
   } catch (error) {
     console.error('Error updating listing status:', error);
     throw error; // Re-throw to allow further handling, e.g., showing an error message in the UI

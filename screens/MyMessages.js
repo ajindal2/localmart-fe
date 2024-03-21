@@ -1,27 +1,30 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useTheme } from '../components/ThemeContext';
 import { useFocusEffect } from '@react-navigation/native';
 import { useMessagesBadgeCount } from '../MessagesBadgeCountContext';
-import {getChats} from '../api/ChatRestService';
+import { getChats } from '../api/ChatRestService';
 import { AuthContext } from '../AuthContext';
 
 const MyMessages = ({ navigation }) => {
   const [chats, setChats] = useState([]);
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
+  const [error, setError] = useState(null);
   const { resetMessagesBadgeCount } = useMessagesBadgeCount();
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
+  const errorMessageTitle = "No Messages Found";
+  const errorMessageDetails = "We're experiencing some problems on our end. Please try again later.";
+  const emptyMessages = "Start contacting sellers and mange your messages here.";
 
   const fetchChats = async () => {
     try {
       const userId = user._id;
       let fetchedChats = await getChats(userId);
 
-      // TODO add a check for null whihc is no messages for this user.
       if (!fetchedChats || fetchedChats.length === 0) {
         // Handle the case where there are no chats
-        console.log('No chats available');
+        setError(emptyMessages);
         setChats([]); // Set chats to an empty array to indicate no chats
         return; 
       }
@@ -36,9 +39,15 @@ const MyMessages = ({ navigation }) => {
           });
         });*/
 
+      // Reset the error state in case of successful fetch
+      setError(null);
       setChats(fetchedChats);
     } catch (error) {
-      console.error("Error fetching chats:", error);
+      if (error.message.includes('RefreshTokenExpired')) {
+        logout();
+      } 
+      setError(errorMessageDetails);
+      console.error("Error fetching chats ", error);
     }
   };
   
@@ -59,6 +68,14 @@ const MyMessages = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      {error ? (
+      // Display error message if error state is set
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorTitle}>{errorMessageTitle}</Text>
+        <Text style={styles.errorMessage}>{error}</Text>
+      </View>
+    ) : (
+      // Display the chat list if there's no error
     <FlatList
       data={chats}
       keyExtractor={item => item._id.toString()}
@@ -96,6 +113,7 @@ const MyMessages = ({ navigation }) => {
         );
       }}
     />
+    )}
     </View>
   );
 };
@@ -157,6 +175,22 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   },
   boldMessage: {
     fontWeight: 'bold',
+  },
+  errorContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  errorTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.primary, 
+  },
+  errorMessage: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 10,
+    textAlign: 'center',
+    paddingHorizontal: 20, // Add some horizontal padding for better readability
   },
 });
 

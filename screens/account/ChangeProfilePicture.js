@@ -100,8 +100,9 @@ const handleChoosePhoto = async () => {
     } catch (error) {
       if (error.message === 'RefreshTokenExpired') {
         logout();
-      } 
-      Alert.alert('Error', 'Could not update profile image: ' + error.message);
+      } else {
+        Alert.alert('Error', 'Could not update profile image. Please try again later.');
+      }
     }
   };
 

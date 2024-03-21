@@ -83,7 +83,6 @@ const UpdatePasswordScreen = ({navigation}) => {
       if (error.message === 'RefreshTokenExpired') {
         logout();
       } 
-      // TODO verify if password validation passes on FE but server side fails, what message gets shown in the alert.
       Alert.alert('Error', error.message || 'Update failed, please try again later');
     }
   };

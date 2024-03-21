@@ -31,11 +31,14 @@ const AccountScreen = ({ navigation }) => {
   const handleAllReviews = async () => {
     try {
       const { averageRating, ratingsWithProfile } = await getUserRatings(user._id);
-      console.log('ratingsWithProfile: ', ratingsWithProfile);
       navigation.navigate('AllReviewsScreen', {ratingsWithProfile, averageRating });     
     } catch (error) {
-      Alert.alert('Error', 'Error occurred when fetching ratings. Please try again later.');
-      console.error('Error fetching seller ratings', error);
+      if (error.message.includes('RefreshTokenExpired')) {
+        logout();
+      } else {
+        Alert.alert('Error', 'Error occurred when fetching ratings. Please try again later.');
+        console.error('Error fetching seller ratings', error);
+      }
     }
   }
 

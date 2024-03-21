@@ -8,7 +8,7 @@ import useHideBottomTab from '../utils/HideBottomTab';
 
 const ChatScreen = ({ route, navigation }) => {
   const { chat } = route.params; // Extract chat from route.params
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
 
   useHideBottomTab(navigation, true);
 
@@ -135,8 +135,16 @@ const ChatScreen = ({ route, navigation }) => {
   
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      // Call the function to mark messages as read
-      markMessagesAsRead(chat._id, user._id);
+      try {
+        // Call the function to mark messages as read
+        markMessagesAsRead(chat._id, user._id);
+      } catch (error) {
+        if (error.message === 'RefreshTokenExpired') {
+          logout();
+        } else {
+          console.error('Error deleting listing:', error);
+        }
+      }
     });
   
     return unsubscribe;

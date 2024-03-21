@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react';
-import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import MySearchBar from '../components/MySearchBar';
 import { getListings } from '../api/ListingsService';
 import LocationInfoDisplay from '../components/LocationInfoDisplay';
@@ -29,7 +29,7 @@ const HomeScreen = ({ navigation }) => {
   const errorMessageTitle = "No Listings Found";
   const errorMessageDetails = "We're experiencing some problems on our end. Please try again later.";
   const emptyListingsMessage = "There are no listings available at the moment for your keyword/ location. LocalMart is a growing marketplace, please try again later.";
-  
+
   useEffect(() => {
     const timerId = setTimeout(() => {
       setDebouncedSearch(search);
@@ -66,7 +66,6 @@ const HomeScreen = ({ navigation }) => {
 
   const handleAppStateChange = async (nextAppState) => {
     if (nextAppState === 'active') {
-      console.log('app state is active');
       registerForPushNotificationsAsync();
     }
   };
@@ -120,12 +119,16 @@ const HomeScreen = ({ navigation }) => {
         } 
     } catch (error) {
         console.error('Error getting push token:', error);
-        //throw error; // Re-throw the error so it can be handled by the calling code
     }
 
     // Save the token to local storage after it's generated
     await AsyncStorage.setItem('pushToken', token);
-    await sendPushToken(user._id, token);
+    try {
+      await sendPushToken(user._id, token);
+    } catch (error) {
+      // Handle any errors that may occur during the initial call
+      console.error('An unexpected error occurred when trying to send the push token:', error);
+    }
 }
 
 const fetchListings = async (searchKey = '', page = currentPage) => {
@@ -140,7 +143,7 @@ const fetchListings = async (searchKey = '', page = currentPage) => {
           searchKey,{
             latitude: location.coordinates[0].latitude,
             longitude: location.coordinates[0].longitude,
-            maxDistance: 50000 // 500 meters TODO adjust
+            maxDistance: 80467  // 50 miles in meters
             },  
             page,
             10, // Set your desired limit or make it configurable

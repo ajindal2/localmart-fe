@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import StarRating from '../components/StarRating';
@@ -7,10 +7,12 @@ import { useTheme } from '../components/ThemeContext';
 import FullScreenImageModal from '../components/FullScreenImageModal';
 import ListingItem from '../components/ListingItem';
 import { getListingsByUser } from '../api/ListingsService'; 
+import { AuthContext } from '../AuthContext';
 
 
 const SellerDetails = ({ route, navigation }) => {
     const { sellerProfile, ratingsWithProfile, averageRating } = route.params;
+    const { logout } = useContext(AuthContext);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [imageErrors, setImageErrors] = useState({});
     const [sellerImageLoadError, setSellerImageLoadError] = useState(false);
@@ -25,7 +27,6 @@ const SellerDetails = ({ route, navigation }) => {
     const errorMessageTitle = "No Listings Found";
     const errorMessageDetails = "Failed to load seller listings";
     const emptyListingsMessage = "This seller does not have other listings. LocalMart is a growing marketplace, please try again later.";
-    
 
     const formatJoinedDate = (dateString) => {
       const date = new Date(dateString);
@@ -73,7 +74,9 @@ const SellerDetails = ({ route, navigation }) => {
             errorMessage = emptyListingsMessage;
           } else if (error.message.includes('Internal server error')) {
             errorMessage = errorMessageDetails;
-          }
+          } else if (error.message.includes('RefreshTokenExpired')) {
+            logout();
+          } 
           setError(errorMessage);
           setLoading(false);
         } finally {

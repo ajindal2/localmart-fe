@@ -48,6 +48,6 @@ export const getSellerLocation = async (userId) => {
     }
   } catch (error) {
     console.error('Error fetching seller location:', error);
-    return null;
+    throw new Error('Error fetching seller location');
   }
 };

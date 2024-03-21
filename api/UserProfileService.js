@@ -135,8 +135,8 @@ export const getUserLocation = async (userId) => {
         const result = await response.json();
         return result;
       } else {
-        const errorData = await response.text();
-        throw new Error(`Server Error: ${errorData}`);
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error uploading profile picture');
       }
     } catch (error) {
       console.error('Error uploading profile image:', error);

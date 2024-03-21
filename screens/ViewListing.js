@@ -142,11 +142,13 @@ const ViewListing = ({ route, navigation }) => {
       };
     
       try {
-        //const item = await ChatService.createChat(createChatDTO);
         const item = await createOrGetChat(createChatDTO);
-        console.log('logging the chat object in VL page: ', item);
         navigation.navigate('ChatScreen', { chat : item });
       } catch (error) {
+        if (error.message.includes('RefreshTokenExpired')) {
+          logout();
+        } 
+        Alert.alert('Error', 'An error aoccured when sending the message. Please try again later.');
         console.error('Error creating chat', error);
       }
     };
@@ -180,14 +182,15 @@ const ViewListing = ({ route, navigation }) => {
           // Navigated from within the app
           setItem(route.params.item);
           hasFetchedData.current = true;
-          console.log('Navigated from within app');
         } else if (route.params?.listingId && !hasFetchedData.current) {
           // Navigated from a deep link and haven't fetched data yet
-          console.log('Navigated from a deep link');
           const listingId = route.params.listingId;
           getListingFromId(listingId).then(data => {
             setItem(data);
             hasFetchedData.current = true; // Set to true to avoid refetching on subsequent renders
+          }).catch(error => {
+            console.error('Error fetching listing details:', error);
+            Alert.alert('Error', 'Failed to load listing details. Please try again later.');
           });
         }
         

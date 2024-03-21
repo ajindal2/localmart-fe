@@ -7,12 +7,15 @@ import useHideBottomTab from '../utils/HideBottomTab';
 import InputComponent from '../components/InputComponent';
 import ButtonComponent from '../components/ButtonComponent';
 import { useTheme } from '../components/ThemeContext';
+import { AuthContext } from '../AuthContext';
+
 
 const SearchLocationPreferenceScreen = ({ navigation, route }) => {
     const [zipCode, setZipCode] = useState('');
     const { setLocation } = useContext(LocationContext);
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
+    const { user, logout } = useContext(AuthContext);
 
     useHideBottomTab(navigation, true);
     
@@ -37,6 +40,9 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
           setLocation(updatedProfileData.location);
          
         } catch (error) {
+          if (error.message.includes('RefreshTokenExpired')) {
+            logout();
+          } 
           console.error('Failed to retrieve location details:', error);
           Alert.alert('Error', error.message);
         }

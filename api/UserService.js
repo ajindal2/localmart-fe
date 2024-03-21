@@ -13,11 +13,12 @@ export const getUser = async (userId) => {
       },
     });
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json();
+      console.log('Error updating User', errorData);
+      throw new Error('Error getting User', errorData);
     }
     return await response.json();
   } catch (error) {
-    // Handle errors or rethrow them
     console.error('There has been a problem with your fetch operation:', error);
     throw error;
   }
@@ -38,14 +39,14 @@ export const updateUser = async (userId, user) => {
   
       if (!response.ok) {
         const errorData = await response.json();
-        console.log('Error updating User', errorData)
+        console.log('Error updating User', errorData);
         throw new Error('Error updating User', errorData);
       }
   
       const data = await response.json();
       return data; // Return the updated user data
     } catch (error) {
-      // Handle or throw the error depending on your error handling strategy
+      console.log('Error updating User', error);
       throw error;
     }
   };
@@ -67,7 +68,7 @@ export const updateUser = async (userId, user) => {
         },
         body: JSON.stringify(requestBody),
       });
-  
+      // Handling !response.ok is done on the screen
       return response;
     } catch (error) {
       console.error('Error updating password:', error);

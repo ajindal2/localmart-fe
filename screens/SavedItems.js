@@ -12,7 +12,7 @@ import shareListing from '../utils/ShareListing';
 
 
 const SavedItems = ({navigation, route}) => {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const [savedListings, setSavedListings] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -34,11 +34,13 @@ const SavedItems = ({navigation, route}) => {
       setSavedListings(data);
       setLoading(false);
     } catch (error) {
-      let errorMessage = error.message; // Default to the error message thrown
+        let errorMessage = error.message; // Default to the error message thrown
         if (error.message.includes('No listings found')) {
           errorMessage = emptyListingsMessage;
         } else if (error.message.includes('Internal server error')) {
           errorMessage = errorMessageDetails;
+        } else if (error.message.includes('RefreshTokenExpired')) {
+          logout();
         }
         setError(errorMessage);
         setLoading(false);
@@ -126,8 +128,12 @@ const SavedItems = ({navigation, route}) => {
         currentSavedListings.filter(listing => listing._id !== item._id)
       );
     } catch (error) {
-      console.error('Error unsaving the listing:', error);
-      // Optionally, handle error (e.g., show a toast notification)
+      if (error.message === 'RefreshTokenExpired') {
+        logout();
+      } else {
+        console.error('Error unsaving listing:', error);
+        Alert.alert('Error', 'Error unsaving listing, please try again later.');
+      }
     }
   };
 

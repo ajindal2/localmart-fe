@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { View, Text, Dimensions, StyleSheet, Alert } from 'react-native';
 import * as Location from 'expo-location';
 import useHideBottomTab from '../utils/HideBottomTab'; 
@@ -6,12 +6,14 @@ import InputComponent from '../components/InputComponent';
 import ButtonComponent from '../components/ButtonComponent';
 import { useTheme } from '../components/ThemeContext';
 import {validateAndGeocodePostalCode} from '../api/LocationService'
+import { AuthContext } from '../AuthContext';
 
 
 const ListingLocationPreferenceScreen = ({ route, navigation }) => {
     const [zipCode, setZipCode] = useState('');
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
+    const { user, logout } = useContext(AuthContext);
 
     useHideBottomTab(navigation, true);
     
@@ -40,6 +42,9 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
           };
           updateLocation(updatedProfileData.location);
         } catch (error) {
+          if (error.message.includes('RefreshTokenExpired')) {
+            logout();
+          } 
           console.error('Failed to retrieve location details:', error);
           Alert.alert('Error', error.message);
         }

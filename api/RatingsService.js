@@ -12,7 +12,8 @@ export const getSellerRatings = async (sellerId) => {
       } else {
         const errorData = await response.json();
         console.error('Failed to fetch ratings:', errorData);
-        throw new Error(errorData.message || 'Failed to fetch ratings');
+        //throw new Error(errorData.message || 'Failed to fetch ratings');
+        return []; // Return an empty array in case of an error indicating empty retings for this seller.
       }
     } catch (error) {
       console.error('Error fetching ratings:', error);
@@ -40,6 +41,6 @@ export const getUserRatings = async (userId) => {
       }
     } catch (error) {
       console.error('Error fetching ratings:', error);
-      return []; // Return an empty array in case of an error indicating empty retings for this seller.
+      throw new Error('Failed to fetch ratings');
     }
 };

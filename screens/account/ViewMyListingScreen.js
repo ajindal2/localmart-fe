@@ -16,7 +16,7 @@ const ViewMyListingScreen = ({navigation}) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false); // Track whether listings have been loaded
-  const { user } = useContext(AuthContext); 
+  const { user, logout } = useContext(AuthContext); 
   const [activeItemId, setActiveItemId] = useState(null);
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
@@ -37,14 +37,18 @@ const ViewMyListingScreen = ({navigation}) => {
           setListings(fetchedListings);
           setLoading(false);
         } catch (error) {
-          let errorMessage = error.message; // Default to the error message thrown
-          if (error.message.includes('No listings found')) {
-            errorMessage = emptyListingsMessage;
-          } else if (error.message.includes('Internal server error')) {
-            errorMessage = errorMessageDetails;
+          if (error.message === 'RefreshTokenExpired') {
+            logout();
+          } else {
+            let errorMessage = error.message; // Default to the error message thrown
+            if (error.message.includes('No listings found')) {
+              errorMessage = emptyListingsMessage;
+            } else if (error.message.includes('Internal server error')) {
+              errorMessage = errorMessageDetails;
+            }
+            setError(errorMessage);
+            setLoading(false);
           }
-          setError(errorMessage);
-          setLoading(false);
         } finally {
           setLoaded(true); // Set loaded to true after fetching, regardless of the outcome
         }
@@ -78,8 +82,12 @@ const ViewMyListingScreen = ({navigation}) => {
       );
       setListings(updatedListings);
     } catch (error) {
-      console.error('Error marking listing as sold:', error);
-      Alert.alert('Error', 'Error updating status, please try again later.');
+      if (error.message === 'RefreshTokenExpired') {
+        logout();
+      } else {
+        console.error('Error marking listing as sold:', error);
+        Alert.alert('Error', 'Error updating status, please try again later.');
+      }
     }
   };
 
@@ -90,8 +98,12 @@ const ViewMyListingScreen = ({navigation}) => {
       setListings(updatedListings); // Update the state with the new listings array
       Alert.alert('Listing deleted successfully');
     } catch (error) {
-      console.error('Error deleting listing:', error);
-      Alert.alert('Error', 'Error deleting listing, please try again later.');
+      if (error.message === 'RefreshTokenExpired') {
+        logout();
+      } else {
+        console.error('Error deleting listing:', error);
+        Alert.alert('Error', 'Error deleting listing, please try again later.');
+      }
     }
   };
 
