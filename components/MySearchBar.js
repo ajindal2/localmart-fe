@@ -2,8 +2,6 @@ import React from 'react';
 import { SearchBar } from 'react-native-elements';
 import { useTheme } from './ThemeContext';
 import { useFonts } from 'expo-font';
-import { Ionicons } from '@expo/vector-icons';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
 
 
 const MySearchBar =  ({ value, onUpdate, navigation }) => {
@@ -15,10 +13,6 @@ const MySearchBar =  ({ value, onUpdate, navigation }) => {
   if (!fontsLoaded) {
     return null; 
   }
-
-  const handleLocationIconPress = () => {
-    navigation.navigate('SearchLocationPreferenceScreen'); 
-  };
 
   return (
     <SearchBar

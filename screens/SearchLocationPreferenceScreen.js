@@ -136,7 +136,6 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   input: {
     width: '75%', 
     flexDirection: 'row',
-    //marginBottom: marginBottom,
   },
   bottomButtonContainer: {
     position: 'absolute',

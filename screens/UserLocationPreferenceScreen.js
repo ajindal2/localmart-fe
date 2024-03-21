@@ -1,0 +1,139 @@
+import React, { useContext, useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { LocationContext } from '../components/LocationProvider';
+import Slider from '@react-native-community/slider';
+import { useTheme } from '../components/ThemeContext';
+import ButtonComponent from '../components/ButtonComponent';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { updateSearchDistance } from '../api/UserPreferencesService'
+import { AuthContext } from '../AuthContext';
+import { DEFAULT_SEARCH_DISTANCE } from '../constants/AppConstants';
+
+
+const UserLocationPreferencesScreen = ({ navigation }) => {
+  const { location } = useContext(LocationContext); 
+  const { user } = useContext(AuthContext);
+  const [initialDistance, setInitialDistance] = useState(DEFAULT_SEARCH_DISTANCE); // TODO Default distance
+  const [editedDistance, setEditedDistance] = useState(initialDistance); 
+  const { colors, typography, spacing } = useTheme();
+  const styles = getStyles(colors, typography, spacing);
+
+  useEffect(() => {
+    const getSearchDistance = async () => {
+      try {
+        const storedDistance = await AsyncStorage.getItem('searchLocationDistance');
+        if (storedDistance !== null) {
+          // If a distance is stored, update the state with this value
+          setInitialDistance(parseInt(storedDistance, DEFAULT_SEARCH_DISTANCE));
+          setEditedDistance(parseInt(storedDistance, DEFAULT_SEARCH_DISTANCE)); // Ensure editedDistance is also updated
+        }
+      } catch (error) {
+        console.error('Error fetching search distance from storage:', error);
+      }
+    };
+
+    getSearchDistance();
+  }, []);
+
+  const handleSubmit = async () => {
+    try {
+        // Only update distance if it has been changed
+        if (initialDistance !== editedDistance) {
+            console.log('update distance');
+            await updateSearchDistance(user._id, editedDistance);
+            setInitialDistance(editedDistance); // Update the initial distance to reflect the new value
+            await AsyncStorage.setItem('searchLocationDistance', `${editedDistance}`);
+        }
+        navigation.goBack();
+    } catch (error) {
+        console.log("error occured: ", error);
+        // TODO
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      {/* Update Location Section */}
+      <TouchableOpacity onPress={() => navigation.navigate('SearchLocationPreferenceScreen')}>
+        <View style={styles.section}>
+             <Text style={styles.preferenceTitle}>Search Location</Text>
+            <Text style={styles.preferenceSubtitle}>{location ? `${location.city}, ${location.state}` : 'Not Set'}</Text>
+        </View>
+      </TouchableOpacity>
+
+      {/* Update Distance Section */}
+      <View style={styles.section}>
+        <Text style={styles.preferenceTitle}>Search Distance</Text>
+        <Text style={styles.currentDistanceText}>Current distance: {editedDistance} miles</Text>
+        <Slider
+            style={{ width: '100%', height: 40 }}
+            minimumValue={5}
+            maximumValue={50}
+            step={1} // The minimum change between values
+            onValueChange={setEditedDistance}
+            value={editedDistance}
+            minimumTrackTintColor="#ff9191"
+            maximumTrackTintColor="#d3d3d3"
+            thumbTintColor="#f77979"
+        />
+      </View>
+
+       {/* Submit Button */}
+       <View style={styles.bottomButtonContainer}>
+        <ButtonComponent title="Save Changes" type="primary" 
+          onPress={handleSubmit}
+          style={{ width: '100%', flexDirection: 'row' }}
+        />
+      </View>
+    </View>
+  );
+};
+
+const screenHeight = Dimensions.get('window').height; // Get the screen height
+const marginBottom = screenHeight * 0.04; // 5% of screen height for bottom margin
+const marginTop = screenHeight * 0.05; 
+
+const getStyles = (colors, typography, spacing) => StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+  },
+  preferenceItem: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  preferenceTitle: {
+    fontSize: 18,
+    //fontWeight: 'bold',
+  },
+  preferenceSubtitle: {
+    fontSize: 16,
+    color: '#666',
+  },
+  section: {
+    backgroundColor: '#fff',
+    //flexDirection: 'row',
+    borderRadius: 8, // Rounded corners for the card
+    padding: spacing.size10,
+   // alignItems: 'center',
+    shadowColor: '#000', // Shadow color
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2, // Shadow opacity
+    shadowRadius: 1.41, // Shadow blur radius
+    elevation: 2, // Elevation for Android
+    marginBottom: spacing.size20, // Space between cards
+  },
+  bottomButtonContainer: {
+    position: 'absolute',
+    bottom: marginBottom,
+    width: '100%',
+    alignItems: 'center', 
+    paddingLeft: 20,
+  },
+});
+
+export default UserLocationPreferencesScreen;
