@@ -66,7 +66,7 @@ const MyProfile = ({ navigation }) => {
         
         setIsLoading(false);
       } catch (error) {
-        if (error.message === 'RefreshTokenExpired') {
+        if (error.message.includes('RefreshTokenExpired')) {
           logout();
         } else {
           Alert.alert('Error', 'Error fetching profile, please try again later');
@@ -99,7 +99,7 @@ const MyProfile = ({ navigation }) => {
       setIsLoading(false);
       Alert.alert('Profile Updated', 'Your profile has been successfully updated.');
     } catch (error) {
-      if (error.message === 'RefreshTokenExpired') {
+      if (error.message.includes('RefreshTokenExpired')) {
         logout();
       } 
       setIsLoading(false);
@@ -156,7 +156,7 @@ const MyProfile = ({ navigation }) => {
             style={styles.input}
           />
           <TouchableOpacity onPress={() => setIsAboutMeEditable(true)} style={styles.iconContainer}>
-            <Icon name="pencil" size={20} color="#6e6e6e" />
+            <Icon name="pencil" size={typography.iconSize} color={colors.iconColor} />
           </TouchableOpacity>
          </View>
       </View>
@@ -177,7 +177,7 @@ const MyProfile = ({ navigation }) => {
               onPress={() => Alert.alert('Information', 'User name cannot be edited. Contact us if you really need to change it.')}
               style={styles.iconContainer}
             >
-            <Icon name="question-circle" size={20} color="#6e6e6e" />
+            <Icon name="question-circle" size={typography.iconSize} color={colors.iconColor} />
           </TouchableOpacity>
         </View>
       </View>
@@ -196,7 +196,7 @@ const MyProfile = ({ navigation }) => {
             style={styles.input}
           />
           <TouchableOpacity onPress={() => setIsEmailEditable(true)} style={styles.iconContainer}>
-            <Icon name="pencil" size={20} color="#6e6e6e" />
+            <Icon name="pencil" size={typography.iconSize} color={colors.iconColor} />
           </TouchableOpacity>
         </View>
       </View>
@@ -209,7 +209,7 @@ const MyProfile = ({ navigation }) => {
             style={styles.input}
           />
           <TouchableOpacity onPress={() => navigation.navigate('UpdatePasswordScreen')} style={styles.iconContainer}>
-            <Icon name="pencil" size={20} color="#6e6e6e" />
+            <Icon name="pencil" size={typography.iconSize} color={colors.iconColor} />
           </TouchableOpacity>
         </View>
       </View>
@@ -229,17 +229,17 @@ const profilePictureSize = screenWidth * 0.3; // for example, 30% of the screen 
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
       flex: 1,
-      padding: spacing.size10,
+      padding: spacing.size10Horizontal,
     },
     imageSection: {
       flexDirection: 'row',
       alignItems: 'center',
-      padding: spacing.size10,
+      padding: spacing.size10Horizontal,
     },
     profileSection: {
         flexDirection: 'column',
         alignItems: 'center',
-        padding: spacing.size20,
+        padding: spacing.size20Horizontal,
     },
     profilePicture: {
       width: profilePictureSize,
@@ -247,11 +247,12 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
       borderRadius: profilePictureSize / 2, 
     },
     aboutSection: {
-      marginTop: spacing.size20,
+      marginTop: spacing.size20Vertical,
     },
     input: {
       flex: 1,
-      paddingHorizontal: 10,
+      paddingLeft: spacing.size10Horizontal,
+      paddingRight: spacing.size10Horizontal,
       borderWidth: 0,
     },
     text: {
@@ -269,14 +270,10 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     inputRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      borderColor: '#cccccc',
+      borderColor: colors.inputBorder,
       borderWidth: 1,
       borderRadius: 5,
-      paddingRight: 10,
-    },
-    editButton: {
-      marginLeft: 10,
-      // Additional styles for the edit button
+      paddingRight: spacing.size10Horizontal,
     },
     iconContainer: {
       // Additional styling if needed, such as padding

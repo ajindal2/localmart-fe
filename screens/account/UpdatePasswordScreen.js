@@ -80,7 +80,7 @@ const UpdatePasswordScreen = ({navigation}) => {
         Alert.alert('Password updated successfully!');
       }
     } catch (error) {
-      if (error.message === 'RefreshTokenExpired') {
+      if (error.message.includes('RefreshTokenExpired')) {
         logout();
       } 
       Alert.alert('Error', error.message || 'Update failed, please try again later');
@@ -98,7 +98,7 @@ const UpdatePasswordScreen = ({navigation}) => {
           style={styles.input}
         />
         <TouchableOpacity onPress={() => setHideCurrentPassword(!hideCurrentPassword)}>
-          <Ionicons name={hideCurrentPassword ? 'eye' : 'eye-off'} size={20} color="#666" />
+          <Ionicons name={hideCurrentPassword ? 'eye' : 'eye-off'} size={typography.iconSize} color={colors.iconColor} />
         </TouchableOpacity>
       </View>
       {errors.currentPassword && <Text style={styles.errorText}>{errors.currentPassword}</Text>}
@@ -112,7 +112,7 @@ const UpdatePasswordScreen = ({navigation}) => {
           style={styles.input}
         />
         <TouchableOpacity onPress={() => setHideNewPassword(!hideNewPassword)}>
-          <Ionicons name={hideNewPassword ? 'eye' : 'eye-off'} size={20} color="#666" />
+          <Ionicons name={hideNewPassword ? 'eye' : 'eye-off'} size={typography.iconSize} color={colors.iconColor} />
         </TouchableOpacity>
       </View>
       {errors.newPassword && <Text style={styles.errorText}>{errors.newPassword}</Text>}
@@ -126,7 +126,7 @@ const UpdatePasswordScreen = ({navigation}) => {
           style={styles.input}
         />
         <TouchableOpacity onPress={() => setHideConfirmNewPassword(!hideConfirmNewPassword)}>
-          <Ionicons name={hideConfirmNewPassword ? 'eye' : 'eye-off'} size={20} color="#666" />
+          <Ionicons name={hideConfirmNewPassword ? 'eye' : 'eye-off'} size={typography.iconSize} color={colors.iconColor} />
         </TouchableOpacity>
       </View>
       {errors.confirmNewPassword && <Text style={styles.errorText}>{errors.confirmNewPassword}</Text>}
@@ -141,23 +141,22 @@ const UpdatePasswordScreen = ({navigation}) => {
 };
 
 const screenHeight = Dimensions.get('window').height; // Get the screen height
-const marginBottom = screenHeight * 0.04; // 5% of screen height for bottom margin
-const marginTop = screenHeight * 0.05; 
+const marginBottom = screenHeight * 0.04; 
 
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    padding: spacing.size10,
+    padding: spacing.size10Horizontal,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.inputBorder,
-    paddingLeft: spacing.size10,
-    paddingRight: spacing.size10,
-    marginBottom: spacing.size10,
+    paddingLeft: spacing.size10Horizontal,
+    paddingRight: spacing.size10Horizontal,
+    marginBottom: spacing.size10Vertical,
     borderRadius: spacing.sm,
   },
   input: {
@@ -165,20 +164,19 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     borderWidth: 0
   },
   label: {
-    fontSize: 16,
-    marginBottom: 5,
-    marginTop:10,
+    fontSize: typography.body,
+    marginBottom: spacing.size5Vertical,
+    marginTop: spacing.size10Vertical,
     textAlign: 'left',
     width: '100%',
 
   },
   errorText: {
     color: 'red',
-    fontSize: 12,
+    fontSize: typography.error,
     width: '100%',
     textAlign: 'left',
-    //marginTop: 5,
-    marginBottom: 20,
+    marginBottom: spacing.size20Vertical,
   },
   bottomButtonContainer: {
     position: 'absolute',

@@ -1,25 +1,27 @@
 import React from 'react';
-import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from './ThemeContext';
 
 const ProfileImageWithEditIcon = ({ imageUri, onEditPress }) => {
   const { colors, typography, spacing } = useTheme();
   const imageSource = imageUri ? { uri: imageUri } : { uri: 'https://via.placeholder.com/150' }; // Fallback image if imageUri is null
-
+  const { width } = Dimensions.get('window');
+  const imageSize = width * 0.4; 
+  
   const baseStyles = StyleSheet.create({
     imageContainer: {
       position: 'relative',
     },
     image: {
-      width: 150, // Set the width and height of the image
-      height: 150,
-      borderRadius: 75, // Round the corners if you want a circular image
+      width: imageSize, // Set the width and height of the image
+      height: imageSize,
+      borderRadius: imageSize/2, // Round the corners if you want a circular image
     },
     iconPosition: {
       position: 'absolute', // Position the icon over the image
-      right: 10, // Distance from the right edge of the image
-      bottom: 10, // Distance from the bottom edge of the image
+      right: spacing.size10Horizontal, // Distance from the right edge of the image
+      bottom: spacing.size10Vertical, // Distance from the bottom edge of the image
       backgroundColor: 'rgba(0, 0, 0, 0.6)', // Optional: make the background of the icon slightly darker
       borderRadius: 12, // If you want the icon background to be circular
       padding: 6, // Size of the touchable area around the icon
@@ -30,7 +32,7 @@ const ProfileImageWithEditIcon = ({ imageUri, onEditPress }) => {
     <View style={baseStyles.imageContainer}>
       <Image source={imageSource} style={baseStyles.image} />
       <TouchableOpacity onPress={onEditPress} style={baseStyles.iconPosition}>
-        <MaterialIcons name="edit" size={24} color="white" />
+        <MaterialIcons name="edit" size={typography.iconLarge} color="white" />
       </TouchableOpacity>
     </View>
   );

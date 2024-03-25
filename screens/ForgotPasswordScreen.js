@@ -55,38 +55,35 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     container: {
     flex: 1,
     alignItems: 'center',
-    //justifyContent: 'center',
-    padding: 20,
+    padding: spacing.size20Horizontal,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.inputBorder,
-    paddingLeft: spacing.size10,
-    paddingRight: spacing.size10,
-    marginBottom: 30, //spacing.size10,
+    paddingLeft: spacing.size10Horizontal,
+    paddingRight: spacing.size10Horizontal,
+    marginBottom: spacing.sizeLarge,
     borderRadius: spacing.sm,
-    
   },
   input: {
     flex: 1,
     borderWidth: 0
   },
   instructions: {
-    marginBottom: 50,
-    fontSize: 16,
+    marginBottom: spacing.sizeLarge,
+    fontSize: typography.body,
     textAlign: 'center',
   },
   optionsContainer: {
-    //marginTop: 15,
     justifyContent: 'center',
     alignItems: 'center',
   },
   optionText: {
-    color: '#007BFF', // Example color for the text
+    color: 'blue', 
     textDecorationLine: 'underline',
-    marginTop: 10,
+    marginTop: spacing.size10Vertical,
   },
 });
 

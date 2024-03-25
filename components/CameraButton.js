@@ -1,15 +1,15 @@
 import { View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from './ThemeContext';
 
 const CameraButton = ({ onPress }) => (
   <TouchableOpacity
     onPress={onPress}
     style={{
-      // Style your button as needed, this is just an example
       width: 45,
       height: 45,
       borderRadius: 22,
-      backgroundColor: 'red',
+      backgroundColor: '#f77979',
       justifyContent: 'center',
       alignItems: 'center',
       //position: 'absolute', // Position absolutely within the parent view

@@ -82,7 +82,7 @@ export const checkSavedStatus = async (userId, listingId) => {
       }
     } catch (error) {
       console.error('Error fetching saved status:', error);
-      return error;
+      throw error;
     }
 };
 

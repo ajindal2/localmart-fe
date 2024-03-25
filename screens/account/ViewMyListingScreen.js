@@ -37,7 +37,7 @@ const ViewMyListingScreen = ({navigation}) => {
           setListings(fetchedListings);
           setLoading(false);
         } catch (error) {
-          if (error.message === 'RefreshTokenExpired') {
+          if (error.message.includes('RefreshTokenExpired')) {
             logout();
           } else {
             let errorMessage = error.message; // Default to the error message thrown
@@ -82,7 +82,7 @@ const ViewMyListingScreen = ({navigation}) => {
       );
       setListings(updatedListings);
     } catch (error) {
-      if (error.message === 'RefreshTokenExpired') {
+      if (error.message.includes('RefreshTokenExpired')) {
         logout();
       } else {
         console.error('Error marking listing as sold:', error);
@@ -98,7 +98,7 @@ const ViewMyListingScreen = ({navigation}) => {
       setListings(updatedListings); // Update the state with the new listings array
       Alert.alert('Listing deleted successfully');
     } catch (error) {
-      if (error.message === 'RefreshTokenExpired') {
+      if (error.message.includes('RefreshTokenExpired')) {
         logout();
       } else {
         console.error('Error deleting listing:', error);
@@ -214,7 +214,7 @@ const ViewMyListingScreen = ({navigation}) => {
       </Text>
       </View>
       <TouchableOpacity style={styles.optionsButton} onPress={() => handleOpenActionSheet(item)}>
-        <Ionicons name="ellipsis-vertical" size={20} color="grey" />
+        <Ionicons name="ellipsis-vertical" size={typography.iconSize} color={colors.darkGrey} />
       </TouchableOpacity>
     </TouchableOpacity>
    ), [navigation]);
@@ -244,7 +244,7 @@ const ViewMyListingScreen = ({navigation}) => {
                 fromAccount: true, // To hide the bottom tab when navigating from here.
               },
             })}
-            style={{ marginTop: 50 }}
+            style={{ marginTop: spacing.sizeExtraLarge }}
           />
         </View>
       ) : (
@@ -270,24 +270,24 @@ const imageSize = width * 0.2;
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    padding: spacing.size10Horizontal,
   },
   createButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 10,
+    marginRight: spacing.size10Horizontal,
   },
   createButtonText: {
-    marginLeft: 5,
+    marginLeft: spacing.size5Horizontal,
     color: 'black',
   },
   listingItem: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     flexDirection: 'row',
-    borderRadius: 8, // Rounded corners for the card
-    padding: spacing.size10,
+    borderRadius: spacing.sm, // Rounded corners for the card
+    padding: spacing.size10Horizontal,
     alignItems: 'center',
-    shadowColor: '#000', // Shadow color
+    shadowColor: colors.shadowColor,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -295,18 +295,18 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     shadowOpacity: 0.2, // Shadow opacity
     shadowRadius: 1.41, // Shadow blur radius
     elevation: 2, // Elevation for Android
-    marginBottom: spacing.size10, // Space between cards
+    marginBottom: spacing.size10Vertical, // Space between cards
   },
   listingImage: {
     width: imageSize,
     height: imageSize,
     borderRadius: imageSize / 8,
-    marginRight: spacing.size10,
+    marginRight: spacing.size10Horizontal,
   },
   listingInfo: {
     flex: 1,
     justifyContent: 'center',
-    marginLeft: spacing.size10,
+    marginLeft: spacing.size10Horizontal,
   },
   title: {
     fontSize: typography.body,
@@ -318,7 +318,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     marginTop: spacing.xs,
   },
   optionsButton: {
-    padding: spacing.size10,
+    padding: spacing.size10Horizontal,
   },
   separator: {
     height: 1,
@@ -327,19 +327,19 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   },
   errorContainer: {
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: spacing.size20Vertical,
   },
   errorTitle: {
-    fontSize: 18,
+    fontSize: typography.heading,
     fontWeight: 'bold',
     color: colors.primary, 
   },
   errorMessage: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 10,
+    fontSize: typography.subHeading,
+    color: colors.secondaryText,
+    marginTop: spacing.size10Vertical,
     textAlign: 'center',
-    paddingHorizontal: 20, // Add some horizontal padding for better readability
+    paddingHorizontal: spacing.size20Horizontal,
   },
 });
 

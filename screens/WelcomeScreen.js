@@ -32,13 +32,13 @@ const WelcomeScreen = ({ navigation }) => {
           title="Login" 
           type="secondary" 
           onPress={() => navigation.navigate('LoginScreen')}
-          style={{ width: buttonWidth, marginRight: 10 }}
+          style={{ width: buttonWidth, marginRight: spacing.size10Horizontal }}
         />
         <ButtonComponent 
           title="Signup" 
           type="primary" 
           onPress={() => navigation.navigate('RegisterScreen')}
-          style={{ width: buttonWidth, marginLeft: 10 }}
+          style={{ width: buttonWidth, marginLeft: spacing.size10Horizontal }}
         />
       </View>
     </View>
@@ -55,7 +55,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     width: '100%',
     height: '50%',
     justifyContent: 'flex-end',
-    padding: spacing.size20,
+    padding: spacing.size20Horizontal,
   },
   title: {
     fontSize: typography.authTitle,
@@ -68,13 +68,13 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     fontFamily: 'Montserrat', 
     color: colors.secondaryText, 
     textAlign: 'center',
-    marginTop: spacing.size10,
+    marginTop: spacing.size10Vertical,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between', // Adjust to 'space-between' for even spacing
     width: '100%',
-    padding: spacing.size20, // Only apply padding to the sides
+    padding: spacing.size20Horizontal, // Only apply padding to the sides
   },
   // Button styles are moved to ButtonComponent
 });

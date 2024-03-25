@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Switch, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Switch, ScrollView, Alert, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { createListing, updateListing } from '../api/ListingsService';
 import { getSellerLocation } from '../api/SellerService';
@@ -25,6 +25,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
   const [shouldCreateListing, setShouldCreateListing] = useState(false);
   const [titleError, setTitleError] = useState('');
   const [priceError, setPriceError] = useState('');
+  const [priceValidationError, setPriceValidationError] = useState('');
   const [photoError, setPhotoError] = useState('');
   const [isEditing] = useState(route.params?.isEditing || false);
   const [listing] = useState(route.params?.listing || {});
@@ -64,7 +65,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           }
         };       
       } catch (error) {
-        if (error.message === 'RefreshTokenExpired') {
+        if (error.message.includes('RefreshTokenExpired')) {
           logout();
         }
         console.error('Failed to retrieve location details:', error);
@@ -115,7 +116,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           setPickupLocation(location); 
         }
       } catch (error) {
-        if (error.message === 'RefreshTokenExpired') {
+        if (error.message.includes('RefreshTokenExpired')) {
           logout();
         }
         console.error('Error fetching seller location:', error);
@@ -244,15 +245,15 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
   useEffect(() => {   
       const handleCreateListing = async () => {
         const hasTitleError = !title.trim();
-        const hasPriceError = !price.trim() && !isFree;
         const hasPhotoError = photos.length === 0;
+        const priceErrorMessage = validatePrice(price);
 
+        setPriceError(priceErrorMessage);
         setTitleError(hasTitleError ? 'Title cannot be empty' : '');
-        setPriceError(hasPriceError ? 'Price cannot be empty' : '');
         setPhotoError(hasPhotoError ? 'Add at least 1 photo' : '');
 
         // If any errors, do not proceed with listing creation
-        if (hasTitleError || hasPriceError || hasPhotoError) {
+        if (hasTitleError || priceErrorMessage || hasPhotoError) {
           console.log('Error: Required fields are missing');
           return;
         }
@@ -283,7 +284,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           Alert.alert('Listing created successfully');
           navigation.navigate('HomeScreen'); // Navigate to the homeScreen
       } catch (error) {
-        if (error.message === 'RefreshTokenExpired') {
+        if (error.message.includes('RefreshTokenExpired')) {
           logout();
         } else {
           Alert.alert('Error', 'An unknown error occured, please try again later.');
@@ -343,6 +344,26 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
     return slots;
   };
 
+  const validatePrice = (input) => {
+    if(!input.trim() && !isFree) {
+      return "Price cannot be empty.";
+    }
+    const numericRegex = /^[0-9]*\.?[0-9]*$/; // Regex to allow numbers and a single decimal point
+    const isValidNumericInput = numericRegex.test(input);
+  
+    if (!isValidNumericInput) {
+      return "Only numeric values are allowed.";
+    }
+  
+    const floatValue = parseFloat(input);
+    if (floatValue > 10000) {
+      return "Max price cannot exceed 10000.";
+    }
+  
+    // If input passes both checks, it's valid
+    return '';
+  };
+
   return (
     <ScrollView style={styles.container}>
       
@@ -362,7 +383,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
            placeholder="What are you selling?"
            onChangeText={setTitle}
            value={title}
-          style={[titleError ? styles.errorInput : {}]}
+          style={[titleError ? styles.errorInput : {marginTop: spacing.size10Vertical, padding:spacing.size10Horizontal}]}
         />
         {titleError ? <Text style={styles.errorMessage}>{titleError}</Text> : null}
 
@@ -370,7 +391,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           placeholder="Description"
           value={description}          
           onChangeText={setDescription}
-          style={{marginTop: 10}}
+          style={{marginTop: spacing.size10Vertical, padding: spacing.size10Horizontal}}
           multiline
         />
       <View style={styles.separator} />
@@ -382,12 +403,14 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
 
         <InputComponent
           placeholder="Price"
+          keyboardType="numeric"
           onChangeText={setPrice}
           value={price}
           editable={!isFree}  // Disable editing when isFree is true
           style={[
             isFree && styles.inputDisabled,
-            priceError && styles.errorInput
+            priceError && styles.errorInput,
+            {marginTop: spacing.size10Vertical, padding: spacing.size10Horizontal}
           ]}
         />
         {priceError ? <Text style={styles.errorMessage}>{priceError}</Text> : null}
@@ -396,8 +419,8 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           <Text>Free</Text>
           <Switch
             value={isFree}
-            trackColor={{ false: "#767577", true: "#81b0ff" }} // Colors for the track
-            thumbColor={isFree ? "#f5dd4b" : "#f4f3f4"} // Color for the thumb
+            trackColor={{ false: colors.darkGrey, true: colors.primary }} // Colors for the track
+            thumbColor={isFree ? colors.secondary : colors.lightWhite} // Color for the thumb
             onValueChange={(value) => {
               setIsFree(value);
               setPrice(value ? '0' : ''); // Set price to '0' if free, else empty string
@@ -432,18 +455,21 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
         onPress={() => {
           setShouldCreateListing(true); // Set the state as needed 
         }}
-        style={{ marginTop: 20, width: '100%', flexDirection: 'row' }}
+        style={{ marginTop: spacing.size20Vertical, width: '100%', flexDirection: 'row' }}
       />
   
     </ScrollView>
   );
 };
 
+const { width } = Dimensions.get('window');
+const photoSlotSize = width * 0.3; 
+const deleteIconSize = width * 0.05; 
 
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
-    padding: spacing.size10,
+    padding: spacing.size10Horizontal,
   },
   errorInput: {
     borderColor: colors.error, // Color for error state
@@ -455,16 +481,16 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   errorMessage: {
     color: colors.error, // Adjust color as needed
     fontSize: typography.subHeading,
-    marginTop: 5,
+    marginTop: spacing.size5Vertical,
   },
   cancelButtonText: {
     color: colors.primary,
-    marginRight: spacing.size10,
+    marginRight: spacing.size10Horizontal,
     fontWeight: 'bold',
   },
   photoScrollView: {
     flexDirection: 'row',
-    marginTop: spacing.size10,
+    marginTop: spacing.size10Vertical,
   },
   section: {
   },
@@ -479,18 +505,18 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginTop: spacing.size10,
+    marginTop: spacing.size10Vertical,
   },
   photoSlot: {
-    width: 120,
-    height: 100,
-    borderColor: 'gray',
+    width: photoSlotSize,
+    height: photoSlotSize,
+    borderColor: colors.darkGrey,
     borderWidth: 1,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing.size10,
-    marginRight:spacing.size10,
+    marginBottom: spacing.size10Vertical,
+    marginRight:spacing.size10Horizontal,
     position: 'relative',
     overflow: 'visible', // Allow overflow
   },
@@ -503,10 +529,10 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     position: 'absolute',
     top: -2, 
     right: -2,
-    backgroundColor: 'grey', // Grey background for the circle
-    borderRadius: 12, // Half of width and height to make it circle
-    width: 24, // Width of the circle
-    height: 24, // Height of the circle
+    backgroundColor: colors.darkGrey,
+    borderRadius: deleteIconSize/2, // Half of width and height to make it circle
+    width: deleteIconSize, // Width of the circle
+    height: deleteIconSize, // Height of the circle
     justifyContent: 'center', // Center the icon horizontally
     alignItems: 'center', // Center the icon vertically
     zIndex: 1,
@@ -515,16 +541,16 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     color: 'white', // White color for the icon
   },
   separator: {
-    height: 2,
+    height: 0, // hiding the separator and keeping the margins
     backgroundColor: colors.separatorColor,
-    marginBottom: spacing.size10,
-    marginTop: spacing.size10,
+    marginBottom: spacing.size5Vertical,
+    marginTop: spacing.size5Vertical,
   },
   text: {
     fontSize: typography.heading,
     fontWeight: 'bold',
     color: colors.headingColor, 
-    paddingBottom: spacing.size10,
+    paddingBottom: spacing.size5Vertical,
   },
   locationText: {
     color: colors.secondaryText, 
@@ -536,10 +562,9 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   },
   buttonStyle: {
     height: 30, // Decrease button height
-    //paddingVertical: 3, // Adjust padding to align content within the smaller button
     paddingTop: 1,
     paddingBottom: 1,
-    fontSize: 12,
+    fontSize: typography.caption,
   },
   longPressIndicator: {
     position: 'absolute',
@@ -550,8 +575,8 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     padding: 2,
   },
   longPressText: {
-    color: '#fff',
-    fontSize: 10,
+    color: colors.white,
+    fontSize: typography.small,
   },
 });
 

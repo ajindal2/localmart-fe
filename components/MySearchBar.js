@@ -31,16 +31,16 @@ const MySearchBar =  ({ value, onUpdate, navigation }) => {
         borderWidth: 1, // Define border width
         borderColor: colors.inputBorder, // Use border color from theme
         borderRadius: 15,
-        backgroundColor: '#fff', // Changes the background color of the input field
+        backgroundColor: colors.white,
         paddingBottom: 0,
       }}
       inputStyle={{
         color: 'black', // Changes the text color
         fontFamily: 'Montserrat', // Set the font family
-        fontSize: 17, //typography.body.fontSize,
+        fontSize: typography.body, //17,
       }}
-      clearIcon={{ size: 20, color: colors.iconColor }} // Customizes the clear icon
-      searchIcon={{ color: colors.iconColor, size: 20 }} // Customizes the search icon
+      clearIcon={{ size: typography.iconSize, color: colors.iconColor }} // Customizes the clear icon
+      searchIcon={{ color: colors.iconColor, size: typography.iconSize }} // Customizes the search icon
       onChangeText={onUpdate}
       value={value}
     />

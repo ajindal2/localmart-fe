@@ -124,7 +124,7 @@ const marginTop = screenHeight * 0.05;
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
-    padding: spacing.size10,
+    padding: spacing.size10Horizontal,
     alignItems: 'center',
   },
   heading: {

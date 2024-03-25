@@ -1,5 +1,5 @@
 import React, { useState} from 'react';
-import { View, TouchableOpacity, Alert, StyleSheet, Image, Text } from 'react-native';
+import { View, TouchableOpacity, Alert, StyleSheet, Image, Text, Dimensions } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import ButtonComponent from '../components/ButtonComponent';
 import { useFonts } from 'expo-font';
@@ -105,7 +105,7 @@ const RegisterScreen = ({ navigation }) => {
       <Text style={styles.description}>Your local marketplace for everything you need.</Text>
   
       <View style={styles.inputContainer}>
-        <Ionicons name="person-outline" size={20} color="#666" />
+        <Ionicons name="person-outline" size={typography.iconSize} color={colors.iconColor} />
         <InputComponent
           placeholder="Username"
           value={userName}
@@ -116,7 +116,7 @@ const RegisterScreen = ({ navigation }) => {
       {errors.userName && <Text style={styles.errorText}>{errors.userName}</Text>}
 
       <View style={styles.inputContainer}>
-      <Ionicons name="mail-outline" size={20} color="#666" />
+      <Ionicons name="mail-outline" size={typography.iconSize} color={colors.iconColor} />
         <InputComponent
           placeholder="Email Address"
           value={emailAddress}
@@ -128,7 +128,7 @@ const RegisterScreen = ({ navigation }) => {
       {errors.emailAddress && <Text style={styles.errorText}>{errors.emailAddress}</Text>}
 
       <View style={styles.inputContainer}>
-        <Ionicons name="lock-closed-outline" size={20} color="#666" />
+        <Ionicons name="lock-closed-outline" size={typography.iconSize} color={colors.iconColor} />
         <InputComponent
           placeholder="Password"
           value={password}
@@ -137,7 +137,7 @@ const RegisterScreen = ({ navigation }) => {
           style={styles.input}
         />
         <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
-          <Ionicons name={passwordVisible ? 'eye' : 'eye-off'} size={20} color="#666" />
+          <Ionicons name={passwordVisible ? 'eye' : 'eye-off'} size={typography.iconSize} color={colors.iconColor} />
         </TouchableOpacity>
       </View>
       {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
@@ -161,40 +161,43 @@ const RegisterScreen = ({ navigation }) => {
     );
   };
 
+  const { width } = Dimensions.get('window');
+  const logoSize = width * 0.4; 
+
   const getStyles = (colors, typography, spacing) => StyleSheet.create({
     container: {
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
-      padding: spacing.size20,
+      padding: spacing.size20Horizontal,
     },
     logo: {
-      width: 150,
-      height: 150,
-      marginBottom: spacing.size20,
+      width: logoSize,
+      height: logoSize,
+      marginBottom: spacing.size20Vertical,
     },
     title: {
       fontSize: typography.authTitle,
       fontFamily: 'Montserrat', // Use Montserrat font for the title
       color: colors.titleColor, // Use dark color for the text
       textAlign: 'center',
-      marginBottom: spacing.size10,
+      marginBottom: spacing.size10Vertical,
     },
     description: {
       fontSize: typography.body,
       color: colors.secondaryText,
       fontFamily: 'Montserrat',
       textAlign: 'center',
-      marginBottom: spacing.size20,
+      marginBottom: spacing.size20Vertical,
     },
     inputContainer: {
       flexDirection: 'row',
       alignItems: 'center',
       borderWidth: 1,
       borderColor: colors.inputBorder,
-      paddingLeft: spacing.size10,
-      paddingRight: spacing.size10,
-      marginBottom: spacing.size10,
+      paddingLeft: spacing.size10Horizontal,
+      paddingRight: spacing.size10Horizontal,
+      marginBottom: spacing.size10Vertical,
       borderRadius: spacing.sm,
     },
     input: {
@@ -203,7 +206,7 @@ const RegisterScreen = ({ navigation }) => {
     },
     forgotPassword: {
       alignSelf: 'flex-end',
-      marginBottom: spacing.size20,
+      marginBottom: spacing.size20Vertical,
     },
     forgotPasswordText: {
       color: 'blue',
@@ -212,7 +215,7 @@ const RegisterScreen = ({ navigation }) => {
       flexDirection: 'row',
       alignItems: 'center',
       width: '100%',
-      marginVertical: spacing.size20,
+      marginVertical: spacing.size20Vertical,
     },
     line: {
       flex: 1,
@@ -220,17 +223,16 @@ const RegisterScreen = ({ navigation }) => {
       backgroundColor: colors.inputBorder,
     },
     orText: {
-      width: 50,
+      width: spacing.sizeExtraLarge,
       textAlign: 'center',
       color: colors.secondaryText,
     },
     errorText: {
       color: 'red',
-      fontSize: 12,
+      fontSize: typography.caption,
       width: '100%',
       textAlign: 'left',
-      //marginTop: 5,
-      marginBottom: 20,
+      marginBottom: spacing.size20Vertical,
     }
   });
   

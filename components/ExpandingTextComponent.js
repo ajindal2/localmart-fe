@@ -62,7 +62,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     // Container styles
   },
   text: {
-    paddingBottom: spacing.size10,
+    paddingBottom: spacing.size10Vertical,
   },
   hidden: {
     position: 'absolute',
@@ -72,7 +72,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   },
   seeMoreText: {
     color: colors.primary,
-    marginTop: 5,
+    marginTop: spacing.size5Vertical,
   },
 });
 

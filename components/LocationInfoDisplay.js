@@ -28,7 +28,7 @@ const LocationInfoDisplay = ({ onPress }) => {
   
     return (
       <TouchableOpacity style={styles.locationContainer} onPress={onPress}>
-         <Ionicons name="location" size={20} color={colors.primary} />
+         <Ionicons name="location" size={typography.iconSize} color={colors.primary} />
           <Text style={styles.locationText}>{locationText}</Text>
       </TouchableOpacity>
     );
@@ -38,12 +38,12 @@ const LocationInfoDisplay = ({ onPress }) => {
     locationContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingLeft: 10,
-        paddingBottom: 10,
+        paddingLeft: spacing.size10Horizontal,
+        paddingBottom: spacing.size10Vertical,
       },
       locationText: {
-        marginLeft: 5,
-        fontSize: 16,
+        marginLeft: spacing.size5Horizontal,
+        fontSize: typography.body,
         color: colors.primary,
         fontWeight: 'bold',
       },

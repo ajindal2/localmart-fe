@@ -230,24 +230,24 @@ const fetchListings = async (searchKey = '', page = currentPage) => {
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 5,
+    paddingTop: spacing.size5Vertical,
     marginTop: 0,
   },
   errorContainer: {
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: spacing.size20Vertical,
   },
   errorTitle: {
-    fontSize: 18,
+    fontSize: typography.heading,
     fontWeight: 'bold',
     color: colors.primary, 
   },
   errorMessage: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 10,
+    fontSize: typography.subHeading,
+    color: colors.secondaryText,
+    marginTop: spacing.size10Vertical,
     textAlign: 'center',
-    paddingHorizontal: 20, // Add some horizontal padding for better readability
+    paddingHorizontal: spacing.size20Horizontal,
   },
 });
 

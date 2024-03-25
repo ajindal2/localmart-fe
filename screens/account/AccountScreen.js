@@ -4,6 +4,7 @@ import sections from '../../constants/AccountSections';
 import { getUserRatings } from '../../api/RatingsService';
 import { AuthContext } from '../../AuthContext';
 import { useTheme } from '../../components/ThemeContext';
+import { Dimensions } from 'react-native';
 
 
 const AccountScreen = ({ navigation }) => {
@@ -44,7 +45,7 @@ const AccountScreen = ({ navigation }) => {
 
   // renderItem expects an object with { item, index, separators, section }
   const renderItem = ({ item, index, separators, section }) => {
-
+    const { width, height } = Dimensions.get('window');
     const onItemPress = () => {
       if (item.key === 'logout') {
         handleLogout();
@@ -100,18 +101,17 @@ const AccountScreen = ({ navigation }) => {
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
       flex: 1,
-      padding: 10,
-      //backgroundColor: '#f0f0f0', // Set the background color for the entire screen
+      padding: spacing.size10Horizontal,
     },
     sectionContainer: {
-      backgroundColor: '#fff',
+      backgroundColor: colors.white,
       flexDirection: 'row',
       borderRadius: 8, // Rounded corners for the card
-      padding: spacing.size10,
-      paddingTop: 5,
-      paddingBottom: 5,
+      padding: spacing.size10Horizontal,
+      paddingTop: spacing.size5Vertical, 
+      paddingBottom: spacing.size5Vertical, 
       alignItems: 'center',
-      shadowColor: '#000', // Shadow color
+      shadowColor: colors.shadowColor, 
       shadowOffset: {
         width: 0,
         height: 1,
@@ -119,18 +119,18 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
       shadowOpacity: 0.2, // Shadow opacity
       shadowRadius: 1.41, // Shadow blur radius
       elevation: 2, // Elevation for Android
-      marginBottom: spacing.size10, // Space between cards
+      marginBottom: spacing.size10Vertical, // Space between cards
     },
     item: {
       backgroundColor: '#fff',
-      paddingVertical: 10,
-      paddingHorizontal: 10,
+      paddingVertical: spacing.size10Vertical,
+      paddingHorizontal: spacing.size10Horizontal,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
     },
     itemText: {
-      fontSize: 16,
+      fontSize: typography.body,
     },
     separator: {
       height: 1,

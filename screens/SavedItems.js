@@ -128,7 +128,7 @@ const SavedItems = ({navigation, route}) => {
         currentSavedListings.filter(listing => listing._id !== item._id)
       );
     } catch (error) {
-      if (error.message === 'RefreshTokenExpired') {
+      if (error.message.includes('RefreshTokenExpired')) {
         logout();
       } else {
         console.error('Error unsaving listing:', error);
@@ -162,7 +162,7 @@ const SavedItems = ({navigation, route}) => {
           <Text style={styles.errorMessage}>{emptyListingsMessage}</Text>
           <ButtonComponent iconName="home-outline" type="primary" title="Start Exploring"
             onPress={() => navigation.navigate('HomeScreen')}
-            style={{ marginTop: 50 }}
+            style={{ marginTop: spacing.sizeExtraLarge }}
           />
         </View>
       ) : (
@@ -188,15 +188,15 @@ const imageSize = width * 0.2;
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    padding: spacing.size10Horizontal,
   },
   listingItem: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     flexDirection: 'row',
-    borderRadius: 8, // Rounded corners for the card
-    padding: spacing.size10,
+    borderRadius: spacing.sm, // Rounded corners for the card
+    padding: spacing.size10Horizontal,
     alignItems: 'center',
-    shadowColor: '#000', // Shadow color
+    shadowColor: colors.shadowColor,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -204,23 +204,23 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     shadowOpacity: 0.2, // Shadow opacity
     shadowRadius: 1.41, // Shadow blur radius
     elevation: 2, // Elevation for Android
-    marginBottom: spacing.size10, // Space between cards
+    marginBottom: spacing.size10Vertical, // Space between cards
   },
   listingImage: {
     width: imageSize,
     height: imageSize,
     borderRadius: imageSize / 8,
-    marginRight: spacing.size10,
+    marginRight: spacing.size10Horizontal,
   },
   image: {
     width: imageSize, 
     height: imageSize, 
     borderRadius: imageSize / 8, 
-    marginRight: spacing.size10,
+    marginRight: spacing.size10Horizontal,
   },
   listingInfo: {
     flex: 1,
-    marginLeft: spacing.size10,
+    marginLeft: spacing.size10Horizontal,
     justifyContent: 'center',
   },
   title: {
@@ -238,23 +238,23 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     marginTop: spacing.xs,
   },
   optionsButton: {
-    padding: spacing.size10,
+    padding: spacing.size10Horizontal,
   },
   errorContainer: {
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: spacing.size20Vertical,
   },
   errorTitle: {
-    fontSize: 18,
+    fontSize: typography.heading,
     fontWeight: 'bold',
     color: colors.primary, 
   },
   errorMessage: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 10,
+    fontSize: typography.subHeading,
+    color: colors.secondaryText,
+    marginTop: spacing.size10Vertical,
     textAlign: 'center',
-    paddingHorizontal: 20, // Add some horizontal padding for better readability
+    paddingHorizontal: spacing.size20Horizontal,
   },
 });
 

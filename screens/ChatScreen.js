@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { GiftedChat, Bubble, Time } from 'react-native-gifted-chat';
 import {markMessagesAsRead} from '../api/ChatRestService';
 import ChatService from '../api/ChatService';
 import { AuthContext } from '../AuthContext';
 import useHideBottomTab from '../utils/HideBottomTab'; 
+import { useTheme } from '../components/ThemeContext';
+
 
 const ChatScreen = ({ route, navigation }) => {
   const { chat } = route.params; // Extract chat from route.params
   const { user, logout } = useContext(AuthContext);
+  const { colors, typography, spacing } = useTheme();
+  const styles = getStyles(colors, typography, spacing);
 
   useHideBottomTab(navigation, true);
 
@@ -139,7 +143,7 @@ const ChatScreen = ({ route, navigation }) => {
         // Call the function to mark messages as read
         markMessagesAsRead(chat._id, user._id);
       } catch (error) {
-        if (error.message === 'RefreshTokenExpired') {
+        if (error.message.includes('RefreshTokenExpired')) {
           logout();
         } else {
           console.error('Error deleting listing:', error);
@@ -181,18 +185,23 @@ const ChatScreen = ({ route, navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const { width } = Dimensions.get('window');
+const imageSize = width * 0.12; 
+
+const getStyles = (colors, typography, spacing) => StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
-    padding: 10,
+    padding: spacing.size10Horizontal,
     alignItems: 'center',
-    backgroundColor: '#f7f7f7', // Choose a background color that fits your app's theme
+    //backgroundColor: colors.mediumGrey , 
+    borderBottomWidth: 2, // This sets the thickness of the bottom border
+    borderBottomColor: colors.separatorColor, 
   },
   listingImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
+    width: imageSize,
+    height: imageSize,
+    borderRadius: imageSize/2,
+    marginRight: spacing.size10Horizontal,
   },
   listingDetails: {
     flex: 1,
@@ -201,37 +210,36 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   listingPrice: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: typography.body,
+    color: colors.secondaryText,
   },
   senderName: {
-    paddingHorizontal: 10,
-    paddingBottom: 2,
-    fontSize: 12,
-    color: 'grey',
+    paddingHorizontal: spacing.size10Horizontal,
+    paddingBottom: spacing.xxs,
+    fontSize: typography.caption,
+    color: colors.darkGrey,
     textAlign: 'left', // Align the sender's name to the left
   },
   bubbleOuterView: {
-    //marginBottom: 6, // Adjust as needed
   },
   bubbleLeft: {
-    backgroundColor: '#00fe2a',
+    backgroundColor: colors.mediumGrey,
   },
   bubbleRight: {
-    backgroundColor: '#0078fe',
+    backgroundColor: colors.primary,
   },
   textLeft: {
     color: 'black',
   },
   textRight: {
-    color: 'white',
+    color: colors.white,
   },
   timeText: {
     left: {
-      color: 'grey',
+      color: colors.darkGrey,
     },
     right: {
-      color: 'white',
+      color: colors.white,
     },
   },
 });

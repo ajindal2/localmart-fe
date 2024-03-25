@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, Dimensions, StyleSheet, Alert } from 'react-native';
 import * as Location from 'expo-location';
 import useHideBottomTab from '../utils/HideBottomTab'; 
@@ -13,7 +13,7 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
     const [zipCode, setZipCode] = useState('');
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
-    const { user, logout } = useContext(AuthContext);
+    const { logout } = useContext(AuthContext);
 
     useHideBottomTab(navigation, true);
     
@@ -126,7 +126,7 @@ const marginTop = screenHeight * 0.05;
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
-    padding: spacing.size10,
+    padding: spacing.size10Horizontal,
     alignItems: 'center',
   },
   heading: {
@@ -144,7 +144,6 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   input: {
     width: '75%', 
     flexDirection: 'row',
-    //marginBottom: marginBottom,
   },
   bottomButtonContainer: {
     position: 'absolute',

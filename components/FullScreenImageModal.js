@@ -1,8 +1,12 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
-import { Modal, View, Image, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { Modal, View, Image, TouchableOpacity, ScrollView, StyleSheet, Dimensions  } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../components/ThemeContext';
 
 const FullScreenImageModal = ({ isVisible, onClose, imageUrls, initialIndex }) => {
+  const { colors, typography, spacing } = useTheme();
+  const styles = getStyles(colors, typography, spacing);
+
   const screenWidth = Dimensions.get('window').width;
   const scrollViewRef = useRef();
   const [currentIndex, setCurrentIndex] = useState(initialIndex || 0);
@@ -56,14 +60,18 @@ const FullScreenImageModal = ({ isVisible, onClose, imageUrls, initialIndex }) =
         </ScrollView>
         <View style={styles.dotContainer}>{renderScrollDots()}</View>
         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-          <Ionicons name="close" size={30} color="white" />
+          <Ionicons name="close" size={spacing.sizeLarge} color="white" />
         </TouchableOpacity>
       </View>
     </Modal>
   );
 };
 
-const styles = {
+const { width, height } = Dimensions.get('window');
+const closeButtonBottomPadding = height * 0.05;
+const closeButtonLeftPadding = width * 0.05;
+
+const getStyles = (colors, typography, spacing) => StyleSheet.create({
   modalContainer: {
     flex: 1,
     backgroundColor: 'black',
@@ -72,15 +80,15 @@ const styles = {
   },
   closeButton: {
     position: 'absolute',
-    top: 40,
-    left: 20,
+    top: closeButtonBottomPadding, //40
+    left: closeButtonLeftPadding, //20
   },
   dotContainer: {
     position: 'absolute',
-    bottom: 10,
+    bottom: spacing.size10Vertical,
     alignSelf: 'center',
     flexDirection: 'row',
-    padding: 5,
+    padding: spacing.size5Horizontal,
     backgroundColor: 'rgba(255, 255, 255, 0.5)',
     borderRadius: 15,
   },
@@ -96,7 +104,6 @@ const styles = {
   inactiveDot: {
     backgroundColor: 'gray',
   },
-  // ... Other styles ...
-};
+});
 
 export default FullScreenImageModal;

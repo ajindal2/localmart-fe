@@ -89,35 +89,31 @@ const UserLocationPreferencesScreen = ({ navigation }) => {
   );
 };
 
-const screenHeight = Dimensions.get('window').height; // Get the screen height
-const marginBottom = screenHeight * 0.04; // 5% of screen height for bottom margin
-const marginTop = screenHeight * 0.05; 
+const screenHeight = Dimensions.get('window').height;
+const marginBottom = screenHeight * 0.04; 
 
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    padding: spacing.size10Horizontal,
   },
   preferenceItem: {
-    padding: 20,
+    padding: spacing.size20Horizontal,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: colors.darkGrey,
   },
   preferenceTitle: {
     fontSize: 18,
-    //fontWeight: 'bold',
   },
   preferenceSubtitle: {
     fontSize: 16,
-    color: '#666',
+    color: colors.secondaryText,
   },
   section: {
-    backgroundColor: '#fff',
-    //flexDirection: 'row',
-    borderRadius: 8, // Rounded corners for the card
-    padding: spacing.size10,
-   // alignItems: 'center',
-    shadowColor: '#000', // Shadow color
+    backgroundColor: colors.white,
+    borderRadius: spacing.sm, // Rounded corners for the card
+    padding: spacing.size10Horizontal,
+    shadowColor: colors.shadowColor,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -125,14 +121,14 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     shadowOpacity: 0.2, // Shadow opacity
     shadowRadius: 1.41, // Shadow blur radius
     elevation: 2, // Elevation for Android
-    marginBottom: spacing.size20, // Space between cards
+    marginBottom: spacing.size20Vertical, // Space between cards
   },
   bottomButtonContainer: {
     position: 'absolute',
     bottom: marginBottom,
     width: '100%',
     alignItems: 'center', 
-    paddingLeft: 20,
+    paddingLeft: spacing.size20Horizontal,
   },
 });
 

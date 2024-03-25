@@ -1,5 +1,5 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList, Dimensions } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import StarRating from '../components/StarRating';
 import useHideBottomTab from '../utils/HideBottomTab'; 
@@ -226,14 +226,17 @@ const SellerDetails = ({ route, navigation }) => {
   );
 };
 
+const { width } = Dimensions.get('window');
+const imageSize = width * 0.1; 
+
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
       flex: 1,
     },
     topSection: {
-      backgroundColor: '#fff',
-      paddingTop: 10,
-      shadowColor: '#000', // Shadow color
+      backgroundColor: colors.white,
+      paddingTop: spacing.size10Vertical,
+      shadowColor: colors.shadowColor,
       shadowOffset: {
         width: 0,
         height: 1,
@@ -243,142 +246,136 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
       elevation: 3, // Elevation for Android
     },
     bottomContainer: {
-      //padding: spacing.size10,
     },
     separator: {
       height: 1,
       backgroundColor: colors.separatorColor,
-      marginBottom: spacing.size10,
-      marginTop: spacing.size10,
+      marginBottom: spacing.size10Vertical,
+      marginTop: spacing.size10Vertical,
       },
     section: {
     },
     sectionHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
     },
     sectionTitle: {
       fontSize: typography.heading,
       fontWeight: 'bold',
       color: colors.headingColor, 
-      paddingBottom: spacing.size10,
-      paddingLeft: spacing.size10,
+      paddingBottom: spacing.size10Vertical,
+      paddingLeft: spacing.size10Horizontal,
     },
     averageRatingContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: spacing.size10Vertical,
     },
     totalRatings: {
-        fontSize: 14,
-        color: 'grey',
-        marginLeft: 8,
+        fontSize: typography.subHeading,
+        color: colors.darkGrey,
+        marginLeft: spacing.size10Horizontal,
     },
     sellerImage: {
       width: '100%', // Make the image span the full width of its container
       height: 200, // Set a fixed height, or use a percentage like '30%' for relative sizing
     },
     sellerName: {
-      fontSize: 22,
+      fontSize: typography.pageTitle,
       fontWeight: 'bold',
-      paddingBottom: 5,
-      paddingLeft: spacing.size10,
-      paddingTop: spacing.size10,
+      paddingBottom: spacing.size5Vertical,
+      paddingLeft: spacing.size10Horizontal,
+      paddingTop: spacing.size10Vertical,
     },
     dateJoined: {
-      fontSize: 14,
-      paddingBottom: 5,
-      paddingLeft: spacing.size10,
+      fontSize: typography.subHeading,
+      paddingBottom: spacing.size5Vertical,
+      paddingLeft: spacing.size10Horizontal,
     },
     sellerDescription: {
-      fontSize: 14, //typography.body,
+      fontSize: typography.subHeading,
       color: colors.secondaryText,
-      paddingTop: spacing.size10,
-      paddingLeft: spacing.size10,
-      paddingBottom: spacing.size10,
+      paddingTop: spacing.size10Vertical,
+      paddingLeft: spacing.size10Horizontal,
+      paddingBottom: spacing.size10Vertical,
     },
     averageRating: {
-      fontSize: 16,
+      fontSize: typography.body,
       fontWeight: 'bold',
     },
     ratingsSection: {
-        marginTop: 10,
-       // margin: 5,
-        backgroundColor: '#fff', // Use a light color for the section background
-        //borderRadius: 8, // Rounded corners for the section
-        padding: spacing.size10, // Internal padding for the section content
-        marginBottom: spacing.size10, // Space between sections
-        shadowColor: '#000', // Shadow color
-        shadowOffset: {
-          width: 0,
-          height: 1,
-        },
-        shadowOpacity: 0.22, // Shadow opacity
-        shadowRadius: 2.22, // Shadow blur radius
-        elevation: 3, // Elevation for Android
+      marginTop: spacing.size10Vertical,
+      backgroundColor: colors.white, // Use a light color for the section background
+      padding: spacing.size10Horizontal, // Internal padding for the section content
+      marginBottom: spacing.size10Vertical, // Space between sections
+      shadowColor: colors.shadowColor,
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+      shadowOpacity: 0.22, // Shadow opacity
+      shadowRadius: 2.22, // Shadow blur radius
+      elevation: 3, // Elevation for Android
     },
     ratingItem: {
-        //padding: 10,
-      },
-      ratingInfo: {
-        // Aligns name and stars vertically
-      },
-      ratingHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingTop: 10,
-        paddingBottom: 10
-      },
-      raterImage: {
-        width: 40,
-        height: 40,
-        borderRadius: 20, // To make it circular
-        marginRight: 10,
-      },
-      ratingDetails: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        //marginLeft: 10,
-      },
-      raterName: {
-        fontWeight: 'bold',
-        fontSize: 16,
-        flex: 1,  // Allocate remaining space to name
-        paddingBottom: 5,
-      },
-      ratingDate: {
-        fontSize: 12,
-        color: 'grey',
-      },
-      ratingText: {
-        fontSize: 14,
-        color: 'black',
-        //paddingTop: 5,
-        paddingBottom: 10
-      },
-      seeMoreText:{
-        color: 'blue',
-        marginTop: 5,
-      },
-      errorContainer: {
-        alignItems: 'center',
-        marginTop: 20,
-      },
-      errorTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: colors.primary, 
-      },
-      errorMessage: {
-        fontSize: 14,
-        color: '#666',
-        marginTop: 10,
-        textAlign: 'center',
-        paddingHorizontal: 20, // Add some horizontal padding for better readability
-      },
+    },
+    ratingInfo: {
+      // Aligns name and stars vertically
+    },
+    ratingHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingTop: spacing.size10Vertical,
+      paddingBottom: spacing.size10Vertical
+    },
+    raterImage: {
+      width: imageSize,
+      height: imageSize,
+      borderRadius: imageSize/2, // To make it circular
+      marginRight: spacing.size10Horizontal,
+    },
+    ratingDetails: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    raterName: {
+      fontWeight: 'bold',
+      fontSize: typography.body,
+      flex: 1,  // Allocate remaining space to name
+      paddingBottom: spacing.size5Vertical,
+    },
+    ratingDate: {
+      fontSize: typography.caption,
+      color: colors.darkGrey,
+    },
+    ratingText: {
+      fontSize: typography.subHeading,
+      color: 'black',
+      paddingBottom: spacing.size10Vertical,
+    },
+    seeMoreText:{
+      color: 'blue',
+      marginTop: spacing.size5Vertical,
+    },
+    errorContainer: {
+      alignItems: 'center',
+      marginTop: spacing.size20Vertical,
+    },
+    errorTitle: {
+      fontSize: typography.heading,
+      fontWeight: 'bold',
+      color: colors.primary, 
+    },
+    errorMessage: {
+      fontSize: typography.subHeading,
+      color: colors.secondaryText,
+      marginTop: spacing.size10Vertical,
+      textAlign: 'center',
+      paddingHorizontal: spacing.size20Horizontal,
+    },
 });
 
 function formatDate(dateString) {

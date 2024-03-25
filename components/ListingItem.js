@@ -53,8 +53,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   itemContainer: {
     flex: 1,
     flexDirection: 'column',
-    padding: spacing.size10,
-    //width: 150,
+    padding: spacing.size10Horizontal,
   },
   image: {
     width: '100%',
@@ -71,7 +70,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     borderTopRightRadius: 5, // Only round the top right corner
     borderBottomLeftRadius: 5, // No radius for the bottom left corner
     borderBottomRightRadius: 5, // No radius for the bottom right corner
-    shadowColor: '#000',
+    shadowColor: colors.shadowColor,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -87,33 +86,32 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: typography.body,
-    paddingTop: 5,
-    paddingLeft: 5,
+    paddingTop: spacing.size5Vertical,
+    paddingLeft: spacing.size5Horizontal,
     overflow: 'hidden',
     width: '100%',
   },
   price: {
     fontSize: typography.price,
     color: colors.secondaryText,
-    paddingLeft: 5,
-    paddingBottom: 5,
+    paddingLeft: spacing.size5Horizontal,
+    paddingBottom: spacing.size5Vertical,
   },
   dot: {
     fontSize: typography.body,
     color: colors.secondaryText,
     fontWeight: 'bold',
-    paddingBottom: 5,
+    paddingBottom: spacing.size5Vertical,
   },
   distance: {
     fontSize: typography.price,
     color: colors.secondaryText,
-   // paddingLeft: 5,
-    paddingBottom: 5,
+    paddingBottom: spacing.size5Vertical,
   },
   invisibleItem: {
     flex: 1,
     flexDirection: 'column',
-    padding: spacing.size10,
+    padding: spacing.size10Horizontal,
     opacity: 0, // Make the item invisible
   }
 });

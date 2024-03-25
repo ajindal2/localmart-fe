@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, Image, StyleSheet, Dimensions } from 'react-native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import StarRating from '../components/StarRating';
@@ -40,7 +40,7 @@ const AllReviewsScreen = ({ route, navigation }) => {
                 <Text style={styles.totalReviews}>{ratingsWithProfile.length} Reviews</Text>
                 </View>
                 <View style={styles.ratingContainer}>
-                <StarRating rating={averageRating} size={20} />
+                <StarRating rating={averageRating} size={typography.iconSize} />
                 <Text style={styles.averageRatingText}>{averageRating.toFixed(1)}</Text>
               </View>
             </View>
@@ -60,7 +60,7 @@ const AllReviewsScreen = ({ route, navigation }) => {
                         <View style={styles.ratingDetails}>
                             <View style={styles.ratingInfo}>
                                 <Text style={styles.raterName}>{ratingWithProfile.ratedBy.userName}</Text>
-                                <StarRating rating={ratingWithProfile.stars} size={16} />
+                                <StarRating rating={ratingWithProfile.stars} size={typography.iconSmall} />
                             </View>
                         <Text style={styles.ratingDate}>{formatDate(ratingWithProfile.dateGiven)}</Text>
                         </View>
@@ -87,21 +87,22 @@ const AllReviewsScreen = ({ route, navigation }) => {
     );
 };
 
+const { width } = Dimensions.get('window');
+const imageSize = width * 0.12; 
+
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
       flex: 1,
-      //padding: spacing.size10,
     },
     section: {
-      //padding: 10,
     },
     topSection: {
       backgroundColor: '#fff',
-      paddingTop: 10,
-      paddingLeft: 10,
-      paddingBottom: 10,
-      marginBottom: 10,
-      shadowColor: '#000', // Shadow color
+      paddingTop: spacing.size10Vertical,
+      paddingLeft: spacing.size10Horizontal,
+      paddingBottom: spacing.size10Vertical,
+      marginBottom: spacing.size10Vertical,
+      shadowColor: colors.shadowColor,
       shadowOffset: {
         width: 0,
         height: 1,
@@ -116,71 +117,68 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
       alignItems: 'center',
     },
     totalReviews: {
-      fontSize: 18,
+      fontSize: typography.heading,
       fontWeight: 'bold',
     },
     filterButton: {
       flexDirection: 'row',
       alignItems: 'center',
-      padding: 5,
+      padding: spacing.size5Horizontal,
       borderWidth: 1,
       borderColor: 'grey',
       borderRadius: 20,
     },
     filterText: {
-      marginLeft: 5,
-      fontSize: 16,
+      marginLeft: spacing.size5Horizontal,
+      fontSize: typography.body,
     },
     ratingContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginTop: 5,
+      marginTop: spacing.size5Vertical,
     },
     averageRatingText: {
-      marginLeft: 10,
-      fontSize: 16,
+      marginLeft: spacing.size10Horizontal,
+      fontSize: typography.body,
     },
     raterImage: {
-      width: 50,
-      height: 50,
-      borderRadius: 25, // To make it circular
-      marginRight: 10,
+      width: imageSize,
+      height: imageSize,
+      borderRadius: imageSize/2, // To make it circular
+      marginRight: spacing.size10Horizontal,
     },
     ratingDetails: {
       flex: 1,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingBottom:10,
-      //marginLeft: 10,
+      paddingBottom:spacing.size10Vertical,
     },
     raterName: {
       fontWeight: 'bold',
-      fontSize: 16,
-      paddingBottom: 5
-      //flex: 1,  // Allocate remaining space to name
+      fontSize: typography.body,
+      paddingBottom: spacing.size5Vertical,
     },
     ratingDate: {
-      fontSize: 12,
-      color: 'grey',
+      fontSize: typography.caption,
+      color: colors.darkGrey,
     },
     ratingText: {
-      fontSize: 14,
+      fontSize: typography.subHeading,
       color: 'black',
-      paddingTop: 10,
-      paddingBottom: 10
+      paddingTop: spacing.size10Vertical,
+      paddingBottom: spacing.size10Vertical,
     },
     seeMoreText:{
       color: 'blue',
-      marginTop: 5,
+      marginTop: spacing.size5Vertical,
     },
     ratingItem: {
-      margin: 5,
-      backgroundColor: '#fff', // Use a light color for the section background
+      margin: spacing.size5Horizontal,
+      backgroundColor: colors.white, // Use a light color for the section background
       borderRadius: 8, // Rounded corners for the section
-      padding: spacing.size10, // Internal padding for the section content
-      //marginBottom: spacing.size10, // Space between sections
-      shadowColor: '#000', // Shadow color
+      padding: spacing.size10Horizontal, // Internal padding for the section content
+      shadowColor: colors.shadowColor,
       shadowOffset: {
         width: 0,
         height: 1,
@@ -195,30 +193,28 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     ratingHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      //paddingTop: 10,
-      //paddingBottom: 10
     },
     separator: {
       height: 2,
       backgroundColor: colors.separatorColor,
-      marginBottom: spacing.size10,
-      marginTop: spacing.size10,
+      marginBottom: spacing.size10Vertical,
+      marginTop: spacing.size10Vertical,
     },
     errorContainer: {
       alignItems: 'center',
-      marginTop: 20,
+      marginTop: spacing.size20Vertical,
     },
     errorTitle: {
-      fontSize: 18,
+      fontSize: typography.heading,
       fontWeight: 'bold',
       color: colors.primary, 
     },
     errorMessage: {
-      fontSize: 14,
-      color: '#666',
-      marginTop: 10,
+      fontSize: typography.subHeading,
+      color: colors.secondaryText,
+      marginTop: spacing.size10Vertical,
       textAlign: 'center',
-      paddingHorizontal: 20, // Add some horizontal padding for better readability
+      paddingHorizontal: spacing.size20Horizontal, 
     },
   });
 

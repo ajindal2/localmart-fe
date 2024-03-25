@@ -1,8 +1,12 @@
 import React from 'react';
 import { View, StyleSheet, Linking, TouchableOpacity, Text } from 'react-native';
 import MapView, { Circle } from 'react-native-maps';
+import { useTheme } from './ThemeContext';
 
 const ListingMap = ({ location }) => {
+    const { colors, typography, spacing } = useTheme();
+    const styles = getStyles(colors, typography, spacing);
+
     // Since coordinates are stored as [longitude, latitude]
     const longitude = location.coordinates[0];
     const latitude = location.coordinates[1];
@@ -42,10 +46,8 @@ const ListingMap = ({ location }) => {
           .catch((err) => console.error('An error occurred', err));
       };
 
-      
     return (
         <View style={styles.container}>
-
         <MapView
             style={styles.map}
             initialRegion={{
@@ -59,7 +61,7 @@ const ListingMap = ({ location }) => {
             center={{ latitude: latitude, longitude: longitude }}
             radius={radius}
             strokeWidth={2}
-            strokeColor="#ff9191" // Example stroke color
+            strokeColor={colors.secondary} 
             fillColor="rgba(247, 121, 121, 0.2)" // Fill color of the circle
             />
         </MapView>
@@ -73,9 +75,9 @@ const ListingMap = ({ location }) => {
     );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
-    height: 100, // Set the desired height for the map container
+    height: 100, 
     width: '100%',
     justifyContent: 'flex-end',
     alignItems: 'center',
@@ -85,15 +87,14 @@ const styles = StyleSheet.create({
   },
   overlayButton: {
     position: 'absolute',
-    bottom: 20, // Adjust based on your layout
-    right: 20, // Adjust based on your layout
+    bottom: spacing.size20Vertical, 
+    right: spacing.size20Horizontal, 
     backgroundColor: 'rgba(0,0,0,0.7)',
-    padding: 10,
+    padding: spacing.size10Horizontal,
     borderRadius: 20,
   },
   overlayButtonText: {
-    color: '#fff',
-    // Add other text styles as needed
+    color: colors.white,
   },
 });
 

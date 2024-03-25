@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { useTheme } from '../components/ThemeContext';
 import { useFocusEffect } from '@react-navigation/native';
 import { useMessagesBadgeCount } from '../MessagesBadgeCountContext';
@@ -15,7 +15,7 @@ const MyMessages = ({ navigation }) => {
   const styles = getStyles(colors, typography, spacing);
   const errorMessageTitle = "No Messages Found";
   const errorMessageDetails = "We're experiencing some problems on our end. Please try again later.";
-  const emptyMessages = "Start contacting sellers and mange your messages here.";
+  const emptyMessages = "Chat history with sellers can be found here.";
 
   const fetchChats = async () => {
     try {
@@ -118,18 +118,21 @@ const MyMessages = ({ navigation }) => {
   );
 };
 
+const { width } = Dimensions.get('window');
+const imageSize = width * 0.1; 
+
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    padding: spacing.size10Horizontal,
   },
   chatItem: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     flexDirection: 'row',
-    borderRadius: 8, // Rounded corners for the card
-    padding: spacing.size10,
+    borderRadius: spacing.sm, // Rounded corners for the card
+    padding: spacing.size10Horizontal,
     alignItems: 'center',
-    shadowColor: '#000', // Shadow color
+    shadowColor: colors.shadowColor, // Shadow color
     shadowOffset: {
       width: 0,
       height: 1,
@@ -137,13 +140,13 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     shadowOpacity: 0.2, // Shadow opacity
     shadowRadius: 1.41, // Shadow blur radius
     elevation: 2, // Elevation for Android
-    marginBottom: spacing.size10, // Space between cards
+    marginBottom: spacing.size10Vertical,
   },
   image: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
+    width: imageSize,
+    height: imageSize,
+    borderRadius: imageSize/2,
+    marginRight: spacing.size10Horizontal,
   },
   contentContainer: {
     flex: 1,
@@ -151,7 +154,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: typography.body,
   },
   messageContainer: {
     flexDirection: 'row',
@@ -160,37 +163,32 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   },
   message: {
     flex: 1,
-    fontSize: 14,
-    color: '#666',
+    fontSize: typography.subHeading,
+    color: colors.secondaryText,
   },
   timestamp: {
-    fontSize: 12,
-    color: '#999',
-    marginLeft: 10,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: '#EEE',
-    marginLeft: 60, // To align with the text next to the image
+    fontSize: typography.caption,
+    color: colors.darkGrey,
+    marginLeft: spacing.size10Horizontal,
   },
   boldMessage: {
     fontWeight: 'bold',
   },
   errorContainer: {
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: spacing.size20Vertical,
   },
   errorTitle: {
-    fontSize: 18,
+    fontSize: typography.heading,
     fontWeight: 'bold',
     color: colors.primary, 
   },
   errorMessage: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 10,
+    fontSize: typography.subHeading,
+    color: colors.secondaryText,
+    marginTop: spacing.size10Vertical,
     textAlign: 'center',
-    paddingHorizontal: 20, // Add some horizontal padding for better readability
+    paddingHorizontal: spacing.size20Horizontal,
   },
 });
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../components/ThemeContext';
 
@@ -15,7 +15,7 @@ const CustomActionSheet = ({ isVisible, onClose, options }) => {
           {options.map((option, index) => (
             <TouchableOpacity key={index} style={styles.option} onPress={option.onPress}>
                 <View style={styles.iconCircle}>
-                    <Ionicons name={option.icon} size={20} color="black" />
+                    <Ionicons name={option.icon} size={typography.iconSize} color="black" />
                 </View>
               <Text style={styles.optionText}>{option.text}</Text>
             </TouchableOpacity>
@@ -29,6 +29,9 @@ const CustomActionSheet = ({ isVisible, onClose, options }) => {
   );
 };
 
+const { width } = Dimensions.get('window');
+const iconSize = width * 0.1; 
+
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
     modalOverlay: {
     flex: 1,
@@ -37,12 +40,12 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   },
   actionSheetContainer: {
     backgroundColor: '#fff',
-    paddingVertical: spacing.size10,
-    paddingHorizontal: spacing.size20,
-    borderRadius: spacing.size20, 
+    paddingVertical: spacing.size10Vertical,
+    paddingHorizontal: spacing.size20Horizontal,
+    borderRadius: spacing.size20Horizontal, 
     overflow: 'hidden', // This ensures the inner content does not overlap the rounded corners
     // shadow related properties
-    shadowColor: "#000",
+    shadowColor: colors.shadowColor,
     shadowOffset: {
       width: 0,
       height: -2, // Shadow above the action sheet
@@ -52,18 +55,18 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     elevation: 5,
   },
   grabberBar: {
-    width: 40, // Adjust width as needed
-    height: 4, // Adjust height as needed
-    backgroundColor: 'grey',
+    width: iconSize, 
+    height: 4, 
+    backgroundColor: colors.darkGrey,
     borderRadius: 2,
     alignSelf: 'center',
-    marginTop: 8, // Add some space at the top
-    marginBottom: 16, // Space before content starts
+    marginTop: spacing.size10Vertical, // Add some space at the top
+    marginBottom: spacing.size10Vertical, // Space before content starts
   },
   iconCircle: {
-    width: 40, // Diameter of the circle
-    height: 40, // Diameter of the circle
-    borderRadius: 20, // Half of the width/height to make it a perfect circle
+    width: iconSize, // Diameter of the circle
+    height: iconSize, // Diameter of the circle
+    borderRadius: iconSize/2, // Half of the width/height to make it a perfect circle
     backgroundColor: colors.mediumGrey, // Grey background color
     justifyContent: 'center', // Center the icon horizontally
     alignItems: 'center', // Center the icon vertically
@@ -71,15 +74,15 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: spacing.size10,
+    paddingVertical: spacing.size10Vertical,
   },
   optionText: {
-    marginLeft: spacing.size10,
+    marginLeft: spacing.size10Horizontal,
     fontSize: typography.body,
   },
   cancelButton: {
     alignItems: 'center',
-    paddingVertical: spacing.size10,
+    paddingVertical: spacing.size10Vertical,
     marginTop: 0, 
   },
   cancelButtonText: {

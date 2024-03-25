@@ -25,7 +25,7 @@ export const getSeller = async (sellerId) => {
       }
     } catch (error) {
       console.error('Error fetching seller:', error);
-      return null;
+      throw error;
     }
 };
 

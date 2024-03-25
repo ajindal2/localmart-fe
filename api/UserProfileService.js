@@ -24,7 +24,7 @@ export const getUserProfile = async (userId) => {
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
-      return null;
+      throw error;
     }
   };
 
@@ -46,12 +46,12 @@ export const getUserLocation = async (userId) => {
         return null;
       } else {
         const errorData = await response.json();
-        console.error('Error fetching user profile:', errorData);
-        throw new Error(errorData.message || 'Error fetching user profile');
+        console.error('Error fetching user location:', errorData);
+        throw new Error(errorData.message || 'Error fetching user location');
       }
     } catch (error) {
-      console.error('Error fetching user profile:', error);
-      return null;
+      console.error('Error fetching user location:', error);
+      throw error;
     }
   };
 

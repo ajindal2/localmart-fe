@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Image, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, Image, Text, StyleSheet, Alert, TouchableOpacity, Dimensions } from 'react-native';
 import { AuthContext } from '../AuthContext';
 import * as SecureStore from 'expo-secure-store';
 import ButtonComponent from '../components/ButtonComponent';
@@ -62,7 +62,7 @@ const LoginScreen = ({ navigation }) => {
     <Text style={styles.description}>Your local marketplace for everything you need.</Text>
 
     <View style={styles.inputContainer}>
-      <Ionicons name="person-outline" size={20} color="#666" />
+      <Ionicons name="person-outline" size={typography.iconSize} color={colors.iconColor} />
       <InputComponent
         placeholder="Username"
         value={userName}
@@ -78,7 +78,7 @@ const LoginScreen = ({ navigation }) => {
     </TouchableOpacity>
 
     <View style={styles.inputContainer}>
-      <Ionicons name="lock-closed-outline" size={20} color="#666" />
+      <Ionicons name="lock-closed-outline" size={typography.iconSize} color={colors.iconColor} />
       <InputComponent
         placeholder="Password"
         value={password}
@@ -87,7 +87,7 @@ const LoginScreen = ({ navigation }) => {
         style={styles.input}
       />
       <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
-        <Ionicons name={passwordVisible ? 'eye' : 'eye-off'} size={20} color="#666" />
+        <Ionicons name={passwordVisible ? 'eye' : 'eye-off'} size={typography.iconSize} color={colors.iconColor} />
       </TouchableOpacity>
     </View>
     <TouchableOpacity
@@ -115,40 +115,43 @@ const LoginScreen = ({ navigation }) => {
   );
 };
 
+const { width } = Dimensions.get('window');
+const logoSize = width * 0.4; 
+
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: spacing.size20Horizontal,
   },
   logo: {
-    width: 150,
-    height: 150,
-    marginBottom: spacing.size20,
+    width: logoSize,
+    height: logoSize,
+    marginBottom: spacing.size20Vertical,
   },
   title: {
     fontSize: typography.authTitle,
     fontFamily: 'Montserrat', // Use Montserrat font for the title
     color: colors.titleColor, // Use dark color for the text
     textAlign: 'center',
-    marginBottom: spacing.size10,
+    marginBottom: spacing.size10Vertical,
   },
   description: {
     fontSize: typography.body,
     color: colors.secondaryText,
     fontFamily: 'Montserrat',
     textAlign: 'center',
-    marginBottom: spacing.size20,
+    marginBottom: spacing.size20Vertical,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.inputBorder,
-    paddingLeft: spacing.size10,
-    paddingRight: spacing.size10,
-    marginTop: spacing.size10,
+    paddingLeft: spacing.size10Horizontal,
+    paddingRight: spacing.size10Horizontal,
+    marginTop: spacing.size10Vertical,
     borderRadius: spacing.sm,
   },
   input: {
@@ -157,12 +160,11 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   },
   forgotPassword: {
     alignSelf: 'flex-end',
-    marginBottom: spacing.size20,
+    marginBottom: spacing.size20Vertical,
   },
   forgotUsername: {
    alignSelf: 'flex-end',
-    //marginTop: spacing.size10,
-    marginBottom: spacing.size10,
+    marginBottom: spacing.size10Vertical,
   },
   forgotPasswordText: {
     color: 'blue',
@@ -171,7 +173,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    marginVertical: spacing.size20,
+    marginVertical: spacing.size20Vertical,
   },
   line: {
     flex: 1,
@@ -179,7 +181,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     backgroundColor: colors.inputBorder,
   },
   orText: {
-    width: 50,
+    width: spacing.sizeExtraLarge,
     textAlign: 'center',
     color: colors.secondaryText,
   },

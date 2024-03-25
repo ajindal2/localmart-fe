@@ -11,7 +11,7 @@ const InputComponent = ({ placeholder, value, onChangeText, secureTextEntry, mul
   const inputStyles = StyleSheet.create({
     input: {
       width: '100%', // Use full width of the container
-      padding: 10, // Adjust padding
+      padding: 5, // Adjust padding
       marginVertical: 5, // Add some vertical margin for spacing
       borderWidth: 1, // Define border width
       borderColor: colors.inputBorder, // Use border color from theme

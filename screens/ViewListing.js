@@ -111,7 +111,7 @@ const ViewListing = ({ route, navigation }) => {
             });
           }
         } catch (error) {
-          if (error.message === 'RefreshTokenExpired') {
+          if (error.message.includes('RefreshTokenExpired')) {
             logout();
           } 
           Toast.show({
@@ -230,10 +230,10 @@ const ViewListing = ({ route, navigation }) => {
                 </TouchableOpacity>
                 <View style={styles.iconsContainer}>
                   <TouchableOpacity onPress={handleShareListing} style={styles.iconCircle}>
-                    <Ionicons name="share-social" size={24} color="white" />
+                    <Ionicons name="share-social" size={typography.iconLarge} color={colors.white} />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={handleSaveListing} style={styles.iconCircle}>
-                    <Ionicons name={isSaved ? "heart" : "heart-outline"} size={24} color={isSaved ? "orange" : "white"} />
+                    <Ionicons name={isSaved ? "heart" : "heart-outline"} size={typography.iconLarge} color={isSaved ? colors.primary : colors.white} />
                   </TouchableOpacity>
                 </View>
                 <View style={styles.dotContainer}>{renderScrollDots()}</View>
@@ -339,17 +339,21 @@ const ViewListing = ({ route, navigation }) => {
   );
 };
 
+const screenHeight = Dimensions.get('window').height;
+const imageSize = screenHeight * 0.3; 
+const sellerImageSize = screenHeight * 0.1;
+
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1, 
   },
   section: {
-    margin: 5,
-    backgroundColor: '#fff', // Use a light color for the section background
-    borderRadius: 8, // Rounded corners for the section
-    padding: spacing.size10, // Internal padding for the section content
-    marginBottom: spacing.size10, // Space between sections
-    shadowColor: '#000', // Shadow color
+    margin: spacing.size5Horizontal,
+    backgroundColor: colors.white, // Use a light color for the section background
+    borderRadius: spacing.sm, // Rounded corners for the section
+    padding: spacing.size10Horizontal, // Internal padding for the section content
+    marginBottom: spacing.size10Vertical, // Space between sections
+    shadowColor: colors.shadowColor,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -360,26 +364,25 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   },
   topContainer: {
     flex: 1,
-    marginBottom: 60, 
+    marginBottom: spacing.sizeExtraLarge,
   },
   textContainer: {
-    //padding: spacing.size10,
   },
   imageWrapper: {
     position: 'relative',
   },
   iconsContainer: {
     position: 'absolute',
-    top: 10,
-    right: 10,
+    top: spacing.size10Vertical,
+    right: spacing.size10Horizontal,
     flexDirection: 'row',
     alignItems: 'center',
   },
   iconCircle: {
     backgroundColor: 'darkgrey',
     borderRadius: 20,
-    padding: 5,
-    marginLeft: 5,
+    padding: spacing.size5Horizontal,
+    marginLeft: spacing.size5Horizontal,
   },
   buttonContainer: {
     position: 'absolute',
@@ -387,53 +390,22 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
-    paddingVertical: 10,
+    paddingVertical: spacing.size10Vertical,
     backgroundColor: 'transparent',
     borderTopWidth: 1,
     borderTopColor: '#E0E0E0',
   },
-  button: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 30,
-    elevation: 3,
-    backgroundColor: 'dodgerblue',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  buttonText: {
-    fontSize: 16,
-    lineHeight: 21,
-    fontWeight: 'bold',
-    letterSpacing: 0.25,
-    color: 'white',
-  },
-  primaryButton: {
-    backgroundColor: 'red', // Primary button color
-  },
   scrollView: {
     flex: 1,
   },
-  listingImage: {
-    width: 200,
-    height: 200,
-    // other styles
-  },
   image: {
-    height: 250,
+    height: imageSize,
   },
   imageContainer: {
     position: 'relative',
-    marginBottom: 10,
-    backgroundColor: '#fff',
-    shadowColor: '#000', // Shadow color
+    marginBottom: spacing.size10Vertical,
+    backgroundColor: colors.white,
+    shadowColor: colors.shadowColor,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -443,75 +415,66 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     elevation: 3, // Elevation for Android
   },
   title: {
-    fontSize: 22,
+    fontSize: typography.sectionTitle,
     fontWeight: 'bold',
-    paddingTop: 5,
-    paddingBottom: 5,
-    paddingLeft: 10,
+    paddingTop: spacing.size5Vertical,
+    paddingBottom: spacing.size5Vertical,
+    paddingLeft: spacing.size10Horizontal,
   },
   price: {
-    fontSize: 18,
+    fontSize: typography.heading,
     color: colors.secondaryText,
-    paddingLeft: 10,
-    paddingBottom: 5,
-  },
-  separator: {
-    height: 2,
-    backgroundColor: colors.separatorColor,
-    marginBottom: spacing.size10,
-    marginTop: spacing.size10,
+    paddingLeft: spacing.size10Horizontal,
+    paddingBottom: spacing.size5Vertical,
   },
   sectionTitle: {
     fontSize: typography.heading,
     fontWeight: 'bold',
     color: colors.headingColor, 
-    paddingBottom: 5,
+    paddingBottom: spacing.size5Vertical,
   },
   sellerDetailsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: 10,
+    paddingBottom: spacing.size10Vertical,
   },
   sellerDetails: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   sellerInfo: {
-    //marginLeft: 10, // Adjust as needed
   },
   sellerName: {
-    fontSize: 16,
+    fontSize: typography.body,
     fontWeight: 'bold',
-    marginBottom: 5, 
+    marginBottom: spacing.size5Vertical, 
   },
   dateJoined: {
-    fontSize: 14,
-    //fontWeight: 'bold',
-    marginBottom: 5, 
+    fontSize: typography.subHeading,
+    marginBottom: spacing.size5Vertical, 
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 5, // Adjust as needed
+    marginTop: spacing.size5Vertical
   },
   ratingCount: {
-    fontSize: 14,
-    marginLeft: 5,
-    // other styling as needed
+    fontSize: typography.subHeading,
+    marginLeft: spacing.size5Vertical,
   },
   sellerImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginRight: 10,
+    width: sellerImageSize,
+    height: sellerImageSize,
+    borderRadius: sellerImageSize/2,
+    marginRight: spacing.size10Horizontal,
   },
   dotContainer: {
     position: 'absolute',
-    bottom: 10, // Adjust as needed
+    bottom: spacing.size10Vertical,
     alignSelf: 'center',
     flexDirection: 'row',
-    padding: 5,
+    padding: spacing.size5Horizontal,
     backgroundColor: 'rgba(255, 255, 255, 0.5)', // Semi-transparent white
     borderRadius: 15,
   },
@@ -527,28 +490,8 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   inactiveDot: {
     backgroundColor: 'white', // Color for inactive dots
   },
-  modalView: {
-    flex: 1,
-    backgroundColor: 'black',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 30,
-    left: 10,
-  },
-  fullScreenImage: {
-    width: '100%',
-    height: '80%',
-    resizeMode: 'contain',
-  },
-  modalDotContainer: {
-    position: 'absolute',
-    bottom: 30,
-  },
   locationText: {
-    paddingBottom: 10,
+    paddingBottom: spacing.size10Vertical,
     color: colors.secondaryText, 
   },
 });

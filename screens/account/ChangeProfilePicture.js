@@ -98,7 +98,7 @@ const handleChoosePhoto = async () => {
       // Navigate back or refresh the profile view if necessary
       navigation.navigate('MyProfile');
     } catch (error) {
-      if (error.message === 'RefreshTokenExpired') {
+      if (error.message.includes('RefreshTokenExpired')) {
         logout();
       } else {
         Alert.alert('Error', 'Could not update profile image. Please try again later.');
@@ -143,7 +143,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center', // Aligns horizontally center
-    padding: spacing.size10,
+    padding: spacing.size10Horizontal,
   },
   imageContainer: {
     marginBottom: marginBottom, // Adds spacing between the image and the buttons
@@ -170,7 +170,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     width: '100%',
   },
   firstButton: {
-    marginBottom: spacing.size20, 
+    marginBottom: spacing.size20Vertical, 
   },
   button: {
     width: '75%', 
