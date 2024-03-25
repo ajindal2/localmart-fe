@@ -31,7 +31,7 @@ const ChatScreen = ({ route, navigation }) => {
         createdAt: message.sentAt ? new Date(message.sentAt) : new Date(),
         user: {
           _id: message.senderId ? (message.senderId._id || message.senderId) : 'unknown',
-          name: message.senderId ? (message.senderId.userName || (message.senderId === user._id || message.senderId._id === user._id ? 'You' : 'Unknown')) : 'Unknown',
+          name: message.senderId ? (message.senderId.displayName || (message.senderId === user._id || message.senderId._id === user._id ? 'You' : 'Unknown')) : 'Unknown',
         },
       };
     });

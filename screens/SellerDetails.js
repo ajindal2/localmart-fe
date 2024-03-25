@@ -101,7 +101,7 @@ const SellerDetails = ({ route, navigation }) => {
               onError={() => setSellerImageLoadError(true)}
             />
           </TouchableOpacity>
-          <Text style={styles.sellerName}>{sellerProfile.userId.userName}</Text>
+          <Text style={styles.sellerName}>{sellerProfile.userId.displayName}</Text>
           <Text style={styles.dateJoined}>Joined {formatJoinedDate(sellerProfile.userId.date)}</Text>
           {sellerProfile.aboutMe && (
             <Text style={styles.sellerDescription}>{sellerProfile.aboutMe}</Text>
@@ -141,7 +141,7 @@ const SellerDetails = ({ route, navigation }) => {
                     />                 
                     <View style={styles.ratingDetails}>
                       <View style={styles.ratingInfo}>
-                          <Text style={styles.raterName}>{ratingWithProfile.ratedBy.userName}</Text>
+                          <Text style={styles.raterName}>{ratingWithProfile.ratedBy.displayName}</Text>
                           <StarRating rating={ratingWithProfile.stars} size={16} />
                       </View>
                       <Text style={styles.ratingDate}>{formatDate(ratingWithProfile.dateGiven)}</Text>

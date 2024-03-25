@@ -277,7 +277,7 @@ const ViewListing = ({ route, navigation }) => {
                         onError={() => setSellerImageLoadError(true)}
                       />
                       <View style={styles.sellerInfo}>
-                          <Text style={styles.sellerName}>{sellerProfile.userId.userName}</Text>
+                          <Text style={styles.sellerName}>{sellerProfile.userId.displayName}</Text>
                           <Text style={styles.dateJoined}>Joined {formatDate(sellerProfile.userId.date)}</Text>
                           <View style={styles.ratingContainer}>
                           <StarRating

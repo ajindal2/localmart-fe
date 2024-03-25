@@ -83,7 +83,7 @@ const MyMessages = ({ navigation }) => {
         // Check if there's at least one message in the array
         const lastMessage = item.messages[item.messages.length - 1];
         const lastMessageContent = lastMessage ? lastMessage.content : 'No messages';
-        const lastMessageSenderName = lastMessage?.senderId?.userName ?? 'Unknown';
+        const lastMessageSenderName = lastMessage?.senderId?.displayName ?? 'Unknown';
         const lastMessageTimestamp = lastMessage ? lastMessage.sentAt : new Date();
         const isLastMessageUnread = item.unreadCount > 0 && !item.lastMessageRead;
       

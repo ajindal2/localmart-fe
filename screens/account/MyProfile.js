@@ -22,7 +22,8 @@ const MyProfile = ({ navigation }) => {
   const [isAboutMeEditable, setIsAboutMeEditable] = useState(false); 
   const [userAuthDetails, setUserAuthDetails] = useState({
     emailAddress: '',
-    userName: ''
+    userName: '',
+    displayName: '',
   });
   const [userProfileDetails, setUserProfileDetails] = useState({
     profilePicture: '',
@@ -49,6 +50,7 @@ const MyProfile = ({ navigation }) => {
         setUserAuthDetails({
           emailAddress: userAuthProfile.emailAddress,
           userName: userAuthProfile.userName,
+          displayName: userAuthProfile.displayName,
           date: userAuthProfile.date,
         });
        
@@ -141,6 +143,7 @@ const MyProfile = ({ navigation }) => {
           <Text style={styles.subText}>Member since {formatDate(userAuthDetails.date)}</Text>
         </View>
       </View>
+
       <View style={styles.aboutSection}>
         <Text style={styles.text}>About Me</Text>
         <View style={styles.inputRow}>
@@ -160,6 +163,7 @@ const MyProfile = ({ navigation }) => {
           </TouchableOpacity>
          </View>
       </View>
+
       <View style={styles.aboutSection}>
         <Text style={styles.text}>User Name</Text>
         <View style={styles.inputRow}>
@@ -181,6 +185,25 @@ const MyProfile = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
+
+      <View style={styles.aboutSection}>
+        <Text style={styles.text}>Display Name</Text>
+        <View style={styles.inputRow}>
+          <InputComponent
+            placeholder="Display Name"
+            value={userAuthDetails.displayName}          
+            editable={false}
+            style={styles.input}
+          />
+          <TouchableOpacity
+              onPress={() => Alert.alert('Information', 'Display name cannot be edited. Contact us if you really need to change it.')}
+              style={styles.iconContainer}
+            >
+            <Icon name="question-circle" size={typography.iconSize} color={colors.iconColor} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
       <View style={styles.aboutSection}>
         <Text style={styles.text}>Email Address</Text>
         <View style={styles.inputRow}>
@@ -200,6 +223,7 @@ const MyProfile = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
+
       <View style={styles.aboutSection}>
         <Text style={styles.text}>Password</Text>
         <View style={styles.inputRow}>
@@ -213,11 +237,13 @@ const MyProfile = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
+
       <View style={styles.aboutSection}>
       <ButtonComponent title="Update Profile" type="primary" 
         onPress={handleUpdateProfile}
         style={{ width: '100%', flexDirection: 'row' }}/>
       </View>
+
     </ScrollView>
   );
 };

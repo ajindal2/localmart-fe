@@ -1,5 +1,5 @@
 import React, { useState} from 'react';
-import { View, TouchableOpacity, Alert, StyleSheet, Image, Text, Dimensions } from 'react-native';
+import { View, TouchableOpacity, Alert, StyleSheet, Image, Text, Dimensions, ScrollView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import ButtonComponent from '../components/ButtonComponent';
 import { useFonts } from 'expo-font';
@@ -12,6 +12,7 @@ const RegisterScreen = ({ navigation }) => {
   const [userName, setUserName] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
   const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [errors, setErrors] = useState({});
   const [fontsLoaded] = useFonts({
@@ -28,6 +29,7 @@ const RegisterScreen = ({ navigation }) => {
        setUserName('');
        setEmailAddress('');
        setPassword('');
+       setDisplayName('');
     }, [])
   );
 
@@ -55,6 +57,12 @@ const RegisterScreen = ({ navigation }) => {
       isValid = false;
       newErrors.password = 'Password must be at least 6 characters, contain an uppercase letter and a number.';
     }
+
+     // DisplayName validation
+     if (!displayName || displayName.length < 2 || displayName.length > 30 || !/^[A-Za-z\s]+$/.test(displayName)) {
+      isValid = false;
+      newErrors.displayName = 'Display Name must be between 2 and 30 characters and contain only letters.';
+    }
   
     setErrors(newErrors);
     return isValid;
@@ -72,7 +80,7 @@ const RegisterScreen = ({ navigation }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userName, emailAddress, password }),
+        body: JSON.stringify({ userName, displayName, emailAddress, password }),
     });
 
     // Check if the response is as expected
@@ -99,7 +107,7 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Image source={require('../assets/app_icon.png')} style={styles.logo} />
       <Text style={styles.title}>Create Account</Text>
       <Text style={styles.description}>Your local marketplace for everything you need.</Text>
@@ -114,6 +122,20 @@ const RegisterScreen = ({ navigation }) => {
         />
       </View>
       {errors.userName && <Text style={styles.errorText}>{errors.userName}</Text>}
+
+      <View style={styles.inputContainer}>
+        <Ionicons name="md-person-circle-outline" size={typography.iconSize} color={colors.iconColor} />
+        <InputComponent
+          placeholder="Display Name"
+          value={displayName}
+          onChangeText={setDisplayName}
+          style={styles.input}
+        />
+        <TouchableOpacity onPress={() => Alert.alert("Display Name Info", "Your display name is how others will see you in the app. It can be your real name or a nickname.")}>
+          <Ionicons name="md-information-circle-outline" size={typography.iconSize} color={colors.iconColor} style={{ marginLeft: 10 }} />
+        </TouchableOpacity>
+      </View>
+      {errors.displayName && <Text style={styles.errorText}>{errors.displayName}</Text>}
 
       <View style={styles.inputContainer}>
       <Ionicons name="mail-outline" size={typography.iconSize} color={colors.iconColor} />
@@ -157,7 +179,7 @@ const RegisterScreen = ({ navigation }) => {
       <ButtonComponent title="Login" type="secondary" 
         onPress={() => navigation.navigate('LoginScreen')} 
        style={{ width: '100%', flexDirection: 'row' }}/>
-    </View>
+    </ScrollView>
     );
   };
 
