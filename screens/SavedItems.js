@@ -147,6 +147,10 @@ const SavedItems = ({navigation, route}) => {
   .filter(item => item._id === activeItemId)
   .map(item => getActionSheetOptions(item))[0] || [];
 
+  const handleHomeScreen = React.useCallback(() => {
+    navigation.navigate('HomeScreen');
+  }, [navigation]);
+
   return (
     <View style={styles.container}>
       {loading ? (
@@ -161,7 +165,7 @@ const SavedItems = ({navigation, route}) => {
           <Text style={styles.errorTitle}>{errorMessageTitle}</Text>
           <Text style={styles.errorMessage}>{emptyListingsMessage}</Text>
           <ButtonComponent iconName="home-outline" type="primary" title="Start Exploring"
-            onPress={() => navigation.navigate('HomeScreen')}
+            onPress={handleHomeScreen}
             style={{ marginTop: spacing.sizeExtraLarge }}
           />
         </View>

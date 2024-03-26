@@ -3,7 +3,7 @@ import { View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../constants/colors';
 
-const StarRating = ({ rating, onRatingChange, maxStars = 5, size = 20  }) => {
+const StarRating = React.memo(({ rating, onRatingChange, maxStars = 5, size = 20  }) => {
   const renderStars = () => {
     let stars = [];
     const floorRating = Math.floor(rating);
@@ -43,6 +43,6 @@ const StarRating = ({ rating, onRatingChange, maxStars = 5, size = 20  }) => {
   };
 
   return <View style={{ flexDirection: 'row' }}>{renderStars()}</View>;
-};
+});
 
 export default StarRating;

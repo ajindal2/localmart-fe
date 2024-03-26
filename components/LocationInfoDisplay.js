@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LocationContext } from '../components/LocationProvider';
 import { useTheme } from '../components/ThemeContext';
 
-const LocationInfoDisplay = ({ onPress }) => {
+const LocationInfoDisplay = React.memo(({ onPress }) => {
     const { location } = useContext(LocationContext); 
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
@@ -32,7 +32,7 @@ const LocationInfoDisplay = ({ onPress }) => {
           <Text style={styles.locationText}>{locationText}</Text>
       </TouchableOpacity>
     );
-  };
+  });
 
   const getStyles = (colors, typography, spacing) => StyleSheet.create({
     locationContainer: {

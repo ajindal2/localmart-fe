@@ -12,6 +12,7 @@ import * as FileSystem from 'expo-file-system';
 const ChangeProfilePicture = ({ route, navigation }) => {
   const [image, setImage] = useState(null);
   const { user, logout } = useContext(AuthContext);
+  const [isCreating, setIsCreating] = useState(false); // to disable button after single press
   const userProfilePicture = route.params?.profilePicture ?? 'https://via.placeholder.com/150';
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
@@ -92,6 +93,7 @@ const handleChoosePhoto = async () => {
 };
 
   const handleConfirmPhoto = async () => {
+    setIsCreating(true); 
     try {
       const result = await uploadProfileImage(user._id, image);
       Alert.alert('Profile Image Updated', 'Your profile image has been updated successfully.');
@@ -103,8 +105,13 @@ const handleChoosePhoto = async () => {
       } else {
         Alert.alert('Error', 'Could not update profile image. Please try again later.');
       }
+    } finally {
+      setIsCreating(false); 
     }
   };
+
+  // Dynamically set the button title
+  let buttonTitle = isCreating ? "Processing..." : "Use photo";
 
   return (
     <View style={styles.container}>
@@ -123,7 +130,9 @@ const handleChoosePhoto = async () => {
       </View>
       {image && (
          <View style={styles.bottomButtonContainer}>
-          <ButtonComponent title="Use photo" type="primary" 
+          <ButtonComponent title={buttonTitle} 
+          disabled={isCreating}
+          loading={isCreating}  type="primary" 
           onPress={handleConfirmPhoto}
           />
          </View>

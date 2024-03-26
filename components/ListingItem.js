@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, Image, StyleSheet, View } from 'react-native';
 import { useTheme } from './ThemeContext';
 
-const ListingItem = ({ item, onPress }) => {
+const ListingItem = React.memo(({ item, onPress }) => {
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
     const STOCK_IMAGE_URI = require('../assets/stock-image.png'); 
@@ -47,7 +47,7 @@ const ListingItem = ({ item, onPress }) => {
         </View>
       </TouchableOpacity>
     );
-  };
+  });
 
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   itemContainer: {

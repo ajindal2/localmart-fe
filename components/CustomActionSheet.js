@@ -3,7 +3,7 @@ import { Modal, View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'rea
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../components/ThemeContext';
 
-const CustomActionSheet = ({ isVisible, onClose, options }) => {
+const CustomActionSheet = React.memo(({ isVisible, onClose, options }) => {
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
 
@@ -27,7 +27,7 @@ const CustomActionSheet = ({ isVisible, onClose, options }) => {
       </TouchableOpacity>
     </Modal>
   );
-};
+});
 
 const { width } = Dimensions.get('window');
 const iconSize = width * 0.1; 

@@ -4,7 +4,7 @@ import { useTheme } from './ThemeContext';
 import { useFonts } from 'expo-font';
 
 
-const MySearchBar =  ({ value, onUpdate, navigation }) => {
+const MySearchBar =  React.memo(({ value, onUpdate, navigation }) => {
   const [fontsLoaded] = useFonts({
     Montserrat: require('../assets/fonts/Montserrat-Regular.ttf'), 
   });
@@ -45,6 +45,6 @@ const MySearchBar =  ({ value, onUpdate, navigation }) => {
       value={value}
     />
   );
-};
+});
 
 export default MySearchBar;

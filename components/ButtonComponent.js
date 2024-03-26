@@ -1,9 +1,10 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useTheme } from './ThemeContext';
 import { Ionicons } from '@expo/vector-icons'; 
 
-const ButtonComponent = ({ title, iconName, iconSize = 20, iconColor, type, onPress, style, round = false }) => {
+const ButtonComponent = ({ title, iconName, iconSize = 20, iconColor, type, onPress, style, round = false,  disabled = false,
+  loading = false }) => {
   const { colors, typography, spacing } = useTheme();
 
   // Determine the size of the round button based on the iconSize
@@ -31,12 +32,32 @@ const ButtonComponent = ({ title, iconName, iconSize = 20, iconColor, type, onPr
     icon: {
       color: iconColor || (type === 'primary' ? colors.white : colors.primary), // Use iconColor prop or default to button text color
     },
+    activityIndicator: {
+      marginLeft: spacing.size10Horizontal,
+      marginRight: spacing.size5Horizontal,
+    }
   });
 
   return (
-    <TouchableOpacity onPress={onPress} style={[baseButtonStyles.button, style]}>
-      {iconName && (
-        <Ionicons name={iconName} size={iconSize} color={baseButtonStyles.icon.color} style={title ? { marginRight: spacing.size10Horizontal } : {}} />
+    <TouchableOpacity 
+      onPress={!disabled && !loading ? onPress : undefined} 
+      disabled={disabled || loading}
+      style={[baseButtonStyles.button, style]}
+    >
+      {iconName && !loading && (
+        <Ionicons
+          name={iconName}
+          size={iconSize}
+          color={baseButtonStyles.icon.color}
+          style={title ? { marginRight: spacing.size10Horizontal } : {}}
+        />
+      )}
+      {loading && (
+        <ActivityIndicator
+          size="small"
+          color={type === 'primary' ? colors.white : colors.primary}
+          style={baseButtonStyles.activityIndicator}
+        />
       )}
       {title && <Text style={baseButtonStyles.text}>{title}</Text>}
     </TouchableOpacity>

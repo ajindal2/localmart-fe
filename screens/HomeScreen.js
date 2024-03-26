@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState, useRef } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import MySearchBar from '../components/MySearchBar';
 import { getListings } from '../api/ListingsService';
@@ -14,6 +14,7 @@ import {sendPushToken} from '../api/AppService';
 import { AuthContext } from '../AuthContext';
 
 const HomeScreen = ({ navigation }) => {
+
   const { user, logout } = useContext(AuthContext);
   const [listings, setListings] = useState([]);
   const [error, setError] = useState(null);
@@ -22,6 +23,7 @@ const HomeScreen = ({ navigation }) => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState(''); 
   const [currentPage, setCurrentPage] = useState(1);
+  const currentPageRef = useRef(1);
   const [totalPages, setTotalPages] = useState(null);
   const { location } = useContext(LocationContext);
   const { colors, typography, spacing } = useTheme();
@@ -39,21 +41,24 @@ const HomeScreen = ({ navigation }) => {
   }, [search]);
 
   useEffect(() => {
+    console.log('Inside debouncedSearch useeffect');
     setListings([]);
-    setCurrentPage(1); // Reset to first page
+    //setCurrentPage(1); // Reset to first page
+    currentPageRef.current = 1;
     setTotalPages(null); // Reset total pages
 
-    fetchListings(debouncedSearch, currentPage);
+    fetchListings(debouncedSearch);
   }, [debouncedSearch]);
 
   useEffect(() => {
     if (location) {
        // Reset listings and current page when location changes
       setListings([]);
-      setCurrentPage(1); // Reset to first page
+      //setCurrentPage(1); // Reset to first page
+      currentPageRef.current = 1;
       setTotalPages(null); // Reset total pages
 
-      fetchListings(null, currentPage); // fetchListings will pick up the location from the context
+      fetchListings(null); // fetchListings will pick up the location from the context
     }
   }, [location]);
 
@@ -77,7 +82,6 @@ const HomeScreen = ({ navigation }) => {
     token = await AsyncStorage.getItem('pushToken');
 
     if (token) {
-      console.log('Push token already exists:', token);
       return;
     }
 
@@ -131,8 +135,9 @@ const HomeScreen = ({ navigation }) => {
     }
 }
 
-const fetchListings = async (searchKey = '', page = currentPage) => {
-  setError(null); // Reset the error state
+const fetchListings = async (searchKey = '') => {
+
+    setError(null); // Reset the error state
     setLoading(true);
     setLoaded(false); // Reset loaded before fetching
 
@@ -145,11 +150,11 @@ const fetchListings = async (searchKey = '', page = currentPage) => {
             longitude: location.coordinates[0].longitude,
             maxDistance: 80467  // 50 miles in meters
             },  
-            page,
-            10, // Set your desired limit or make it configurable
+            currentPageRef.current,
+            50, // Set your desired limit or make it configurable
           );
       } else {
-        paginatedResult = await getListings(searchKey, {}, page, 10);
+        paginatedResult = await getListings(searchKey, {}, currentPageRef.current, 50);
       }
       
       const { listings, pagination } = paginatedResult; // Destructure to get the listings array
@@ -183,6 +188,16 @@ const fetchListings = async (searchKey = '', page = currentPage) => {
     });
   }, [navigation]);
 
+  const locationInfoPress = React.useCallback(() => {
+    navigation.navigate('SearchLocationPreferenceScreen')
+  }, [navigation]);
+
+  const loadMoreListings = () => {
+    if (!loading && currentPageRef.current < totalPages) {
+      currentPageRef.current += 1; // Update the ref value
+    }
+  };
+
   return (
     <View style={styles.container}>
       <MySearchBar
@@ -190,7 +205,7 @@ const fetchListings = async (searchKey = '', page = currentPage) => {
        onUpdate={(text) => setSearch(text)}
        navigation={navigation}
       />
-     <LocationInfoDisplay onPress={() => navigation.navigate('SearchLocationPreferenceScreen')} />
+     <LocationInfoDisplay onPress={() => locationInfoPress()} />
      {loading ? (
       <ActivityIndicator size="large" color={colors.primary} />
     ) : error ? (
@@ -212,11 +227,7 @@ const fetchListings = async (searchKey = '', page = currentPage) => {
             onPress={() => handlePress(item)}
           />
         )}
-        onEndReached={() => {
-          if ( !loading && currentPage < totalPages) {
-            setCurrentPage(prevPage => prevPage + 1);
-          }
-        }}
+        onEndReached={loadMoreListings} 
         onEndReachedThreshold={0.5}
         // Using index condition because of the dummy item insertged when odd listings since taht wont have _id field.
         keyExtractor={(item, index) => item._id ? item._id.toString() : index.toString()}

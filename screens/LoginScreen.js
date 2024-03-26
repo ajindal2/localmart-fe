@@ -13,6 +13,7 @@ const LoginScreen = ({ navigation }) => {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [isCreating, setIsCreating] = useState(false); // to disable button after single press
   const { setUser, setToken } = useContext(AuthContext);
   const [fontsLoaded] = useFonts({
     Montserrat: require('../assets/fonts/Montserrat-Regular.ttf'), 
@@ -25,6 +26,7 @@ const LoginScreen = ({ navigation }) => {
   }
 
   const handleLogin = async () => {
+    setIsCreating(true); 
     try {
       const response = await fetch(`${BASE_URL}/auth/login`, {
         method: 'POST',
@@ -48,18 +50,31 @@ const LoginScreen = ({ navigation }) => {
       } else {
         console.error('Error in login data:', data);
         Alert.alert('Login failed', 'Invalid Username or Password');
+        setIsCreating(false); 
       }
     } catch (error) {
       console.error('Error logging in:', error);
       Alert.alert('Login error', 'An error occurred while trying to log in');
+    } finally {
+      setIsCreating(false); 
     }
   };
+
+  const handleForgotPasswordScreen = React.useCallback(() => {
+    navigation.navigate('ForgotPasswordScreen');
+  }, [navigation]);
+  
+  const handleRegisterScreen = React.useCallback(() => {
+    navigation.navigate('RegisterScreen');
+  }, [navigation]);
+
+  let buttonTitle = isCreating ? "Processing..." : "Login";
 
   return (
   <View style={styles.container}>
     <Image source={require('../assets/app_icon.png')} style={styles.logo} />
     <Text style={styles.title}>Welcome Back</Text>
-    <Text style={styles.description}>Your local marketplace for everything you need.</Text>
+    <Text style={styles.description}>Your local marketplace for produce.</Text>
 
     <View style={styles.inputContainer}>
       <Ionicons name="person-outline" size={typography.iconSize} color={colors.iconColor} />
@@ -92,11 +107,15 @@ const LoginScreen = ({ navigation }) => {
     </View>
     <TouchableOpacity
       style={styles.forgotPassword}
-      onPress={() => navigation.navigate('ForgotPasswordScreen')} >
+      onPress={handleForgotPasswordScreen} >
       <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
     </TouchableOpacity>
 
-    <ButtonComponent title="Login" type="primary" 
+    <ButtonComponent  
+      title={buttonTitle} 
+      disabled={isCreating}
+      loading={isCreating}  
+      type="primary" 
       onPress={handleLogin}           
       style={{ width: '100%', flexDirection: 'row' }}
     />
@@ -108,7 +127,7 @@ const LoginScreen = ({ navigation }) => {
     </View>
 
     <ButtonComponent title="Register" type="secondary" 
-      onPress={() => navigation.navigate('RegisterScreen')} 
+      onPress={handleRegisterScreen} 
      style={{ width: '100%', flexDirection: 'row' }}/>
 
   </View>

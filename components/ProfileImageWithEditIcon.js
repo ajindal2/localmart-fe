@@ -3,7 +3,7 @@ import { View, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-nat
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from './ThemeContext';
 
-const ProfileImageWithEditIcon = ({ imageUri, onEditPress }) => {
+const ProfileImageWithEditIcon = React.memo(({ imageUri, onEditPress }) => {
   const { colors, typography, spacing } = useTheme();
   const imageSource = imageUri ? { uri: imageUri } : { uri: 'https://via.placeholder.com/150' }; // Fallback image if imageUri is null
   const { width } = Dimensions.get('window');
@@ -36,6 +36,6 @@ const ProfileImageWithEditIcon = ({ imageUri, onEditPress }) => {
       </TouchableOpacity>
     </View>
   );
-};
+});
 
 export default ProfileImageWithEditIcon;

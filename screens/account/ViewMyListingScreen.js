@@ -223,6 +223,16 @@ const ViewMyListingScreen = ({navigation}) => {
   .filter(item => item._id === activeItemId)
   .map(item => getActionSheetOptions(item))[0] || [];
 
+  const handlePress = React.useCallback(() => {
+    navigation.navigate('ListingStack', {
+      screen: 'CreateNewListingScreen',
+      params: {
+        isEditing: false, 
+        fromAccount: true, // To hide the bottom tab when navigating from here.
+      },
+    });
+  }, [navigation]);
+
   return (
     <View style={styles.container}>
       {loading ? (
@@ -237,13 +247,7 @@ const ViewMyListingScreen = ({navigation}) => {
           <Text style={styles.errorTitle}>{errorMessageTitle}</Text>
           <Text style={styles.errorMessage}>{emptyListingsMessage}</Text>
           <ButtonComponent iconName="create-outline" type="primary" title="Start Selling"
-            onPress={() => navigation.navigate('ListingStack', {
-              screen: 'CreateNewListingScreen',
-              params: {
-                isEditing: false, 
-                fromAccount: true, // To hide the bottom tab when navigating from here.
-              },
-            })}
+            onPress={handlePress}
             style={{ marginTop: spacing.sizeExtraLarge }}
           />
         </View>

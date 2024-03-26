@@ -21,6 +21,7 @@ const UpdatePasswordScreen = ({navigation}) => {
   const { user, logout } = useContext(AuthContext);
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
+  const [isCreating, setIsCreating] = useState(false); // to disable button after single press
 
   useHideBottomTab(navigation, true);
 
@@ -60,14 +61,17 @@ const UpdatePasswordScreen = ({navigation}) => {
   };
 
   const handleUpdatePassword = async () => {
+    setIsCreating(true); 
     if (!validateInput()) {
       // Input validation failed
+      setIsCreating(false); 
       return;
     }
     try {
       const response = await updatePassword(user._id, currentPassword, newPassword, confirmNewPassword);
       if (!response.ok) {
         // Handle server-side validation errors, e.g., incorrect current password
+        setIsCreating(false); 
         const errorData = await response.json();
         if (errorData.errors) {
           setErrors(errorData.errors);
@@ -84,8 +88,12 @@ const UpdatePasswordScreen = ({navigation}) => {
         logout();
       } 
       Alert.alert('Error', error.message || 'Update failed, please try again later');
+    } finally {
+      setIsCreating(false); 
     }
   };
+
+  let buttonTitle = isCreating ? "Processing..." : "Update Password";
 
   return (
     <View style={styles.container}>
@@ -132,7 +140,11 @@ const UpdatePasswordScreen = ({navigation}) => {
       {errors.confirmNewPassword && <Text style={styles.errorText}>{errors.confirmNewPassword}</Text>}
 
       <View style={styles.bottomButtonContainer}>
-        <ButtonComponent title="Update Password" type="primary"  
+        <ButtonComponent 
+          title={buttonTitle} 
+          disabled={isCreating}
+          loading={isCreating} 
+          type="primary"  
           onPress={handleUpdatePassword} 
           style={{ width: '100%', flexDirection: 'row' }} />
       </View>

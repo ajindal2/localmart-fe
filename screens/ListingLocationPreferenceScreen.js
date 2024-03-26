@@ -14,6 +14,7 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
     const { logout } = useContext(AuthContext);
+    const [isCreating, setIsCreating] = useState(false); // to disable button after single press
 
     useHideBottomTab(navigation, true);
     
@@ -29,6 +30,7 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
     };
 
     const updateLocationWithZipCode = async () => {
+      setIsCreating(true); 
       if (/^\d{5}$/.test(zipCode)) {
         try {
           const result = await validateAndGeocodePostalCode(zipCode);
@@ -48,8 +50,12 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
           console.error('Failed to retrieve location details:', error);
           Alert.alert('Error', error.message);
         }
+        finally {
+          setIsCreating(false); 
+        }
       } else {
         Alert.alert('Invalid ZIP Code', 'Please enter a valid 5-digit ZIP code.');
+        setIsCreating(false); 
       }
     };
 
@@ -90,6 +96,9 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
       updateLocation(location);
     };
 
+    // Dynamically set the button title
+   let buttonTitle = isCreating ? "Processing..." : "Update Location";
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Where is your item located?</Text>
@@ -110,7 +119,11 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
         />
 
       <View style={styles.bottomButtonContainer}>
-        <ButtonComponent title="Update Location" type="primary" 
+        <ButtonComponent 
+          title={buttonTitle} 
+          disabled={isCreating}
+          loading={isCreating}
+          type="primary" 
           onPress={updateLocationWithZipCode}
           style={{ width: '100%', flexDirection: 'row' }}
         />

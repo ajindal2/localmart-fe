@@ -18,7 +18,6 @@ import ListingMap from '../components/ListingMap';
 
 
 const ViewListing = ({ route, navigation }) => {
-    //const { item } = route.params;
     const hasFetchedData = useRef(false);
     const screenWidth = Dimensions.get('window').width;
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -55,9 +54,9 @@ const ViewListing = ({ route, navigation }) => {
     setIsModalVisible(false);
   };
 
-    const navigateToSellerDetails = () => {
-        navigation.navigate('SellerDetails', { sellerProfile, ratingsWithProfile, averageRating });
-    };
+    const navigateToSellerDetails = React.useCallback(() => {
+      navigation.navigate('SellerDetails', { sellerProfile, ratingsWithProfile, averageRating });
+    }, [navigation]);
 
     const handleScroll = (event) => {
       const contentOffsetX = event.nativeEvent.contentOffset.x;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
 import ProfileImageWithEditIcon from '../../components/ProfileImageWithEditIcon';
 import { getUser, updateUser } from '../../api/UserService';
 import { getUserProfile, updateUserProfile } from '../../api/UserProfileService';
@@ -114,30 +114,40 @@ const MyProfile = ({ navigation }) => {
     setIsUserProfileDetailsChanged(false);
   };
 
-  if (isLoading) {
-    return (
-      // You can use your own custom Loader component here
-      <Text>Loading...</Text>
-    );
-  }
+  const onChangeAboutMe = React.useCallback((text) => {
+    setUserProfileDetails({ ...userProfileDetails, aboutMe: text });
+    setIsUserProfileDetailsChanged(true);
+  }, [userProfileDetails]); 
+  
+  const onChangeEmail = React.useCallback((text) => {
+    setUserAuthDetails({ ...userAuthDetails, emailAddress: text });
+    setIsUserAuthDetailsChanged(true);
+  }, [userAuthDetails]);
+  
+  const handleEditProfilePicture =  React.useCallback(() => {
+    navigation.navigate('ChangeProfilePicture', {
+      profilePicture: userProfileDetails.profilePicture,
+    });
+  }, [navigation]);
 
-  if (error) {
-    return (
-      <View>
-        <Text>Error: {error}</Text>
-      </View>
-    );
-  }
+  const handleUpdatePasswordScreen = React.useCallback(() => {
+    navigation.navigate('UpdatePasswordScreen');
+  }, [navigation]);
 
   return (
     <ScrollView style={styles.container}>
+      {isLoading ? (
+         <ActivityIndicator size="large" color={colors.primary} />
+    ) : error ? (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    ) : (
+      <>
       <View style={styles.imageSection}>
         <ProfileImageWithEditIcon
         imageUri={userProfileDetails.profilePicture}
-        onEditPress={() => {
-            navigation.navigate('ChangeProfilePicture', {
-              profilePicture: userProfileDetails.profilePicture, 
-            })}}
+        onEditPress={handleEditProfilePicture} 
         />
         <View style={styles.profileSection}>
           <Text style={styles.subText}>Member since {formatDate(userAuthDetails.date)}</Text>
@@ -152,10 +162,7 @@ const MyProfile = ({ navigation }) => {
             multiline
             value={userProfileDetails.aboutMe}
             editable={isAboutMeEditable}
-            onChangeText={(text) => {
-              setUserProfileDetails({ ...userProfileDetails, aboutMe: text });
-              setIsUserProfileDetailsChanged(true);
-            }}
+            onChangeText={onChangeAboutMe}          
             style={styles.input}
           />
           <TouchableOpacity onPress={() => setIsAboutMeEditable(true)} style={styles.iconContainer}>
@@ -170,10 +177,6 @@ const MyProfile = ({ navigation }) => {
           <InputComponent
             placeholder="User Name"
             value={userAuthDetails.userName}          
-            onChangeText={(text) => {
-              setUserAuthDetails({ ...userAuthDetails, userName: text });
-              setIsUserAuthDetailsChanged(true);
-            }}
             editable={false}
             style={styles.input}
           />
@@ -211,10 +214,7 @@ const MyProfile = ({ navigation }) => {
             placeholder="Email"
             keyboardType="email-address"
             value={userAuthDetails.emailAddress}          
-            onChangeText={(text) => {
-              setUserAuthDetails({ ...userAuthDetails, emailAddress: text });
-              setIsUserAuthDetailsChanged(true);
-            }}
+            onChangeText={onChangeEmail}
             editable={isEmailEditable} // Control the editable state
             style={styles.input}
           />
@@ -232,7 +232,7 @@ const MyProfile = ({ navigation }) => {
             editable={false} 
             style={styles.input}
           />
-          <TouchableOpacity onPress={() => navigation.navigate('UpdatePasswordScreen')} style={styles.iconContainer}>
+          <TouchableOpacity onPress={handleUpdatePasswordScreen} style={styles.iconContainer}>
             <Icon name="pencil" size={typography.iconSize} color={colors.iconColor} />
           </TouchableOpacity>
         </View>
@@ -243,7 +243,8 @@ const MyProfile = ({ navigation }) => {
         onPress={handleUpdateProfile}
         style={{ width: '100%', flexDirection: 'row' }}/>
       </View>
-
+      </>
+    )}
     </ScrollView>
   );
 };
@@ -256,6 +257,17 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
       flex: 1,
       padding: spacing.size10Horizontal,
+    },
+    errorContainer: {
+      alignItems: 'center',
+      marginTop: spacing.size20Vertical,
+    },
+    errorText: {
+      fontSize: typography.subHeading,
+      color: colors.secondaryText,
+      marginTop: spacing.size10Vertical,
+      textAlign: 'center',
+      paddingHorizontal: spacing.size20Horizontal,
     },
     imageSection: {
       flexDirection: 'row',

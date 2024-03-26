@@ -25,13 +25,13 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
   const [shouldCreateListing, setShouldCreateListing] = useState(false);
   const [titleError, setTitleError] = useState('');
   const [priceError, setPriceError] = useState('');
-  const [priceValidationError, setPriceValidationError] = useState('');
   const [photoError, setPhotoError] = useState('');
   const [isEditing] = useState(route.params?.isEditing || false);
   const [listing] = useState(route.params?.listing || {});
   const fromAccount = route.params?.fromAccount;
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
+  const [isCreating, setIsCreating] = useState(false); // to disable button after single press
 
   useEffect(() => {
     console.log('Photos updated:', photos);
@@ -133,7 +133,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
     return () => {
       // Cleanup or reset route params if needed
     };
-  }, [navigation, route.params?.updatedLocation, user._id]);
+  }, [route.params?.updatedLocation, user._id]);
   
   const handleCancelListing = () => {
     Alert.alert(
@@ -186,8 +186,6 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
     );
   };
   
-
-  // TODO add logic to use camera for photos
   const handleAddPhoto = async () => {
     const remainingSlots = 10 - photos.length;
     if (remainingSlots <= 0) {
@@ -242,8 +240,10 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
     );
   };
 
-  useEffect(() => {   
+  //useEffect(() => {   
       const handleCreateListing = async () => {
+        setIsCreating(true); 
+
         const hasTitleError = !title.trim();
         const hasPhotoError = photos.length === 0;
         const priceErrorMessage = validatePrice(price);
@@ -255,6 +255,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
         // If any errors, do not proceed with listing creation
         if (hasTitleError || priceErrorMessage || hasPhotoError) {
           console.log('Error: Required fields are missing');
+          setIsCreating(false); 
           return;
         }
 
@@ -269,19 +270,20 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           if (isEditing) {
             // Call API to update the listing
             await updateListing(listing._id, listingDetails);
+            Alert.alert('Listing updated successfully');
           } else {
             // Call API to create a new listing
             await createListing(user._id, listingDetails);
+            Alert.alert('Listing created successfully');
           }
           // Handle success
-          setShouldCreateListing(false); // Reset the flag
+          // setShouldCreateListing(false); // Reset the flag
           // Handle success - reset the form fields and navigate to HomeScreen
           setTitle('');
           setDescription('');
           setPrice('');
           setIsFree(false);
           setPhotos([]);
-          Alert.alert('Listing created successfully');
           navigation.navigate('HomeScreen'); // Navigate to the homeScreen
       } catch (error) {
         if (error.message.includes('RefreshTokenExpired')) {
@@ -290,15 +292,18 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           Alert.alert('Error', 'An unknown error occured, please try again later.');
         }
         console.error(error);
-        setShouldCreateListing(false); // Reset the flag
+        //setShouldCreateListing(false); // Reset the flag
+      } finally {
+        setIsCreating(false); 
+        //setShouldCreateListing(false);
       }
     };
 
-    if (shouldCreateListing) {
-      handleCreateListing();
-      setShouldCreateListing(false); 
-    }
-  }, [photos, shouldCreateListing, title, description, price, isFree, user._id]);
+    //if (shouldCreateListing) {
+      //handleCreateListing();
+      //setShouldCreateListing(false); 
+    //}
+  //}, [photos, shouldCreateListing, title, description, price, isFree, user._id]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -306,7 +311,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
       setTitleError('');
       setPriceError('');
       setPhotoError('');
-  
+      setIsCreating(false); 
       // Optionally reset form fields
       // setTitle('');
       // setDescription('');
@@ -364,6 +369,16 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
     return '';
   };
 
+  const navigateToListingLocationPreferenceScreen = React.useCallback(() => {
+    navigation.navigate('ListingLocationPreferenceScreen');
+  }, [navigation]);
+
+   // Dynamically set the button title
+   let buttonTitle = isEditing ? "Update" : "Create";
+   if (isCreating) {
+     buttonTitle = "Processing...";
+   }
+
   return (
     <ScrollView style={styles.container}>
       
@@ -383,7 +398,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
            placeholder="What are you selling?"
            onChangeText={setTitle}
            value={title}
-          style={[titleError ? styles.errorInput : {marginTop: spacing.size10Vertical, padding:spacing.size10Horizontal}]}
+           style={[titleError ? styles.errorInput : {marginTop: spacing.size10Vertical, padding:spacing.size10Horizontal}]}
         />
         {titleError ? <Text style={styles.errorMessage}>{titleError}</Text> : null}
 
@@ -444,16 +459,21 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           </Text>
           <ButtonComponent 
             title="Edit"
-            onPress={() => navigation.navigate('ListingLocationPreferenceScreen')}
+            onPress={navigateToListingLocationPreferenceScreen}
             style={styles.buttonStyle} 
           />
         </View>
         <View style={styles.separator} />
       </View>
 
-      <ButtonComponent title={isEditing ? 'Update' : 'Create'} type="primary" 
+      <ButtonComponent 
+        title={buttonTitle} 
+        disabled={isCreating}
+        loading={isCreating}
+        type="primary" 
         onPress={() => {
-          setShouldCreateListing(true); // Set the state as needed 
+          handleCreateListing();
+          //setShouldCreateListing(true); // Set the state as needed 
         }}
         style={{ marginTop: spacing.size20Vertical, width: '100%', flexDirection: 'row' }}
       />

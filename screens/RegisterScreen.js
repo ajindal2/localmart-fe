@@ -20,6 +20,7 @@ const RegisterScreen = ({ navigation }) => {
   });
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
+  const [isCreating, setIsCreating] = useState(false); // to disable button after single press
 
   useFocusEffect(
     React.useCallback(() => {
@@ -69,8 +70,10 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   const handleRegister = async () => {
+    setIsCreating(true); 
     if (!validateInput()) {
       // Input validation failed
+      setIsCreating(false); 
       return;
     }
 
@@ -103,8 +106,17 @@ const RegisterScreen = ({ navigation }) => {
     // Handle network errors or errors returned from the server
     console.error('Error in registration:', error);
     Alert.alert('Registration Error', 'An error occurred during registration');
-  }
+    } finally {
+      setIsCreating(false); 
+    }
   };
+
+  const handleLoginScreen = React.useCallback(() => {
+    navigation.navigate('LoginScreen');
+  }, [navigation]);
+
+  // Dynamically set the button title
+  let buttonTitle = isCreating ? "Processing..." : "Register";
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -165,7 +177,11 @@ const RegisterScreen = ({ navigation }) => {
       {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
   
-      <ButtonComponent title="Register" type="primary" 
+      <ButtonComponent 
+        title={buttonTitle} 
+        disabled={isCreating}
+        loading={isCreating} 
+        type="primary" 
         onPress={handleRegister}           
         style={{ width: '100%', flexDirection: 'row' }}
       />
@@ -177,7 +193,7 @@ const RegisterScreen = ({ navigation }) => {
       </View>
   
       <ButtonComponent title="Login" type="secondary" 
-        onPress={() => navigation.navigate('LoginScreen')} 
+        onPress={handleLoginScreen} 
        style={{ width: '100%', flexDirection: 'row' }}/>
     </ScrollView>
     );
