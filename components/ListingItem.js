@@ -1,11 +1,12 @@
 import React from 'react';
 import { TouchableOpacity, Text, Image, StyleSheet, View } from 'react-native';
 import { useTheme } from './ThemeContext';
+import { DEFAULT_IMAGE_URI } from '../constants/AppConstants'
+
 
 const ListingItem = React.memo(({ item, onPress }) => {
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
-    const STOCK_IMAGE_URI = require('../assets/stock-image.png'); 
 
     const convertMetersToMiles = (meters) => {
       return meters * 0.000621371;
@@ -31,7 +32,7 @@ const ListingItem = React.memo(({ item, onPress }) => {
       <TouchableOpacity activeOpacity={1} onPress={onPress} style={styles.itemContainer}>
         <View style={styles.infoContainer}>
         <Image 
-          source={item?.imageUrls?.[0] ? { uri: item.imageUrls[0] } : require('../assets/stock-image.png')}
+          source={item?.imageUrls?.[0] ? { uri: item.imageUrls[0] } : DEFAULT_IMAGE_URI}
           style={styles.image} 
         />      
           <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">

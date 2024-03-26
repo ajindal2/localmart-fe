@@ -15,6 +15,8 @@ import { useTheme } from '../components/ThemeContext';
 import ButtonComponent from '../components/ButtonComponent';
 import ExpandingTextComponent from '../components/ExpandingTextComponent';
 import ListingMap from '../components/ListingMap';
+import { DEFAULT_IMAGE_URI } from '../constants/AppConstants'
+import { DEFAULT_LISTING_IMAGE_URI } from '../constants/AppConstants'
 
 
 const ViewListing = ({ route, navigation }) => {
@@ -32,8 +34,6 @@ const ViewListing = ({ route, navigation }) => {
     const [sellerImageLoadError, setSellerImageLoadError] = useState(false);
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
-    const STOCK_IMAGE_URI = require('../assets/stock-image.png'); 
-    const STOCK_LISTING_IMAGE_URI = require('../assets/app_icon.png'); 
 
     // Hide the bottom tab 
     useHideBottomTab(navigation, true);
@@ -251,7 +251,7 @@ const ViewListing = ({ route, navigation }) => {
           ) : (
             // Render a placeholder or message if no images are available
             <View style={[styles.imageWrapper, { width: screenWidth }]}>
-              <Image source={STOCK_LISTING_IMAGE_URI} style={styles.image} />
+              <Image source={DEFAULT_LISTING_IMAGE_URI} style={styles.image} />
             </View>
           )
         }
@@ -279,7 +279,7 @@ const ViewListing = ({ route, navigation }) => {
                       <Image 
                         source={
                           sellerImageLoadError || !sellerProfile.profilePicture
-                            ? STOCK_IMAGE_URI
+                            ? DEFAULT_IMAGE_URI
                             : { uri: sellerProfile.profilePicture }
                         }
                         style={styles.sellerImage}

@@ -8,6 +8,7 @@ import FullScreenImageModal from '../components/FullScreenImageModal';
 import ListingItem from '../components/ListingItem';
 import { getListingsByUser } from '../api/ListingsService'; 
 import { AuthContext } from '../AuthContext';
+import { DEFAULT_IMAGE_URI } from '../constants/AppConstants'
 
 
 const SellerDetails = ({ route, navigation }) => {
@@ -23,7 +24,6 @@ const SellerDetails = ({ route, navigation }) => {
     const topThreeRatingsWithProfile = ratingsWithProfile.slice(0, 3); // Get top 3 ratings
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
-    const STOCK_IMAGE_URI = require('../assets/stock-image.png'); 
     const errorMessageTitle = "No Listings Found";
     const errorMessageDetails = "Failed to load seller listings";
     const emptyListingsMessage = "This seller does not have other listings. LocalMart is a growing marketplace, please try again later.";
@@ -94,7 +94,7 @@ const SellerDetails = ({ route, navigation }) => {
             <Image 
               source={
                 sellerImageLoadError || !sellerProfile.profilePicture
-                  ? STOCK_IMAGE_URI
+                  ? DEFAULT_IMAGE_URI
                   : { uri: sellerProfile.profilePicture }
               }
               style={styles.sellerImage}
@@ -134,7 +134,7 @@ const SellerDetails = ({ route, navigation }) => {
                   <View style={styles.ratingHeader}>
                     <Image
                       source={
-                        imageErrors[ratingWithProfile.ratedByProfilePicture] || !ratingWithProfile.ratedByProfilePicture ? STOCK_IMAGE_URI : { uri: ratingWithProfile.ratedByProfilePicture }
+                        imageErrors[ratingWithProfile.ratedByProfilePicture] || !ratingWithProfile.ratedByProfilePicture ? DEFAULT_IMAGE_URI : { uri: ratingWithProfile.ratedByProfilePicture }
                       }
                       style={styles.raterImage}
                       onError={() => handleImageError(ratingWithProfile.ratedByProfilePicture)} // Handle error for this specific image URI
@@ -220,7 +220,7 @@ const SellerDetails = ({ route, navigation }) => {
       <FullScreenImageModal
         isVisible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
-        imageUrls={[sellerProfile.profilePicture || STOCK_IMAGE_URI]}
+        imageUrls={[sellerProfile.profilePicture || DEFAULT_IMAGE_URI]}
       />
     </View>
   );

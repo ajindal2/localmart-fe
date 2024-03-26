@@ -64,13 +64,22 @@ export const LocationProvider = ({ children }) => {
           try {
           // Fetch location from the backend
           const fetchedLocation = await getUserLocation(user._id);
-          const location = { 
-            city: fetchedLocation.city,
-            state: fetchedLocation.state,
-            postalCode: fetchedLocation.postalCode,
-            coordinates: [{ latitude: fetchedLocation.coordinates.coordinates[1], longitude: fetchedLocation.coordinates.coordinates[0] }],
-          }
-          setLocation(location);
+          if (fetchedLocation) {
+            const location = {
+              city: fetchedLocation.city,
+              state: fetchedLocation.state,
+              postalCode: fetchedLocation.postalCode
+            };
+
+            if (fetchedLocation.coordinates && fetchedLocation.coordinates.coordinates) {
+              location.coordinates = [{
+                latitude: fetchedLocation.coordinates.coordinates[1],
+                longitude: fetchedLocation.coordinates.coordinates[0]
+              }];
+            }
+
+            setLocation(location);
+        }
         } catch (error) {
           if (error.message.includes('RefreshTokenExpired')) {
             logout();

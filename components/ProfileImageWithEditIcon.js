@@ -2,10 +2,11 @@ import React from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from './ThemeContext';
+import { DEFAULT_IMAGE_URI } from '../constants/AppConstants'
 
 const ProfileImageWithEditIcon = React.memo(({ imageUri, onEditPress }) => {
   const { colors, typography, spacing } = useTheme();
-  const imageSource = imageUri ? { uri: imageUri } : { uri: 'https://via.placeholder.com/150' }; // Fallback image if imageUri is null
+  const imageSource = imageUri ? { uri: imageUri } : DEFAULT_IMAGE_URI;
   const { width } = Dimensions.get('window');
   const imageSize = width * 0.4; 
   

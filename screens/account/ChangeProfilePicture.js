@@ -3,7 +3,7 @@ import { View, Image, StyleSheet, Alert, Dimensions } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { uploadProfileImage} from '../../api/UserProfileService';
 import { AuthContext } from '../../AuthContext';
-import DEFAULT_IMAGE_URI from '../../constants/AppConstants';
+import { DEFAULT_IMAGE_URI } from '../../constants/AppConstants';
 import useHideBottomTab from '../../utils/HideBottomTab'; 
 import ButtonComponent from '../../components/ButtonComponent';
 import { useTheme } from '../../components/ThemeContext';
@@ -13,7 +13,7 @@ const ChangeProfilePicture = ({ route, navigation }) => {
   const [image, setImage] = useState(null);
   const { user, logout } = useContext(AuthContext);
   const [isCreating, setIsCreating] = useState(false); // to disable button after single press
-  const userProfilePicture = route.params?.profilePicture ?? 'https://via.placeholder.com/150';
+  const userProfilePicture = route.params?.profilePicture;
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
 
@@ -120,7 +120,7 @@ const handleChoosePhoto = async () => {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image source={image ? { uri: image } : { uri: userProfilePicture }} style={styles.image} />
+      <Image source={image ? { uri: image } : userProfilePicture ? { uri: userProfilePicture } : DEFAULT_IMAGE_URI} style={styles.image} />
       </View>
       <View style={styles.buttonContainer}>
         <ButtonComponent title="Take photo" type="secondary" iconName="camera"

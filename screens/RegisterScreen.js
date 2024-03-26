@@ -7,6 +7,8 @@ import InputComponent from '../components/InputComponent';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../components/ThemeContext';
 import { BASE_URL } from '../constants/AppConstants';
+import { DEFAULT_LISTING_IMAGE_URI } from '../constants/AppConstants'
+
 
 const RegisterScreen = ({ navigation }) => {
   const [userName, setUserName] = useState('');
@@ -120,7 +122,7 @@ const RegisterScreen = ({ navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Image source={require('../assets/app_icon.png')} style={styles.logo} />
+      <Image source={DEFAULT_LISTING_IMAGE_URI} style={styles.logo} />
       <Text style={styles.title}>Create Account</Text>
       <Text style={styles.description}>Your local marketplace for everything you need.</Text>
   

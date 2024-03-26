@@ -39,6 +39,7 @@ export const getSellerLocation = async (userId) => {
         'Authorization': `Bearer ${token}`
       },
     });
+    // BE return a null lcoation if it does not exist
     if (response.ok) {
       return await response.json();
     } else {

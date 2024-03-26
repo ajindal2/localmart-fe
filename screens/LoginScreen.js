@@ -8,6 +8,8 @@ import InputComponent from '../components/InputComponent';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../components/ThemeContext';
 import { BASE_URL } from '../constants/AppConstants';
+import { DEFAULT_LISTING_IMAGE_URI } from '../constants/AppConstants'
+
 
 const LoginScreen = ({ navigation }) => {
   const [userName, setUserName] = useState('');
@@ -64,7 +66,7 @@ const LoginScreen = ({ navigation }) => {
 
   return (
   <View style={styles.container}>
-    <Image source={require('../assets/app_icon.png')} style={styles.logo} />
+    <Image source={DEFAULT_LISTING_IMAGE_URI} style={styles.logo} />
     <Text style={styles.title}>Welcome Back</Text>
     <Text style={styles.description}>Your local marketplace for groceries.</Text>
 

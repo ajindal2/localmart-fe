@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import StarRating from '../components/StarRating';
 import useHideBottomTab from '../utils/HideBottomTab'; 
 import { useTheme } from '../components/ThemeContext';
+import { DEFAULT_IMAGE_URI } from '../constants/AppConstants'
 
 
 const AllReviewsScreen = ({ route, navigation }) => {
@@ -11,7 +12,6 @@ const AllReviewsScreen = ({ route, navigation }) => {
     const [imageErrors, setImageErrors] = useState({});
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
-    const STOCK_IMAGE_URI = require('../assets/stock-image.png'); 
     const errorMessageTitle = "No Ratings Found";
     const emptyRatingsMessage = "You dont have any ratings yet";
     
@@ -52,7 +52,7 @@ const AllReviewsScreen = ({ route, navigation }) => {
                     <View style={styles.ratingHeader}>
                       <Image
                           source={
-                            imageErrors[ratingWithProfile.ratedByProfilePicture] || !ratingWithProfile.ratedByProfilePicture ? STOCK_IMAGE_URI : { uri: ratingWithProfile.ratedByProfilePicture }
+                            imageErrors[ratingWithProfile.ratedByProfilePicture] || !ratingWithProfile.ratedByProfilePicture ? DEFAULT_IMAGE_URI : { uri: ratingWithProfile.ratedByProfilePicture }
                           }
                           style={styles.raterImage}
                           onError={() => handleImageError(ratingWithProfile.ratedByProfilePicture)} // Handle error for this specific image URI

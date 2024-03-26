@@ -10,6 +10,7 @@ import InputComponent from '../../components/InputComponent';
 import ButtonComponent from '../../components/ButtonComponent';
 import { useTheme } from '../../components/ThemeContext';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
+import { DEFAULT_IMAGE_URI } from '../../constants/AppConstants'
 
 
 const MyProfile = ({ navigation }) => {
@@ -62,12 +63,12 @@ const MyProfile = ({ navigation }) => {
         if (userProfile) {
           setUserProfileDetails({
             aboutMe: userProfile.aboutMe || '', 
-            profilePicture: userProfile.profilePicture || 'https://via.placeholder.com/150',
+            profilePicture: userProfile.profilePicture || DEFAULT_IMAGE_URI,
           })
         } else {
           setUserProfileDetails({
             aboutMe : '',
-            profilePicture : 'https://via.placeholder.com/150',
+            profilePicture : DEFAULT_IMAGE_URI,
           })
         }
         

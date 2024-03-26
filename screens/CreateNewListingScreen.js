@@ -112,7 +112,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
       }
       try {
         const locationData = await  getSellerLocation(user._id);
-        if (locationData && locationData.city) {
+        if (locationData && locationData.city && locationData.coordinates && locationData.coordinates.coordinates) {
           const location = { 
             city: locationData.city,
             state: locationData.state,
@@ -181,9 +181,10 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
               }
   
               if(isEditing) {
-                navigation.navigate('AccountStackNavigator', {
+                /*navigation.navigate('AccountStackNavigator', {
                   screen: 'AccountScreen',
-                }); 
+                }); */
+                navigation.goBack();
               } else {
                 navigation.navigate('HomeScreen');
               }

@@ -41,7 +41,6 @@ const HomeScreen = ({ navigation }) => {
   }, [search]);
 
   useEffect(() => {
-    console.log('Inside debouncedSearch useeffect');
     setListings([]);
     //setCurrentPage(1); // Reset to first page
     currentPageRef.current = 1;
