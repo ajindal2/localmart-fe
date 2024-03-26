@@ -8,9 +8,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { updateSearchDistance } from '../api/UserPreferencesService'
 import { AuthContext } from '../AuthContext';
 import { DEFAULT_SEARCH_DISTANCE } from '../constants/AppConstants';
+import NoInternetComponent from '../components/NoInternetComponent';
+import useNetworkConnectivity from '../components/useNetworkConnectivity';
 
 
 const UserLocationPreferencesScreen = ({ navigation }) => {
+  const isConnected = useNetworkConnectivity();
   const { location } = useContext(LocationContext); 
   const { user } = useContext(AuthContext);
   const [initialDistance, setInitialDistance] = useState(DEFAULT_SEARCH_DISTANCE); // TODO Default distance
@@ -50,6 +53,15 @@ const UserLocationPreferencesScreen = ({ navigation }) => {
         // TODO
     }
   };
+
+
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

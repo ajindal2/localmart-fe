@@ -7,9 +7,12 @@ import { DEFAULT_IMAGE_URI } from '../../constants/AppConstants';
 import useHideBottomTab from '../../utils/HideBottomTab'; 
 import ButtonComponent from '../../components/ButtonComponent';
 import { useTheme } from '../../components/ThemeContext';
-import * as FileSystem from 'expo-file-system';
+import NoInternetComponent from '../../components/NoInternetComponent';
+import useNetworkConnectivity from '../../components/useNetworkConnectivity';
+
 
 const ChangeProfilePicture = ({ route, navigation }) => {
+  const isConnected = useNetworkConnectivity();
   const [image, setImage] = useState(null);
   const { user, logout } = useContext(AuthContext);
   const [isCreating, setIsCreating] = useState(false); // to disable button after single press
@@ -117,6 +120,14 @@ const handleChoosePhoto = async () => {
   // Dynamically set the button title
   let buttonTitle = isCreating ? "Processing..." : "Use photo";
 
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
+  
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>

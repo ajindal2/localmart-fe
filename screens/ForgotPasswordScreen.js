@@ -4,8 +4,12 @@ import { forgotPassword} from '../api/AuthService';
 import ButtonComponent from '../components/ButtonComponent';
 import InputComponent from '../components/InputComponent';
 import { useTheme } from '../components/ThemeContext';
+import NoInternetComponent from '../components/NoInternetComponent';
+import useNetworkConnectivity from '../components/useNetworkConnectivity';
+
 
 const ForgotPasswordScreen = ({ navigation }) => {
+  const isConnected = useNetworkConnectivity();
   const [email, setEmail] = useState('');
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
@@ -19,6 +23,15 @@ const ForgotPasswordScreen = ({ navigation }) => {
     }
   };
 
+
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
+  
   return (
     <View style={styles.container}>
       <Text style={styles.instructions}>

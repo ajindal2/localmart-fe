@@ -5,9 +5,12 @@ import StarRating from '../components/StarRating';
 import useHideBottomTab from '../utils/HideBottomTab'; 
 import { useTheme } from '../components/ThemeContext';
 import { DEFAULT_IMAGE_URI } from '../constants/AppConstants'
+import NoInternetComponent from '../components/NoInternetComponent';
+import useNetworkConnectivity from '../components/useNetworkConnectivity';
 
 
 const AllReviewsScreen = ({ route, navigation }) => {
+  const isConnected = useNetworkConnectivity();
     const { ratingsWithProfile, averageRating } = route.params;
     const [imageErrors, setImageErrors] = useState({});
     const { colors, typography, spacing } = useTheme();
@@ -24,6 +27,14 @@ const AllReviewsScreen = ({ route, navigation }) => {
         [imageId]: true, // Mark this image as errored
       }));
     };
+
+    if (!isConnected) {
+      return (
+        <View style={styles.container}>
+          <NoInternetComponent/>
+        </View>
+      );
+    }
 
     return (
         <ScrollView style={styles.container}>

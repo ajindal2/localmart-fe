@@ -9,9 +9,12 @@ import ListingItem from '../components/ListingItem';
 import { getListingsByUser } from '../api/ListingsService'; 
 import { AuthContext } from '../AuthContext';
 import { DEFAULT_IMAGE_URI } from '../constants/AppConstants'
+import NoInternetComponent from '../components/NoInternetComponent';
+import useNetworkConnectivity from '../components/useNetworkConnectivity';
 
 
 const SellerDetails = ({ route, navigation }) => {
+    const isConnected = useNetworkConnectivity();
     const { sellerProfile, ratingsWithProfile, averageRating } = route.params;
     const { logout } = useContext(AuthContext);
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -192,6 +195,13 @@ const SellerDetails = ({ route, navigation }) => {
     </>
   );
 
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

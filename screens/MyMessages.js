@@ -5,8 +5,12 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useMessagesBadgeCount } from '../MessagesBadgeCountContext';
 import { getChats } from '../api/ChatRestService';
 import { AuthContext } from '../AuthContext';
+import NoInternetComponent from '../components/NoInternetComponent';
+import useNetworkConnectivity from '../components/useNetworkConnectivity';
+
 
 const MyMessages = ({ navigation }) => {
+  const isConnected = useNetworkConnectivity();
   const [chats, setChats] = useState([]);
   const { user, logout } = useContext(AuthContext);
   const [error, setError] = useState(null);
@@ -63,6 +67,15 @@ const MyMessages = ({ navigation }) => {
 
     return unsubscribe;
   }, [navigation]);
+
+
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

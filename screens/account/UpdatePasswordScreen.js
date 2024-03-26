@@ -8,9 +8,12 @@ import ButtonComponent from '../../components/ButtonComponent';
 import { useTheme } from '../../components/ThemeContext';
 import InputComponent from '../../components/InputComponent';
 import { Ionicons } from '@expo/vector-icons';
+import NoInternetComponent from '../../components/NoInternetComponent';
+import useNetworkConnectivity from '../../components/useNetworkConnectivity';
 
 
 const UpdatePasswordScreen = ({navigation}) => {
+  const isConnected = useNetworkConnectivity();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -99,6 +102,14 @@ const UpdatePasswordScreen = ({navigation}) => {
 
   let buttonTitle = isCreating ? "Processing..." : "Update Password";
 
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
+  
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Current Password</Text>

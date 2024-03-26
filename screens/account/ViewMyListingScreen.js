@@ -9,9 +9,12 @@ import { useTheme } from '../../components/ThemeContext';
 import ButtonComponent from '../../components/ButtonComponent';
 import { useFocusEffect } from '@react-navigation/native'; 
 import shareListing from '../../utils/ShareListing';
+import NoInternetComponent from '../../components/NoInternetComponent';
+import useNetworkConnectivity from '../../components/useNetworkConnectivity';
 
 
 const ViewMyListingScreen = ({navigation}) => {
+  const isConnected = useNetworkConnectivity();
   const [listings, setListings] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -237,6 +240,15 @@ const ViewMyListingScreen = ({navigation}) => {
       },
     });
   }, [navigation]);
+
+
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

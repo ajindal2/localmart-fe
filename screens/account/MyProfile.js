@@ -11,9 +11,12 @@ import ButtonComponent from '../../components/ButtonComponent';
 import { useTheme } from '../../components/ThemeContext';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
 import { DEFAULT_IMAGE_URI } from '../../constants/AppConstants'
+import NoInternetComponent from '../../components/NoInternetComponent';
+import useNetworkConnectivity from '../../components/useNetworkConnectivity';
 
 
 const MyProfile = ({ navigation }) => {
+  const isConnected = useNetworkConnectivity();
   const { user, setUser, logout } = useContext(AuthContext);
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
@@ -143,6 +146,15 @@ const MyProfile = ({ navigation }) => {
   const handleUpdatePasswordScreen = React.useCallback(() => {
     navigation.navigate('UpdatePasswordScreen');
   }, [navigation]);
+
+
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>

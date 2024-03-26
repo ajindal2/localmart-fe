@@ -9,9 +9,12 @@ import CustomActionSheet from '../components/CustomActionSheet';
 import { useTheme } from '../components/ThemeContext';
 import ButtonComponent from '../components/ButtonComponent';
 import shareListing from '../utils/ShareListing';
+import NoInternetComponent from '../components/NoInternetComponent';
+import useNetworkConnectivity from '../components/useNetworkConnectivity';
 
 
 const SavedItems = ({navigation, route}) => {
+  const isConnected = useNetworkConnectivity();
   const { user, logout } = useContext(AuthContext);
   const [savedListings, setSavedListings] = useState([]);
   const [error, setError] = useState(null);
@@ -156,6 +159,15 @@ const SavedItems = ({navigation, route}) => {
     navigation.navigate('HomeScreen');
   }, [navigation]);
 
+
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
+  
   return (
     <View style={styles.container}>
       {loading ? (

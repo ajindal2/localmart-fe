@@ -7,9 +7,12 @@ import ButtonComponent from '../components/ButtonComponent';
 import { useTheme } from '../components/ThemeContext';
 import {validateAndGeocodePostalCode} from '../api/LocationService'
 import { AuthContext } from '../AuthContext';
+import NoInternetComponent from '../components/NoInternetComponent';
+import useNetworkConnectivity from '../components/useNetworkConnectivity';
 
 
 const ListingLocationPreferenceScreen = ({ route, navigation }) => {
+    const isConnected = useNetworkConnectivity();
     const [zipCode, setZipCode] = useState('');
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
@@ -96,8 +99,17 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
       updateLocation(location);
     };
 
-    // Dynamically set the button title
-   let buttonTitle = isCreating ? "Processing..." : "Update Location";
+  // Dynamically set the button title
+  let buttonTitle = isCreating ? "Processing..." : "Update Location";
+
+
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

@@ -17,9 +17,12 @@ import ExpandingTextComponent from '../components/ExpandingTextComponent';
 import ListingMap from '../components/ListingMap';
 import { DEFAULT_IMAGE_URI } from '../constants/AppConstants'
 import { DEFAULT_LISTING_IMAGE_URI } from '../constants/AppConstants'
+import NoInternetComponent from '../components/NoInternetComponent';
+import useNetworkConnectivity from '../components/useNetworkConnectivity';
 
 
 const ViewListing = ({ route, navigation }) => {
+    const isConnected = useNetworkConnectivity();
     const hasFetchedData = useRef(false);
     const screenWidth = Dimensions.get('window').width;
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -216,6 +219,15 @@ const ViewListing = ({ route, navigation }) => {
         // Render a loading indicator or null if no item data is available yet
         return <Text>Loading...</Text>;
     }
+
+  
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

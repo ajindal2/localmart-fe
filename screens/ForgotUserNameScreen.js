@@ -4,8 +4,12 @@ import { forgotUserName} from '../api/AuthService';
 import ButtonComponent from '../components/ButtonComponent';
 import InputComponent from '../components/InputComponent';
 import { useTheme } from '../components/ThemeContext';
+import NoInternetComponent from '../components/NoInternetComponent';
+import useNetworkConnectivity from '../components/useNetworkConnectivity';
+
 
 const ForgotUserNameScreen = ({ navigation }) => {
+  const isConnected = useNetworkConnectivity();
   const [email, setEmail] = useState('');
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
@@ -18,6 +22,15 @@ const ForgotUserNameScreen = ({ navigation }) => {
       Alert.alert('Error', error.message || 'There was an error processing your request. Please try again later.');
     }
   };
+
+  
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

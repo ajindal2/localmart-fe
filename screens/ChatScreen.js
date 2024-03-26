@@ -6,9 +6,12 @@ import ChatService from '../api/ChatService';
 import { AuthContext } from '../AuthContext';
 import useHideBottomTab from '../utils/HideBottomTab'; 
 import { useTheme } from '../components/ThemeContext';
+import NoInternetComponent from '../components/NoInternetComponent';
+import useNetworkConnectivity from '../components/useNetworkConnectivity';
 
 
 const ChatScreen = ({ route, navigation }) => {
+  const isConnected = useNetworkConnectivity();
   const { chat } = route.params; // Extract chat from route.params
   const { user, logout } = useContext(AuthContext);
   const { colors, typography, spacing } = useTheme();
@@ -185,6 +188,15 @@ const ChatScreen = ({ route, navigation }) => {
       return GiftedChat.append(previousMessages, newUniqueMessages);
     });*/
   };
+
+
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>

@@ -11,10 +11,12 @@ import useHideBottomTab from '../utils/HideBottomTab';
 import { useTheme } from '../components/ThemeContext';
 import InputComponent from '../components/InputComponent';
 import ButtonComponent from '../components/ButtonComponent';
+import NoInternetComponent from '../components/NoInternetComponent';
+import useNetworkConnectivity from '../components/useNetworkConnectivity';
+
 
 const CreatingNewListingScreen = ({ navigation, route }) => {
-  const PHOTO_SLOT_WIDTH = 120; // Use the same width as defined in your photoSlot style
-
+  const isConnected = useNetworkConnectivity();
   const { user, logout } = useContext(AuthContext);
   const [photos, setPhotos] = useState([]);
   const [title, setTitle] = useState('');
@@ -398,6 +400,15 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
    if (isCreating) {
      buttonTitle = "Processing...";
    }
+
+
+   if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>

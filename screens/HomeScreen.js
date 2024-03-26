@@ -12,9 +12,12 @@ import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import {sendPushToken} from '../api/AppService';
 import { AuthContext } from '../AuthContext';
+import NoInternetComponent from '../components/NoInternetComponent';
+import useNetworkConnectivity from '../components/useNetworkConnectivity';
+
 
 const HomeScreen = ({ navigation }) => {
-
+  const isConnected = useNetworkConnectivity();
   const { user, logout } = useContext(AuthContext);
   const [listings, setListings] = useState([]);
   const [error, setError] = useState(null);
@@ -196,6 +199,15 @@ const fetchListings = async (searchKey = '') => {
       currentPageRef.current += 1; // Update the ref value
     }
   };
+
+
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

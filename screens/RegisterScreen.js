@@ -8,9 +8,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../components/ThemeContext';
 import { BASE_URL } from '../constants/AppConstants';
 import { DEFAULT_LISTING_IMAGE_URI } from '../constants/AppConstants'
+import NoInternetComponent from '../components/NoInternetComponent';
+import useNetworkConnectivity from '../components/useNetworkConnectivity';
 
 
 const RegisterScreen = ({ navigation }) => {
+  const isConnected = useNetworkConnectivity();
   const [userName, setUserName] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
   const [password, setPassword] = useState('');
@@ -119,6 +122,15 @@ const RegisterScreen = ({ navigation }) => {
 
   // Dynamically set the button title
   let buttonTitle = isCreating ? "Processing..." : "Register";
+
+
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

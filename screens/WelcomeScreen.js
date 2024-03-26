@@ -3,8 +3,13 @@ import { View, Text, StyleSheet, ImageBackground, Dimensions } from 'react-nativ
 import ButtonComponent from '../components/ButtonComponent';
 import { useFonts } from 'expo-font';
 import { useTheme } from '../components/ThemeContext';
+import NoInternetComponent from '../components/NoInternetComponent';
+import useNetworkConnectivity from '../components/useNetworkConnectivity';
+
 
 const WelcomeScreen = ({ navigation }) => {
+  const isConnected = useNetworkConnectivity();
+
   const [fontsLoaded] = useFonts({
     Montserrat: require('../assets/fonts/Montserrat-Regular.ttf'), 
   });
@@ -16,6 +21,14 @@ const WelcomeScreen = ({ navigation }) => {
   }
 
   const buttonWidth = (Dimensions.get('window').width / 2) - 30 ;
+
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

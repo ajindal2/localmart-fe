@@ -5,9 +5,12 @@ import { getUserRatings } from '../../api/RatingsService';
 import { AuthContext } from '../../AuthContext';
 import { useTheme } from '../../components/ThemeContext';
 import { Dimensions } from 'react-native';
+import NoInternetComponent from '../../components/NoInternetComponent';
+import useNetworkConnectivity from '../../components/useNetworkConnectivity';
 
 
 const AccountScreen = ({ navigation }) => {
+  const isConnected = useNetworkConnectivity();
   const { user, logout } = useContext(AuthContext);
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
@@ -90,6 +93,14 @@ const AccountScreen = ({ navigation }) => {
     );
   };
 
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       {sections.map((section, index) => (
@@ -102,7 +113,6 @@ const AccountScreen = ({ navigation }) => {
   );
 };
   
-
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
       flex: 1,

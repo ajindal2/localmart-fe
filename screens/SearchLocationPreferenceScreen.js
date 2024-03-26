@@ -8,9 +8,12 @@ import InputComponent from '../components/InputComponent';
 import ButtonComponent from '../components/ButtonComponent';
 import { useTheme } from '../components/ThemeContext';
 import { AuthContext } from '../AuthContext';
+import NoInternetComponent from '../components/NoInternetComponent';
+import useNetworkConnectivity from '../components/useNetworkConnectivity';
 
 
 const SearchLocationPreferenceScreen = ({ navigation, route }) => {
+    const isConnected = useNetworkConnectivity();
     const [zipCode, setZipCode] = useState('');
     const { setLocation } = useContext(LocationContext);
     const { colors, typography, spacing } = useTheme();
@@ -93,8 +96,17 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
         setLocation(location);
     };
 
-    // Dynamically set the button title
-   let buttonTitle = isCreating ? "Processing..." : "Update Location";
+  // Dynamically set the button title
+  let buttonTitle = isCreating ? "Processing..." : "Update Location";
+
+
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

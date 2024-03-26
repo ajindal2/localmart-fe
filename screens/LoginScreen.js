@@ -9,9 +9,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../components/ThemeContext';
 import { BASE_URL } from '../constants/AppConstants';
 import { DEFAULT_LISTING_IMAGE_URI } from '../constants/AppConstants'
+import NoInternetComponent from '../components/NoInternetComponent';
+import useNetworkConnectivity from '../components/useNetworkConnectivity';
 
 
 const LoginScreen = ({ navigation }) => {
+  const isConnected = useNetworkConnectivity();
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -63,6 +66,14 @@ const LoginScreen = ({ navigation }) => {
   };
 
   let buttonTitle = isCreating ? "Processing..." : "Login";
+
+  if (!isConnected) {
+    return (
+      <View style={styles.container}>
+        <NoInternetComponent/>
+      </View>
+    );
+  }
 
   return (
   <View style={styles.container}>
