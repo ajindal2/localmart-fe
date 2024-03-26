@@ -54,19 +54,11 @@ const LoginScreen = ({ navigation }) => {
       }
     } catch (error) {
       console.error('Error logging in:', error);
-      Alert.alert('Login error', 'An error occurred while trying to log in');
+      Alert.alert('Login error', 'An error occurred while trying to log in. Please try again in sometime');
     } finally {
       setIsCreating(false); 
     }
   };
-
-  const handleForgotPasswordScreen = React.useCallback(() => {
-    navigation.navigate('ForgotPasswordScreen');
-  }, [navigation]);
-  
-  const handleRegisterScreen = React.useCallback(() => {
-    navigation.navigate('RegisterScreen');
-  }, [navigation]);
 
   let buttonTitle = isCreating ? "Processing..." : "Login";
 
@@ -74,7 +66,7 @@ const LoginScreen = ({ navigation }) => {
   <View style={styles.container}>
     <Image source={require('../assets/app_icon.png')} style={styles.logo} />
     <Text style={styles.title}>Welcome Back</Text>
-    <Text style={styles.description}>Your local marketplace for produce.</Text>
+    <Text style={styles.description}>Your local marketplace for groceries.</Text>
 
     <View style={styles.inputContainer}>
       <Ionicons name="person-outline" size={typography.iconSize} color={colors.iconColor} />
@@ -107,7 +99,7 @@ const LoginScreen = ({ navigation }) => {
     </View>
     <TouchableOpacity
       style={styles.forgotPassword}
-      onPress={handleForgotPasswordScreen} >
+      onPress={() => navigation.navigate('ForgotPasswordScreen')} >
       <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
     </TouchableOpacity>
 
@@ -127,7 +119,7 @@ const LoginScreen = ({ navigation }) => {
     </View>
 
     <ButtonComponent title="Register" type="secondary" 
-      onPress={handleRegisterScreen} 
+      onPress={() => navigation.navigate('RegisterScreen')} 
      style={{ width: '100%', flexDirection: 'row' }}/>
 
   </View>

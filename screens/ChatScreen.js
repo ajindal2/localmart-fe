@@ -17,6 +17,11 @@ const ChatScreen = ({ route, navigation }) => {
   useHideBottomTab(navigation, true);
 
   const transformMessages = (messages) => {
+    if (!user) {
+      console.error('User is null, cannot transformMessages');
+      return; // Exit the function if there's no user
+    }
+
     // Deduplicate messages based on _id
     const uniqueIds = Array.from(new Set(messages.map(message => message._id)));
     const uniqueMessages = uniqueIds.map(id => {
@@ -70,6 +75,11 @@ const ChatScreen = ({ route, navigation }) => {
   };
 
   const renderBubble = (props) => {
+    if (!user) {
+      console.error('User is null, cannot renderBubble');
+      return; // Exit the function if there's no user
+    }
+
     const isCurrentUser = props.currentMessage.user._id === user._id;
     const senderName = isCurrentUser ? 'You' : props.currentMessage.user.name; // Show 'You' for current user, else show sender's name
 
@@ -140,8 +150,10 @@ const ChatScreen = ({ route, navigation }) => {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       try {
-        // Call the function to mark messages as read
-        markMessagesAsRead(chat._id, user._id);
+        if(user) {
+          // Call the function to mark messages as read
+          markMessagesAsRead(chat._id, user._id);
+        }
       } catch (error) {
         if (error.message.includes('RefreshTokenExpired')) {
           logout();
@@ -155,14 +167,16 @@ const ChatScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   const onSend = (newMessages = []) => {
-    newMessages.forEach((message) => {
-      const createMessageDTO = {
-        senderId: user._id,
-        content: message.text,
-        sentAt: message.createdAt
-      };
-      ChatService.sendMessage(createMessageDTO, chat._id);
-    });
+    if(user) {
+      newMessages.forEach((message) => {
+        const createMessageDTO = {
+          senderId: user._id,
+          content: message.text,
+          sentAt: message.createdAt
+        };
+        ChatService.sendMessage(createMessageDTO, chat._id);
+      });
+    }
     // Update the local state with the new message so it renders immediately
     /*setMessages(previousMessages => {
       const newUniqueMessages = newMessages.filter(newMsg => 
@@ -174,14 +188,22 @@ const ChatScreen = ({ route, navigation }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ChatHeader listing={chat.listingId} /> 
-      <GiftedChat
-      messages={messages}
-      onSend={(newMessages) => onSend(newMessages)}
-      user={{ _id: user._id }}
-      renderBubble={renderBubble}
-    />
-   </View>
+      {user && (
+        <>
+          <ChatHeader listing={chat.listingId} />
+          <GiftedChat
+            messages={messages}
+            onSend={(newMessages) => onSend(newMessages)}
+            user={{ _id: user._id }}
+            renderBubble={renderBubble}
+          />
+        </>
+      )}
+      {!user && (
+        // Optionally, render a placeholder or a message indicating that the user needs to be logged in
+        <Text>Please log in to view the chat.</Text>
+      )}
+    </View>
   );
 };
 

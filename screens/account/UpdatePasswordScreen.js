@@ -61,6 +61,10 @@ const UpdatePasswordScreen = ({navigation}) => {
   };
 
   const handleUpdatePassword = async () => {
+    if (!user) {
+      console.error('User is null, cannot handleUpdatePassword');
+      return; // Exit the function if there's no user
+    }
     setIsCreating(true); 
     if (!validateInput()) {
       // Input validation failed

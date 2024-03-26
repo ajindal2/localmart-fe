@@ -42,6 +42,11 @@ const MyProfile = ({ navigation }) => {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
+      if (!user) {
+        console.error('User is null, cannot fetchUserProfile');
+        return; // Exit the function if there's no user
+      }
+
       setIsLoading(true);
       try {
         const userAuthProfile = await getUser(user._id);
@@ -81,9 +86,13 @@ const MyProfile = ({ navigation }) => {
     fetchUserProfile();
     setIsUserAuthDetailsChanged(false);
     setIsUserProfileDetailsChanged(false);
-  }, [user._id]);
+  }, [user]);
 
   const handleUpdateProfile = async () => {
+    if (!user) {
+      console.error('User is null, cannot handleUpdateProfile');
+      return; // Exit the function if there's no user
+    }
     setIsLoading(true);
     setError('');
     try {

@@ -30,6 +30,11 @@ const AccountScreen = ({ navigation }) => {
   };
 
   const handleAllReviews = async () => {
+    if (!user) {
+      console.error('User is null, cannot handleAllReviews');
+      return; // Exit the function if there's no user
+    }
+
     try {
       const { averageRating, ratingsWithProfile } = await getUserRatings(user._id);
       navigation.navigate('AllReviewsScreen', {ratingsWithProfile, averageRating });     

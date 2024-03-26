@@ -29,6 +29,11 @@ const ViewMyListingScreen = ({navigation}) => {
    useFocusEffect(
       useCallback(() => {
       const loadListings = async () => {
+        if (!user) {
+          console.error('User is null, cannot loadListings');
+          return; // Exit the function if there's no user
+        }
+
         setError(null); // Reset the error state
         setLoading(true);
         setLoaded(false); // Reset loaded before fetching
@@ -55,7 +60,7 @@ const ViewMyListingScreen = ({navigation}) => {
       };
 
       loadListings();
-    }, [user._id])
+    }, [user])
   );
 
   React.useLayoutEffect(() => {

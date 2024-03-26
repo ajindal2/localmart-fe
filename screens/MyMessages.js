@@ -18,6 +18,11 @@ const MyMessages = ({ navigation }) => {
   const emptyMessages = "Chat history with sellers can be found here.";
 
   const fetchChats = async () => {
+    if (!user) {
+      console.error('User is null, cannot fetchChats');
+      return; // Exit the function if there's no user
+    }
+
     try {
       const userId = user._id;
       let fetchedChats = await getChats(userId);
@@ -31,13 +36,6 @@ const MyMessages = ({ navigation }) => {
   
       // Filter out any chats that don't have messages
       fetchedChats = fetchedChats.filter(chat => chat.messages && chat.messages.length > 0);
-  
-      /*fetchedChats.forEach(chat => {
-          console.log(`Chat ID: ${chat._id}`);
-          chat.messages.forEach((message, index) => {
-            console.log(`Message ${index + 1}: ${message.content}`);
-          });
-        });*/
 
       // Reset the error state in case of successful fetch
       setError(null);
@@ -54,7 +52,7 @@ const MyMessages = ({ navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       fetchChats(); // Fetch chats when the screen comes into focus
-    }, [user._id])
+    }, [user])
   );
 
   useEffect(() => {

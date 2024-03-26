@@ -15,7 +15,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
       await forgotPassword(email);
       Alert.alert('Success', 'If your email address is registered with us, you will receive an email with further instructions.');
     } catch (error) {
-      Alert.alert('Error', 'There was an error processing your request. Please try again later.');
+      Alert.alert('Error', error.message || 'There was an error processing your request. Please try again later.');
     }
   };
 

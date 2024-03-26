@@ -80,6 +80,11 @@ const ViewListing = ({ route, navigation }) => {
 
     // Handle save listing action
     const handleSaveListing = async () => {
+        if (!user) {
+          console.error('User is null, cannot handleSaveListing');
+          return; // Exit the function if there's no user
+        }
+
         const newSavedState = !isSaved;
         setIsSaved(newSavedState);
       
@@ -166,6 +171,11 @@ const ViewListing = ({ route, navigation }) => {
         };
         
         const checkIfSaved = async () => {
+          if (!user) {
+            console.error('User is null, cannot checkIfSaved');
+            return; // Exit the function if there's no user
+          }
+
           try {
             const response = await checkSavedStatus(user._id, item._id);
             if (response) {
@@ -325,7 +335,7 @@ const ViewListing = ({ route, navigation }) => {
     </ScrollView>
 
     <View style={styles.buttonContainer}>
-      {sellerProfile && sellerProfile.userId._id !== user._id && (
+      {user && sellerProfile && sellerProfile.userId._id !== user._id && (
         <ButtonComponent 
           title="Message Seller"
           type="primary"

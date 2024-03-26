@@ -26,6 +26,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
   const [titleError, setTitleError] = useState('');
   const [priceError, setPriceError] = useState('');
   const [photoError, setPhotoError] = useState('');
+  const [locationError, setLocationError] = useState('');
   const [isEditing] = useState(route.params?.isEditing || false);
   const [listing] = useState(route.params?.listing || {});
   const fromAccount = route.params?.fromAccount;
@@ -104,6 +105,11 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     const fetchAndSetSellerLocation = async () => {
+      // Check if user is null before proceeding
+      if (!user) {
+        console.error('User is null, cannot fetchAndSetSellerLocation');
+        return; // Exit the function if there's no user
+      }
       try {
         const locationData = await  getSellerLocation(user._id);
         if (locationData && locationData.city) {
@@ -133,9 +139,14 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
     return () => {
       // Cleanup or reset route params if needed
     };
-  }, [route.params?.updatedLocation, user._id]);
+  }, [route.params?.updatedLocation, user]);
   
   const handleCancelListing = () => {
+    // Check if user is null before proceeding
+    if (!user) {
+      console.error('User is null, cannot fetch seller location.');
+      return; // Exit the function if there's no user
+    }
     Alert.alert(
       "Discard Listing",
       "Are you sure you want to discard this listing?",
@@ -242,18 +253,25 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
 
   //useEffect(() => {   
       const handleCreateListing = async () => {
+        if (!user) {
+          console.error('User is null, cannot create listing');
+          return; // Exit the function if there's no user
+        }
+
         setIsCreating(true); 
 
         const hasTitleError = !title.trim();
         const hasPhotoError = photos.length === 0;
         const priceErrorMessage = validatePrice(price);
+        const hasLocationError = pickupLocation == null || !pickupLocation || (!pickupLocation.coordinates && !pickupLocation.postalCode);
 
         setPriceError(priceErrorMessage);
         setTitleError(hasTitleError ? 'Title cannot be empty' : '');
         setPhotoError(hasPhotoError ? 'Add at least 1 photo' : '');
+        setLocationError(hasLocationError ? 'Location cannot be empty' : '');
 
         // If any errors, do not proceed with listing creation
-        if (hasTitleError || priceErrorMessage || hasPhotoError) {
+        if (hasTitleError || priceErrorMessage || hasPhotoError || hasLocationError) {
           console.log('Error: Required fields are missing');
           setIsCreating(false); 
           return;
@@ -311,6 +329,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
       setTitleError('');
       setPriceError('');
       setPhotoError('');
+      setLocationError('');
       setIsCreating(false); 
       // Optionally reset form fields
       // setTitle('');
@@ -322,7 +341,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
       return () => {
         // Optional: Any cleanup logic goes here
       };
-    }, [user._id])
+    }, [user])
   );
 
   const renderPhotoSlots = () => {
@@ -463,6 +482,8 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
             style={styles.buttonStyle} 
           />
         </View>
+        {locationError ? <Text style={styles.errorMessage}>{locationError}</Text> : null}
+
         <View style={styles.separator} />
       </View>
 

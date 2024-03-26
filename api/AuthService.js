@@ -11,7 +11,12 @@ import { BASE_URL } from '../constants/AppConstants';
       });
     
       if (!response.ok) {
-        throw new Error('Failed to send forgot password email');
+        let errorCode = response.status;
+        if (errorCode === 429) {
+          throw new Error('Too many requests. Please try again in sometime.');
+        } else {
+          throw new Error('Failed to send forgot password email');
+        }
       }
       return response.json();
     } catch (error) {
@@ -31,7 +36,12 @@ import { BASE_URL } from '../constants/AppConstants';
       });
     
       if (!response.ok) {
-        throw new Error('Failed to send forgot username email');
+        let errorCode = response.status;
+        if (errorCode === 429) {
+          throw new Error('Too many requests. Please try again in sometime.');
+        } else {
+          throw new Error('Failed to send forgot password email');
+        }
       }
     
       return response.json();

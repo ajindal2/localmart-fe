@@ -26,6 +26,11 @@ const SavedItems = ({navigation, route}) => {
   const emptyListingsMessage = "You dont have any saved listings at this time.";
 
   const fetchSavedListings = async () => {
+    if (!user) {
+      console.error('User is null, cannot fetchSavedListings');
+      return; // Exit the function if there's no user
+    }
+
     setError(null); // Reset the error state
     setLoading(true);
     setLoaded(false); // Reset loaded before fetching
@@ -54,7 +59,7 @@ const SavedItems = ({navigation, route}) => {
   useFocusEffect(
     useCallback(() => {
       fetchSavedListings();
-    }, [user._id])
+    }, [user])
   );
 
   // Handle share listing action
@@ -174,7 +179,6 @@ const SavedItems = ({navigation, route}) => {
         data={savedListings}
         renderItem={renderItem}
         keyExtractor={(item, index) => item._id ? item._id.toString() : index.toString()}
-
       />
       )}
      <CustomActionSheet

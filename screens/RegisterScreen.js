@@ -105,7 +105,7 @@ const RegisterScreen = ({ navigation }) => {
   } catch (error) {
     // Handle network errors or errors returned from the server
     console.error('Error in registration:', error);
-    Alert.alert('Registration Error', 'An error occurred during registration');
+    Alert.alert('Registration Error', 'An error occurred during registration. Please try again in sometime.');
     } finally {
       setIsCreating(false); 
     }

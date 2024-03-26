@@ -93,6 +93,10 @@ const handleChoosePhoto = async () => {
 };
 
   const handleConfirmPhoto = async () => {
+    if (!user) {
+      console.error('User is null, cannot handleConfirmPhoto');
+      return; // Exit the function if there's no user
+    }
     setIsCreating(true); 
     try {
       const result = await uploadProfileImage(user._id, image);
