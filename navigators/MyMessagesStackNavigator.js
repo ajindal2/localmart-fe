@@ -2,6 +2,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MyMessages from '../screens/MyMessages';
 import ChatScreen from '../screens/ChatScreen';
 import ViewListingStackNavigator from './ViewListingStackNavigator';
+import RatingForSellerScreen from '../screens/RatingForSellerScreen';
+
 
 const MyMessagesStack = createStackNavigator();
 
@@ -18,13 +20,15 @@ function MyMessagesStackNavigator() {
           headerShown: true,
           title: 'Message' 
         }} /> 
-        <MyMessagesStack.Screen
-        name="ViewListingStack"
-        component={ViewListingStackNavigator}
+        <MyMessagesStack.Screen name="ViewListingStack" component={ViewListingStackNavigator}
         options={{ 
           headerShown: false,
-        }} 
-      />
+        }} />
+        <MyMessagesStack.Screen name="RatingForSellerScreen" component={RatingForSellerScreen}
+        options={{ 
+          headerShown: true,
+          title: 'Rate Seller',
+        }}  />
       </MyMessagesStack.Navigator>
     );
   }

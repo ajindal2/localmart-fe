@@ -39,9 +39,7 @@ const RegisterScreen = ({ navigation }) => {
     }, [])
   );
 
-  if (!fontsLoaded) {
-    return null; // Or a loading indicator if you prefer
-  }
+  
 
   const validateInput = () => {
     let isValid = true;
@@ -130,6 +128,10 @@ const RegisterScreen = ({ navigation }) => {
         <NoInternetComponent/>
       </View>
     );
+  }
+
+  if (!fontsLoaded) {
+    return null; // Or a loading indicator if you prefer
   }
 
   return (

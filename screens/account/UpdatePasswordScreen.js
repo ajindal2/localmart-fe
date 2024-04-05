@@ -206,9 +206,11 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     marginBottom: spacing.size20Vertical,
   },
   bottomButtonContainer: {
-    position: 'absolute',
-    bottom: marginBottom,
-    width: '100%',
+    position: 'absolute', // Position the button container absolutely
+    bottom: 0, // At the bottom of the parent container
+    left: 0,
+    right: 0,
+    padding: 10, // Add some padding around the button
   },
 });
 

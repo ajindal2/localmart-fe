@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Dimensions, 
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../../AuthContext'; 
 import { getListingsByUser, deleteListing, updateListingStatus } from '../../api/ListingsService'; 
+import { getBuyerInfoByListingId } from '../../api/ChatRestService';
 import useHideBottomTab from '../../utils/HideBottomTab'; 
 import CustomActionSheet from '../../components/CustomActionSheet'; 
 import { useTheme } from '../../components/ThemeContext';
@@ -82,11 +83,11 @@ const ViewMyListingScreen = ({navigation}) => {
     });
   }, [navigation]);
 
-  const markAsSold = async (listingId) => {
+  const markAsSold = async (listing) => {
     try {
-      await updateListingStatus(listingId, 'Sold');
+      await updateListingStatus(listing._id, 'Sold');
       const updatedListings = listings.map(item =>
-        item._id === listingId ? { ...item, status: 'Sold' } : item
+        item._id === listing._id ? { ...item, status: 'Sold' } : item
       );
       setListings(updatedListings);
     } catch (error) {
@@ -95,6 +96,23 @@ const ViewMyListingScreen = ({navigation}) => {
       } else {
         console.error('Error marking listing as sold:', error);
         Alert.alert('Error', 'Error updating status, please try again later.');
+      }
+    }
+
+    try {
+      if(user) {
+        const buyers = await getBuyerInfoByListingId(listing._id, user._id)
+        if (buyers) {
+          // Buyers found, navigate to BuyerConfirmationScreen
+          navigation.navigate('BuyerConfirmationScreen', { buyers, listing });
+        }
+      }
+    } catch (error) {
+      if (error.message.includes('RefreshTokenExpired')) {
+        logout();
+      } else {
+        // Just log and do nothing. User can start rating flow from this page later.
+        console.error('Error getting buyer details after marking as sold for user and listing:', user._id, listing._id, error);
       }
     }
   };
@@ -115,19 +133,37 @@ const ViewMyListingScreen = ({navigation}) => {
     }
   };
 
+  const handleRateMoreBuyers = async (listing) => {
+    try{
+      if (user) {
+        const buyers = await getBuyerInfoByListingId(listing._id, user._id)
+        if (buyers) {
+          // Buyers found, navigate to BuyerConfirmationScreen
+          navigation.navigate('BuyerConfirmationScreen', { buyers, listing });
+        }
+      }
+    } catch (error) {
+      if (error.message.includes('RefreshTokenExpired')) {
+        logout();
+      } else {
+        console.error('Error handling RateMoreBuyers for user and listing:', user._id, listing._id, error);
+        Alert.alert('Error', 'An unknown error occured, please try again later.');
+      }
+    }
+  };
+
   // Handle share listing action
   const handleShareListing = (listingId) => {
     const listingTitle = 'Check this Item for Sale!';
     const listingUrl = getListingUrl(listingId);
     shareListing(listingTitle, listingUrl);
-};
+  };
 
   const getActionSheetOptions = (item) => [
     {
       icon: 'share-social-outline',
       text: 'Share Listing',
       onPress: () => {
-        console.log('Sharing listing:', item._id);
         handleShareListing(item._id);
         setActiveItemId(null);
       },
@@ -158,7 +194,7 @@ const ViewMyListingScreen = ({navigation}) => {
             {
               text: 'Yes',
               onPress: async () => {
-                markAsSold(item._id)
+                markAsSold(item)
                 setActiveItemId(null); // Close the action sheet only after confirming
               },
             },

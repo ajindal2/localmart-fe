@@ -3,6 +3,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import CreateListingStackNavigator from './CreateListingStackNavigator';
 import ViewListingStackNavigator from './ViewListingStackNavigator';
 import ViewMyListingScreen from '../screens/account/ViewMyListingScreen';
+import BuyerConfirmationScreen from '../screens/account/BuyerConfirmationScreen';
+import RatingForBuyerScreen from '../screens/RatingForBuyerScreen';
+
 
 const ViewMyListingStack = createStackNavigator();
 
@@ -15,6 +18,22 @@ function ViewMyListingStackNavigator() {
         options={{ 
           headerShown: true,
           title: 'My Listings',
+        }} 
+      />
+      <ViewMyListingStack.Screen
+        name="BuyerConfirmationScreen"
+        component={BuyerConfirmationScreen}
+        options={{ 
+          headerShown: true,
+          title: 'Select Buyer',
+        }} 
+      />
+      <ViewMyListingStack.Screen
+        name="RatingForBuyerScreen"
+        component={RatingForBuyerScreen}
+        options={{ 
+          headerShown: true,
+          title: 'Rate Buyer',
         }} 
       />
       <ViewMyListingStack.Screen

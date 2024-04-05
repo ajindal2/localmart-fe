@@ -44,3 +44,64 @@ export const getUserRatings = async (userId) => {
       throw new Error('Failed to fetch ratings');
     }
 };
+
+export const createRating = async (ratingDetails) => {
+  try {
+    const token = await SecureStore.getItemAsync('token');
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/ratings`, { 
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(ratingDetails),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      let errorCode = response.status;
+      console.error('Failed to create rating:', errorData);
+      // ConflictException
+      if (errorCode === 409) {
+        throw new Error('Rating already exists');
+      } else {
+        throw new Error(errorData.message || 'Failed to create rating');
+      }
+    }
+
+    const rating = await response.json();
+    return rating;
+  } catch (error) {
+    console.error('Error creating rating:', error);
+    throw error;
+  }
+};
+
+export const checkRatingExists = async (listingId, ratedBy, ratedUser) => {
+  const token = await SecureStore.getItemAsync('token');
+
+  try {
+    const queryParams = new URLSearchParams({ listingId, ratedBy, ratedUser }).toString();
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/ratings/exists?${queryParams}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const exists = await response.json(); // Directly get the boolean value
+      return exists;
+    } else {
+      const errorData = await response.json();
+      console.error('Failed to check rating existence', errorData.message);
+      // Returning false. Let the user continue and add a double check when creating rating if it already exists.
+     return false;
+    }
+  } catch (error) {
+    console.error('Error checking rating existence:', error);
+    // Throwing error here and not returning false since it could be token refresh error.
+    throw error;
+  }
+};

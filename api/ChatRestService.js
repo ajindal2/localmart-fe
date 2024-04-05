@@ -58,6 +58,35 @@ export const getChats = async (userId) => {
     }
   };
 
+  // To send create a message and send notification to buyer to rate the seller.
+  export const createSystemChat = async (buyerId, listingId) => {
+    const token = await SecureStore.getItemAsync('token');
+  
+    try {
+      const response = await fetchWithTokenRefresh(`${BASE_URL}/chat/create-system-chat`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ buyerId, listingId }),
+      });
+  
+      if (response.ok) {
+        const chat = await response.json();
+        return chat;
+      } else {
+        // TODO do retry in case of failure and dont surface it to the seller. Do not throw errro here.
+        const errorData = await response.json();
+        console.error('Error creating system chat:', errorData);
+        throw new Error(errorData.message || 'Error creating system chat');
+      }
+    } catch (error) {
+      console.error('Error creating system chat:', error);
+      throw error; // Rethrow or handle the error as needed
+    }
+  };
+
   export const markMessagesAsRead = async (chatId, userId) => {
     const token = await SecureStore.getItemAsync('token');
 
@@ -123,5 +152,35 @@ export const updateNotificationCount = async (userId, count) => {
     console.error('Error updating notification count:', error);
   }
 }
+
+// Get the buyer details based on the chats for the given listing
+export const getBuyerInfoByListingId = async (listingId, sellerId) => {
+  const token = await SecureStore.getItemAsync('token');
+
+  try {
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/chat/buyer-info/${listingId}/${sellerId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    });
+
+    if (response.ok) {
+      const buyerInfo = await response.json();
+      return buyerInfo;
+    } else if (response.status === 404) {
+      // No buyer information found, return null or a specific message
+      return null;
+    } else {
+      const errorData = await response.json();
+      console.error('Error fetching buyer information:', errorData);
+      throw new Error(errorData.message || 'Error fetching buyer information');
+    }
+  } catch (error) {
+    console.error('Error fetching buyer information:', error);
+    return null;
+  }
+};
+
 
   

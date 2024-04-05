@@ -6,7 +6,7 @@ import { DEFAULT_IMAGE_URI } from '../constants/AppConstants'
 
 const ProfileImageWithEditIcon = React.memo(({ imageUri, onEditPress }) => {
   const { colors, typography, spacing } = useTheme();
-  const imageSource = imageUri ? { uri: imageUri } : DEFAULT_IMAGE_URI;
+  const imageSource = typeof imageUri === 'string' && imageUri !== '' ? { uri: imageUri } : DEFAULT_IMAGE_URI;
   const { width } = Dimensions.get('window');
   const imageSize = width * 0.4; 
   

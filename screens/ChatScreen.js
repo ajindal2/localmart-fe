@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import { GiftedChat, Bubble, Time } from 'react-native-gifted-chat';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import { GiftedChat, Bubble, Time, Message } from 'react-native-gifted-chat';
 import {markMessagesAsRead} from '../api/ChatRestService';
 import ChatService from '../api/ChatService';
 import { AuthContext } from '../AuthContext';
@@ -12,7 +12,7 @@ import useNetworkConnectivity from '../components/useNetworkConnectivity';
 
 const ChatScreen = ({ route, navigation }) => {
   const isConnected = useNetworkConnectivity();
-  const { chat } = route.params; // Extract chat from route.params
+  const { chat } = route.params; 
   const { user, logout } = useContext(AuthContext);
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
@@ -170,6 +170,10 @@ const ChatScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   const onSend = (newMessages = []) => {
+    if(chat.isSystemMessage) {
+      Alert.alert('Error', 'Cannot reply to system generated message');
+      return;
+    }
     if(user) {
       newMessages.forEach((message) => {
         const createMessageDTO = {
@@ -187,6 +191,23 @@ const ChatScreen = ({ route, navigation }) => {
       );
       return GiftedChat.append(previousMessages, newUniqueMessages);
     });*/
+  };
+
+  const onMessagePress = (message) => {
+    if (chat.isSystemMessage && chat.listingId) {
+      // If the chat is a special system message, navigate to RatingForSellerScreen
+      navigation.navigate('RatingForSellerScreen', { listing: chat.listingId,  buyerId: chat.buyerId});
+    }
+    // Handle other types of messages as needed
+  };
+
+  const renderMessage = (messageProps) => {
+    return (
+      <Message
+        {...messageProps}
+        onPress={() => onMessagePress(messageProps.currentMessage)}
+      />
+    );
   };
 
 
@@ -208,6 +229,7 @@ const ChatScreen = ({ route, navigation }) => {
             onSend={(newMessages) => onSend(newMessages)}
             user={{ _id: user._id }}
             renderBubble={renderBubble}
+            renderMessage={renderMessage} // Custom render function for messages
           />
         </>
       )}
