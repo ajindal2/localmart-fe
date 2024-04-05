@@ -31,10 +31,15 @@ const ListingItem = React.memo(({ item, onPress }) => {
     return (
       <TouchableOpacity activeOpacity={1} onPress={onPress} style={styles.itemContainer}>
         <View style={styles.infoContainer}>
-        <Image 
-          source={item?.imageUrls?.[0] ? { uri: item.imageUrls[0] } : DEFAULT_IMAGE_URI}
-          style={styles.image} 
-        />      
+          <Image 
+            source={item?.imageUrls?.[0] ? { uri: item.imageUrls[0] } : DEFAULT_IMAGE_URI}
+            style={styles.image} 
+          />    
+          {item.state?.toLowerCase() === 'sold' && (
+            <View style={styles.soldTag}>
+              <Text style={styles.soldText}>SOLD</Text>
+            </View>
+          )}  
           <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
             {item.title}
           </Text>
@@ -44,7 +49,7 @@ const ListingItem = React.memo(({ item, onPress }) => {
             )}
             {/* Conditional rendering for distance */}
             {renderDistance()}    
-          </View>
+          </View>  
         </View>
       </TouchableOpacity>
     );
@@ -114,7 +119,20 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     flexDirection: 'column',
     padding: spacing.size10Horizontal,
     opacity: 0, // Make the item invisible
-  }
+  },
+  soldTag: {
+    position: 'absolute',
+    right: 0,
+    top: 0, // To show the sold tag at top right corner
+    backgroundColor: colors.primary, 
+    paddingHorizontal: spacing.size5Horizontal, 
+    paddingVertical: 2, 
+    borderTopLeftRadius: 5, 
+  },
+  soldText: {
+    color: 'white', // Choose a text color that contrasts with the tag background
+    fontSize: typography.subHeading, // Adjust font size as needed
+  },
 });
 
 export default ListingItem;

@@ -190,7 +190,7 @@ const SellerDetails = ({ route, navigation }) => {
         )}
 
         {/* Section 3: More Listings from this Seller */}
-          <Text style={styles.sectionTitle}>More listings from this seller</Text>
+        <Text style={styles.sectionTitle}>More listings from this seller</Text>
       </View>
     </>
   );

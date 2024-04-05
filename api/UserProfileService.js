@@ -28,27 +28,26 @@ export const getUserProfile = async (userId) => {
     }
   };
 
-export const getUserLocation = async (userId) => {
-  const token = await SecureStore.getItemAsync('token');
-
-  try {
-    const response = await fetchWithTokenRefresh(`${BASE_URL}/userProfile/${userId}/location`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
-    });
-    if (response.ok) {
-        const profile = await response.json();
-        return profile;
-      } else if (response.status === 404) {
-        // Profile not found, return null or a specific message
-        return null;
-      } else {
-        const errorData = await response.json();
-        console.error('Error fetching user location:', errorData);
-        throw new Error(errorData.message || 'Error fetching user location');
-      }
+  // Remove auth for fetching location.
+  export const getUserLocation = async (userId) => {
+    try {
+      const response = await fetch(`${BASE_URL}/userProfile/${userId}/location`, {
+        method: 'GET',
+        headers: {
+          //'Authorization': `Bearer ${token}`
+        },
+      });
+      if (response.ok) {
+          const profile = await response.json();
+          return profile;
+        } else if (response.status === 404) {
+          // Profile not found, return null or a specific message
+          return null;
+        } else {
+          const errorData = await response.json();
+          console.error('Error fetching user location:', errorData);
+          throw new Error(errorData.message || 'Error fetching user location');
+        }
     } catch (error) {
       console.error('Error fetching user location:', error);
       throw error;

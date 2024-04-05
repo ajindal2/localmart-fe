@@ -59,7 +59,7 @@ const ViewListing = ({ route, navigation }) => {
 
     const navigateToSellerDetails = React.useCallback(() => {
       navigation.navigate('SellerDetails', { sellerProfile, ratingsWithProfile, averageRating });
-    }, [navigation]);
+    }, [navigation, sellerProfile, ratingsWithProfile, averageRating]);
 
     const handleScroll = (event) => {
       const contentOffsetX = event.nativeEvent.contentOffset.x;
@@ -161,63 +161,63 @@ const ViewListing = ({ route, navigation }) => {
     };
 
     useEffect(() => {
-       
-        const fetchSellerRatings = async () => {
-          try {
-            const { averageRating, ratingsWithProfile, sellerProfile } = await getSellerRatings(item.sellerId);
-            setRatingsWithProfile(ratingsWithProfile);
-            setAverageRating(averageRating); 
-            setSellerProfile(sellerProfile);
-          } catch (error) {
-            console.error('Error fetching seller ratings', error);
-          }
-        };
-        
-        const checkIfSaved = async () => {
-          if (!user) {
-            console.error('User is null, cannot checkIfSaved');
-            return; // Exit the function if there's no user
-          }
-
-          try {
-            const response = await checkSavedStatus(user._id, item._id);
-            if (response) {
-              setIsSaved(response.isSaved);
-              setSavedListingId(response.savedListingId);
-            }
-          } catch (error) {
-            console.error('Error checking saved status:', error);
-          }
-        };
-
-        if (route.params?.item) {
-          // Navigated from within the app
-          setItem(route.params.item);
-          hasFetchedData.current = true;
-        } else if (route.params?.listingId && !hasFetchedData.current) {
-          // Navigated from a deep link and haven't fetched data yet
-          const listingId = route.params.listingId;
-          getListingFromId(listingId).then(data => {
-            setItem(data);
-            hasFetchedData.current = true; // Set to true to avoid refetching on subsequent renders
-          }).catch(error => {
-            console.error('Error fetching listing details:', error);
-            Alert.alert('Error', 'Failed to load listing details. Please try again later.');
-          });
+      const fetchSellerRatings = async () => {
+        try {
+          const { averageRating, ratingsWithProfile, sellerProfile } = await getSellerRatings(item.sellerId);
+          setRatingsWithProfile(ratingsWithProfile);
+          setAverageRating(averageRating); 
+          setSellerProfile(sellerProfile);
+        } catch (error) {
+          console.error('Error fetching seller ratings', error);
         }
-        
-        if(item && user) {
-          checkIfSaved();
+      };
+      
+      const checkIfSaved = async () => {
+        if (!user) {
+          console.error('User is null, cannot checkIfSaved');
+          return; // Exit the function if there's no user
         }
-        if(item && item.sellerId) {
-          fetchSellerRatings();
-        }    
-       
-      }, [item, user, route.params]);
 
-      if (!item) {
-        // Render a loading indicator or null if no item data is available yet
-        return <Text>Loading...</Text>;
+        try {
+          const response = await checkSavedStatus(user._id, item._id);
+          if (response) {
+            setIsSaved(response.isSaved);
+            setSavedListingId(response.savedListingId);
+          }
+        } catch (error) {
+          console.error('Error checking saved status:', error);
+        }
+      };
+
+      if (route.params?.item) {
+        // Navigated from within the app
+        setItem(route.params.item);
+        hasFetchedData.current = true;
+      } else if (route.params?.listingId && !hasFetchedData.current) {
+        // Navigated from a deep link and haven't fetched data yet
+        const listingId = route.params.listingId;
+        getListingFromId(listingId).then(data => {
+          setItem(data);
+          hasFetchedData.current = true; // Set to true to avoid refetching on subsequent renders
+        }).catch(error => {
+          console.error('Error fetching listing details:', error);
+          Alert.alert('Error', 'Failed to load listing details. Please try again later.');
+        });
+      }
+      
+      if(item && user) {
+        checkIfSaved();
+      }
+      if(item && item.sellerId) {
+        fetchSellerRatings();
+      }    
+      
+    }, [item, user, route.params]);
+
+    if (!item) {
+      // TODO add Activity Indicator instead
+      // Render a loading indicator or null if no item data is available yet
+      return <Text>Loading...</Text>;
     }
 
   

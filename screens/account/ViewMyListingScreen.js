@@ -102,10 +102,10 @@ const ViewMyListingScreen = ({navigation}) => {
     try {
       if(user) {
         const buyers = await getBuyerInfoByListingId(listing._id, user._id)
-        if (buyers) {
+        if (buyers && buyers.length > 0) {
           // Buyers found, navigate to BuyerConfirmationScreen
           navigation.navigate('BuyerConfirmationScreen', { buyers, listing });
-        }
+        } 
       }
     } catch (error) {
       if (error.message.includes('RefreshTokenExpired')) {
@@ -137,9 +137,12 @@ const ViewMyListingScreen = ({navigation}) => {
     try{
       if (user) {
         const buyers = await getBuyerInfoByListingId(listing._id, user._id)
-        if (buyers) {
+        if (buyers && buyers.length > 0) {
           // Buyers found, navigate to BuyerConfirmationScreen
           navigation.navigate('BuyerConfirmationScreen', { buyers, listing });
+        }
+        else {
+          Alert.alert('Error', 'No buyers found for this listing');
         }
       }
     } catch (error) {
@@ -159,87 +162,93 @@ const ViewMyListingScreen = ({navigation}) => {
     shareListing(listingTitle, listingUrl);
   };
 
-  const getActionSheetOptions = (item) => [
-    {
-      icon: 'share-social-outline',
-      text: 'Share Listing',
-      onPress: () => {
-        handleShareListing(item._id);
-        setActiveItemId(null);
+  const getActionSheetOptions = (item) => {
+    let options = [
+      {
+        icon: 'share-social-outline',
+        text: 'Share Listing',
+        onPress: () => {
+          handleShareListing(item._id);
+          setActiveItemId(null);
+        },
       },
-    },
-    {
-      icon: 'pencil-outline',
-      text: 'Edit Listing',
-      onPress: () => {
-        navigation.navigate('ListingStack', {
-          screen: 'CreateNewListingScreen',
-          params: {
-            isEditing: true, 
-            listing: item,
-            fromAccount: true, // To hide the bottom tab when navigating from here.
-          },
-        });
-        setActiveItemId(null);
-      },
-    },
-    {
-      icon: 'checkmark-circle-outline',
-      text: 'Mark as Sold',
-      onPress: () => {
-        Alert.alert(
-          'Confirm',
-          'Are you sure you want to mark this listing as sold, it cannot be undone?',
-          [
-            {
-              text: 'Yes',
-              onPress: async () => {
-                markAsSold(item)
-                setActiveItemId(null); // Close the action sheet only after confirming
+      {
+        icon: 'trash-outline',
+        text: 'Delete Listing',
+        onPress: () => {
+          Alert.alert(
+            'Confirm',
+            'Are you sure you want to delete this listing, it cannot be undone?',
+            [
+              {
+                text: 'Yes',
+                onPress: async () => {
+                  handleDeleteListing(item._id);
+                  setActiveItemId(null); // Close the action sheet only after confirming
+                },
               },
-            },
-            {
-              text: 'No',
-              onPress: () => console.log('Cancelled marking as sold'),
-              style: 'cancel',
-            },
-          ],
-          { cancelable: false }
-        );
-      },
-    },
-    {
-      icon: 'trash-outline',
-      text: 'Delete Listing',
-      onPress: () => {
-        Alert.alert(
-          'Confirm',
-          'Are you sure you want to delete this listing, it cannot be undone?',
-          [
-            {
-              text: 'Yes',
-              onPress: async () => {
-                handleDeleteListing(item._id);
-                setActiveItemId(null); // Close the action sheet only after confirming
+              {
+                text: 'No',
+                onPress: () => console.log('Cancelled delete'),
+                style: 'cancel',
               },
-            },
-            {
-              text: 'No',
-              onPress: () => console.log('Cancelled delete'),
-              style: 'cancel',
-            },
-          ],
-          { cancelable: false }
-        );
+            ],
+            { cancelable: false }
+          );
+        },
       },
-    },
-  ];
+    ];
+    if (item.state.toLowerCase() !== 'sold') {
+      options.push({
+        icon: 'pencil-outline',
+        text: 'Edit Listing',
+        onPress: () => {
+          navigation.navigate('ListingStack', {
+            screen: 'CreateNewListingScreen',
+            params: {
+              isEditing: true, 
+              listing: item,
+              fromAccount: true, // To hide the bottom tab when navigating from here.
+            },
+          });
+          setActiveItemId(null);
+        },
+      });
+
+      options.push({
+        icon: 'checkmark-circle-outline',
+        text: 'Mark as Sold',
+        onPress: () => {
+          Alert.alert(
+            'Confirm',
+            'Are you sure you want to mark this listing as sold, it cannot be undone?',
+            [
+              {
+                text: 'Yes',
+                onPress: async () => {
+                  markAsSold(item)
+                  setActiveItemId(null); // Close the action sheet only after confirming
+                },
+              },
+              {
+                text: 'No',
+                onPress: () => console.log('Cancelled marking as sold'),
+                style: 'cancel',
+              },
+            ],
+            { cancelable: false }
+          );
+        },
+      });
+    }
+    return options;
+  };
 
   const handleOpenActionSheet = (item) => {
     setActiveItemId(item._id); 
   };
 
-  // Using callback t omemoize the component to prevent unnecessary re-renders of list items if their props haven't changed
+  // Using callback to memoize the component to prevent unnecessary re-renders of list items if their props haven't changed
   const renderItem = React.useCallback(({ item }) => (
     <TouchableOpacity 
       style={styles.listingItem} 
@@ -250,12 +259,18 @@ const ViewMyListingScreen = ({navigation}) => {
     >
       <Image source={{ uri: item.imageUrls[0] }} style={styles.listingImage} />
       <View style={styles.listingInfo}>
-      <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
-        {item.title}
-      </Text>
-      <Text style={styles.listingDetails}>
-        {`$${item.price.toFixed(2)}`} · {item.state} · Created on: {new Date(item.dateCreated).toLocaleDateString()}
-      </Text>
+        <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+          {item.title}
+        </Text>
+        <Text style={styles.listingDetails}>
+          {`$${item.price.toFixed(2)}`} · {item.state} · Created on: {new Date(item.dateCreated).toLocaleDateString()}
+        </Text>
+        {item.state.toLowerCase() === 'sold' && (
+          <ButtonComponent title="Rate More Buyers" type="secondary" 
+            onPress={() => handleRateMoreBuyers(item)} 
+            style={styles.rateMoreBuyersButton}
+          />
+        )}
       </View>
       <TouchableOpacity style={styles.optionsButton} onPress={() => handleOpenActionSheet(item)}>
         <Ionicons name="ellipsis-vertical" size={typography.iconSize} color={colors.darkGrey} />
@@ -309,7 +324,6 @@ const ViewMyListingScreen = ({navigation}) => {
         data={listings}
         renderItem={renderItem}
         keyExtractor={(item, index) => item._id ? item._id.toString() : index.toString()}
-        //ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
       )}
       <CustomActionSheet
@@ -337,6 +351,12 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   createButtonText: {
     marginLeft: spacing.size5Horizontal,
     color: 'black',
+  },
+  rateMoreBuyersButton: {
+    alignSelf: 'flex-start', 
+    paddingVertical: 2, 
+    paddingHorizontal: spacing.size10Horizontal, 
+    marginTop: spacing.size10Vertical,
   },
   listingItem: {
     backgroundColor: colors.white,
@@ -373,6 +393,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     fontSize: typography.price,
     color: colors.secondaryText,
     marginTop: spacing.xs,
+    fontWeight: 'bold',
   },
   optionsButton: {
     padding: spacing.size10Horizontal,
