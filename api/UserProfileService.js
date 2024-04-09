@@ -28,13 +28,14 @@ export const getUserProfile = async (userId) => {
     }
   };
 
-  // Remove auth for fetching location.
   export const getUserLocation = async (userId) => {
+    const token = await SecureStore.getItemAsync('token');
+
     try {
-      const response = await fetch(`${BASE_URL}/userProfile/${userId}/location`, {
+      const response = await fetchWithTokenRefresh(`${BASE_URL}/userProfile/${userId}/location`, {
         method: 'GET',
         headers: {
-          //'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`
         },
       });
       if (response.ok) {
@@ -56,30 +57,30 @@ export const getUserProfile = async (userId) => {
 
   // This is not in use, use updateUserProfile instead
   export const createUserProfile = async (userId) => {
-      try {
-        const newProfile = {
-          userId: userId,
-          aboutMe: ''
-        };
-        const response = await fetch(`${BASE_URL}/userProfile/`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(newProfile),
-        });
-        if (response.ok) {
-          const profile = await response.json();
-          return profile;
-        } else {
-          const errorData = await response.json();
-          console.error('Error creating user profile:', errorData);
-          throw new Error(errorData.message || 'Error creating user profile');
-        }
-      } catch (error) {
-        console.error('Error creating user profile:', error);
+    try {
+      const newProfile = {
+        userId: userId,
+        aboutMe: ''
+      };
+      const response = await fetch(`${BASE_URL}/userProfile/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newProfile),
+      });
+      if (response.ok) {
+        const profile = await response.json();
+        return profile;
+      } else {
+        const errorData = await response.json();
+        console.error('Error creating user profile:', errorData);
+        throw new Error(errorData.message || 'Error creating user profile');
       }
-    };
+    } catch (error) {
+      console.error('Error creating user profile:', error);
+    }
+  };
 
   // This will create the profile if it does not exist.
   export const updateUserProfile = async (userId, updatedProfileData) => {

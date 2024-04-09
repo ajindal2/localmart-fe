@@ -7,7 +7,6 @@ export const fetchWithTokenRefresh = async (url, options) => {
     
     if (response.status === 401) { // Token expired
       const refreshToken = await SecureStore.getItemAsync('refreshToken');
-      console.log('Token expired');
 
       // Attempt to refresh the token
       const refreshResponse = await fetch(`${BASE_URL}/auth/refresh`, {

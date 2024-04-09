@@ -11,11 +11,12 @@ import { AuthContext } from '../AuthContext';
 import { DEFAULT_IMAGE_URI } from '../constants/AppConstants'
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
+import TagsSummary from '../components/TagsSummary';
 
 
 const SellerDetails = ({ route, navigation }) => {
     const isConnected = useNetworkConnectivity();
-    const { sellerProfile, ratingsWithProfile, averageRating } = route.params;
+    const { sellerProfile, ratingsWithProfile, averageRating, tagsSummary } = route.params;
     const { logout } = useContext(AuthContext);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [imageErrors, setImageErrors] = useState({});
@@ -42,7 +43,7 @@ const SellerDetails = ({ route, navigation }) => {
     };
     
     const navigateToAllRatings = () => {
-        navigation.navigate('AllReviewsScreen', {ratingsWithProfile, averageRating }); // Navigate to a screen that shows all ratings
+        navigation.navigate('AllReviewsScreen', {ratingsWithProfile, averageRating, tagsSummary }); // Navigate to a screen that shows all ratings
     };
 
     // Function to handle image load error
@@ -119,8 +120,8 @@ const SellerDetails = ({ route, navigation }) => {
         <TouchableOpacity onPress={navigateToAllRatings} style={styles.ratingsSection}>
           <View style={styles.section}>
               <View style={styles.sectionHeader}>
-                  <Text style={styles.sectionTitle}>Ratings</Text>
-                  <Ionicons name="chevron-forward" size={20} color="grey" />
+                <Text style={styles.sectionTitle}>Ratings</Text>
+                <Ionicons name="chevron-forward" size={20} color="grey" />
               </View>
               <View style={styles.averageRatingContainer}>
                 <StarRating rating={averageRating.toFixed(1)} />
@@ -128,7 +129,7 @@ const SellerDetails = ({ route, navigation }) => {
                     ({ratingsWithProfile.length} ratings)
                 </Text>
               </View>
-            
+              <TagsSummary tagsSummary={tagsSummary} />
 
             {/* TODO add logic to show placeholder image when profile image does not exist */}
             {topThreeRatingsWithProfile.map((ratingWithProfile, index) => (

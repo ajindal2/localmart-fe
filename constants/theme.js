@@ -6,6 +6,7 @@ export const theme = {
   colors: {
     primary: '#f77979', // light orange
     secondary: '#ff9191', // dark orange
+    lightPrimary: '#fdd6d6',
     secondaryText: '#666', // eg subtitles
     inputBorder: '#d7d7d7', // light gray
     titleColor: '#000',

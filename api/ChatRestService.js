@@ -25,7 +25,7 @@ export const getChats = async (userId) => {
         }
       } catch (error) {
         console.error('Error fetching chats:', error);
-        return null;
+        throw error;
       }
   };
 
@@ -122,14 +122,15 @@ export const getChats = async (userId) => {
         },
       });
       if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Failed to fetch notification count', errorData);
         throw new Error('Failed to fetch notification count');
       }
       const data = await response.json();
       return data;
-      //return data.count; // Assuming the backend returns an object with a 'count' property
     } catch (error) {
       console.error('Error fetching notification count:', error);
-      return 0; // Return 0 as a fallback
+      throw error;
     }
 }
 
@@ -146,7 +147,9 @@ export const updateNotificationCount = async (userId, count) => {
       body: JSON.stringify({ userId, count }),
     });
     if (!response.ok) {
-      throw new Error('Failed to update notification count');
+      // DOnt throw error, just silently log the error. Count will update when app becomes active again.
+      const errorData = await response.json();
+      console.error('Error updating notification count:', errorData);
     }
   } catch (error) {
     console.error('Error updating notification count:', error);
@@ -178,7 +181,7 @@ export const getBuyerInfoByListingId = async (listingId, sellerId) => {
     }
   } catch (error) {
     console.error('Error fetching buyer information:', error);
-    return null;
+    throw error;
   }
 };
 

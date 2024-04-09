@@ -1,17 +1,17 @@
 import { View, Text, ScrollView, Image, StyleSheet, Dimensions } from 'react-native';
 import React, { useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
 import StarRating from '../components/StarRating';
 import useHideBottomTab from '../utils/HideBottomTab'; 
 import { useTheme } from '../components/ThemeContext';
 import { DEFAULT_IMAGE_URI } from '../constants/AppConstants'
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
+import TagsSummary from '../components/TagsSummary';
 
 
 const AllReviewsScreen = ({ route, navigation }) => {
   const isConnected = useNetworkConnectivity();
-    const { ratingsWithProfile, averageRating } = route.params;
+    const { ratingsWithProfile, averageRating, tagsSummary } = route.params;
     const [imageErrors, setImageErrors] = useState({});
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
@@ -49,11 +49,12 @@ const AllReviewsScreen = ({ route, navigation }) => {
             <View style={styles.topSection}>
               <View style={styles.header}>
                 <Text style={styles.totalReviews}>{ratingsWithProfile.length} Reviews</Text>
-                </View>
-                <View style={styles.ratingContainer}>
+              </View>
+              <View style={styles.ratingContainer}>
                 <StarRating rating={averageRating} size={typography.iconSize} />
                 <Text style={styles.averageRatingText}>{averageRating.toFixed(1)}</Text>
               </View>
+              <TagsSummary tagsSummary={tagsSummary} />
             </View>
 
             {/* Section 2: Individual Reviews */}

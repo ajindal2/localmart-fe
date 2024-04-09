@@ -41,7 +41,7 @@ export const getUserRatings = async (userId) => {
       }
     } catch (error) {
       console.error('Error fetching ratings:', error);
-      throw new Error('Failed to fetch ratings');
+      throw error;
     }
 };
 

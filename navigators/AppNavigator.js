@@ -132,23 +132,30 @@ const AppStack = () => {
 
   // For setting badge count when app loads/comes to active state
   useEffect(() => {
-    if (user) {
-      const updateBadgeCount = async () => {
-        const count = await fetchNotificationCount(user._id);
-        setMessagesBadgeCount(count);
-      };
-  
-      updateBadgeCount();
-  
-      const appStateSubscription = AppState.addEventListener('change', nextAppState => {
-        if (nextAppState === 'active') {
-          updateBadgeCount();
-        }
-      });
-  
-      return () => {
-        appStateSubscription.remove();
-      };
+    try {
+      if (user) {
+        const updateBadgeCount = async () => {
+          const count = await fetchNotificationCount(user._id);
+          setMessagesBadgeCount(count);
+        };
+    
+        updateBadgeCount();
+    
+        const appStateSubscription = AppState.addEventListener('change', nextAppState => {
+          if (nextAppState === 'active') {
+            updateBadgeCount();
+          }
+        });
+    
+        return () => {
+          appStateSubscription.remove();
+        };
+      }
+    } catch (error) {
+      if (error.message.includes('RefreshTokenExpired')) {
+        logout();
+      } 
+      setMessagesBadgeCount(0);
     }
   }, [user, setMessagesBadgeCount]);
 

@@ -29,6 +29,7 @@ const ViewListing = ({ route, navigation }) => {
     const { user, logout } = useContext(AuthContext);
     const [sellerProfile, setSellerProfile] = useState(null);
     const [ratingsWithProfile, setRatingsWithProfile] = useState([]);
+    const [tagsSummary, setTagsSummary] = useState(null);
     const [averageRating, setAverageRating] = useState(0); 
     const [isSaved, setIsSaved] = useState(false);
     const [savedListingId, setSavedListingId] = useState(null);
@@ -58,8 +59,8 @@ const ViewListing = ({ route, navigation }) => {
   };
 
     const navigateToSellerDetails = React.useCallback(() => {
-      navigation.navigate('SellerDetails', { sellerProfile, ratingsWithProfile, averageRating });
-    }, [navigation, sellerProfile, ratingsWithProfile, averageRating]);
+      navigation.navigate('SellerDetails', { sellerProfile, ratingsWithProfile, averageRating, tagsSummary });
+    }, [navigation, sellerProfile, ratingsWithProfile, averageRating, tagsSummary]);
 
     const handleScroll = (event) => {
       const contentOffsetX = event.nativeEvent.contentOffset.x;
@@ -163,10 +164,11 @@ const ViewListing = ({ route, navigation }) => {
     useEffect(() => {
       const fetchSellerRatings = async () => {
         try {
-          const { averageRating, ratingsWithProfile, sellerProfile } = await getSellerRatings(item.sellerId);
+          const { averageRating, ratingsWithProfile, sellerProfile, tagsSummary } = await getSellerRatings(item.sellerId);
           setRatingsWithProfile(ratingsWithProfile);
           setAverageRating(averageRating); 
           setSellerProfile(sellerProfile);
+          setTagsSummary(tagsSummary);
         } catch (error) {
           console.error('Error fetching seller ratings', error);
         }
