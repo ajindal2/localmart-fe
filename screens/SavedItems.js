@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useContext } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../AuthContext';
@@ -108,7 +108,7 @@ const SavedItems = ({navigation, route}) => {
           });
         } else {
           console.log('Listing is null, navigation aborted');
-          // Optionally, you can show an alert or a toast message here
+          Alert.alert('Error', 'An unknown error occured, please try again later');
         }
       }}
     >
@@ -117,8 +117,11 @@ const SavedItems = ({navigation, route}) => {
       <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
           {item.listing.title}
       </Text>
-      <Text style={styles.price}>${item.listing.price}</Text>
-      <Text style={styles.state}> {item.listing.state}</Text>
+      <Text style={styles.price}>
+        {`$${item.listing.price.toFixed(2)}`}
+        <Text style={styles.dot}> · </Text>
+        {item.listing.state} 
+       </Text>
     </View>
     <TouchableOpacity style={styles.optionsButton} onPress={() => handleOpenActionSheet(item)}>
       <Ionicons name="ellipsis-vertical" size={20} color="grey" />
@@ -252,11 +255,6 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     color: colors.secondaryText,
     marginTop: spacing.xs,
   },
-  state: {
-    fontSize: typography.price,
-    color: colors.secondaryText,
-    marginTop: spacing.xs,
-  },
   optionsButton: {
     padding: spacing.size10Horizontal,
   },
@@ -276,6 +274,10 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: spacing.size20Horizontal,
   },
+  dot: {
+    fontSize: typography.heading,
+    fontWeight: 'bold', 
+  }
 });
 
 const getListingUrl = (listingId) => {

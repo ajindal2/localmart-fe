@@ -43,7 +43,7 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
             }
           };
           setLocation(updatedProfileData.location);
-         
+          navigation.goBack();
         } catch (error) {
           if (error.message.includes('RefreshTokenExpired')) {
             logout();
@@ -82,6 +82,7 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
       } else {
         const location = await Location.getCurrentPositionAsync({});
         setLocation(location);
+        navigation.goBack();
       }
     };
 
@@ -94,6 +95,7 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
 
         const location = await Location.getCurrentPositionAsync({});
         setLocation(location);
+        navigation.goBack();
     };
 
   // Dynamically set the button title

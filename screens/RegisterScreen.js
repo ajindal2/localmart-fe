@@ -39,8 +39,6 @@ const RegisterScreen = ({ navigation }) => {
     }, [])
   );
 
-  
-
   const validateInput = () => {
     let isValid = true;
     let newErrors = {};
@@ -48,6 +46,9 @@ const RegisterScreen = ({ navigation }) => {
     if (!userName || userName.length < 4) {
       isValid = false;
       newErrors.userName = 'Username must be at least 4 characters long.';
+    } else if (!/^(?=.*[A-Za-z])[A-Za-z\d]*$/.test(userName)) {
+      isValid = false;
+      newErrors.userName = 'Username must contain at least one letter and can only contain letters and numbers.';
     }
   
     // Email validation (use a more robust regex in production)
@@ -57,15 +58,18 @@ const RegisterScreen = ({ navigation }) => {
     }
   
     // Password validation
-    if (!password || password.length < 6 || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+    if (!password || password.length < 6 || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || !/(?=.*[!@#$%^&*])/.test(password)) {
       isValid = false;
-      newErrors.password = 'Password must be at least 6 characters, contain an uppercase letter and a number.';
-    }
+      newErrors.password = 'Password must be at least 6 characters, contain an uppercase letter, a number, and a special character.';
+    }    
 
-     // DisplayName validation
-     if (!displayName || displayName.length < 2 || displayName.length > 30 || !/^[A-Za-z\s]+$/.test(displayName)) {
+    // DisplayName validation
+    if (!displayName || displayName.length < 2 || displayName.length > 30) {
       isValid = false;
-      newErrors.displayName = 'Display Name must be between 2 and 30 characters and contain only letters.';
+      newErrors.displayName = 'Display Name must be between 2 and 30 characters.';
+    } else if (!/^[A-Za-z]+$/.test(displayName)) {
+      isValid = false;
+      newErrors.displayName = 'Display Name must contain only letters.';
     }
   
     setErrors(newErrors);

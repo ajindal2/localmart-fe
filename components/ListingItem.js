@@ -45,7 +45,7 @@ const ListingItem = React.memo(({ item, onPress }) => {
           </Text>
           <View style={styles.priceDistanceContainer}>
             {typeof item?.price === 'number' && (
-              <Text style={styles.price}>${item.price}</Text>
+              <Text style={styles.price}>{`$${item.price.toFixed(2)}`}</Text>
             )}
             {/* Conditional rendering for distance */}
             {renderDistance()}    

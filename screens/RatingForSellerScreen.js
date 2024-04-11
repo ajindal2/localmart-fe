@@ -26,8 +26,7 @@ const RatingForSellerScreen = ({ navigation, route }) => {
   const [selectedTags, setSelectedTags] = useState([]);
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
-  const positiveTags =  ['Punctuality', 'Friendly', 'Reliable', 'Quality of Product'];
-  const improvementTags = ["Late", "Poor Quality", "Unreliable"];
+  const positiveTags =  ['On Time', 'Friendly', 'Communicative', 'Quality of Product'];
   const [isCreating, setIsCreating] = useState(false); // to disable button after single press
 
   useHideBottomTab(navigation, true);
@@ -104,7 +103,7 @@ const RatingForSellerScreen = ({ navigation, route }) => {
           <Image source={{ uri: listing.imageUrls[0] }} style={styles.listingImage} />
           <View style={styles.listingDetails}>
             <Text style={styles.listingTitle}>{listing.title}</Text>
-            <Text style={styles.listingPrice}>${listing.price.toString()}</Text>
+            <Text style={styles.listingPrice}>{`$${listing.price.toFixed(2)}`}</Text>
           </View>
         </View>
       </View>
@@ -150,17 +149,6 @@ const RatingForSellerScreen = ({ navigation, route }) => {
                     ))}
                   </View>
                 )}
-
-                {/* Render tags for low rating */}
-                {rating <= 3 && (
-                  <View style={styles.tagsContainer}>
-                    {improvementTags.map((tag, index) => (
-                      <TouchableOpacity key={index} onPress={() => handleTagSelect(tag)} style={[styles.tag, selectedTags.includes(tag) && styles.selectedTag]}>
-                        <Text style={styles.tagText}>{tag}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                )}
               </>
             )}
             
@@ -170,6 +158,7 @@ const RatingForSellerScreen = ({ navigation, route }) => {
               value={review}
               onChangeText={setReview}          
               style={styles.textInput}
+              textAlignVertical="top"
             />
             
             <View style={styles.bottomButtonContainer}>

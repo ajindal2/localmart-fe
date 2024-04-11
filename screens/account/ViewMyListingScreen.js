@@ -263,7 +263,11 @@ const ViewMyListingScreen = ({navigation}) => {
           {item.title}
         </Text>
         <Text style={styles.listingDetails}>
-          {`$${item.price.toFixed(2)}`} · {item.state} · Created on: {new Date(item.dateCreated).toLocaleDateString()}
+          {`$${item.price.toFixed(2)}`}
+          <Text style={styles.dot}> · </Text>
+          {item.state}
+          <Text style={styles.dot}> · </Text>
+          Created on: {new Date(item.dateCreated).toLocaleDateString()}
         </Text>
         {item.state.toLowerCase() === 'sold' && (
           <ButtonComponent title="Rate More Buyers" type="secondary" 
@@ -393,7 +397,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     fontSize: typography.price,
     color: colors.secondaryText,
     marginTop: spacing.xs,
-    fontWeight: 'bold',
+    //fontWeight: 'bold',
   },
   optionsButton: {
     padding: spacing.size10Horizontal,
@@ -419,6 +423,10 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: spacing.size20Horizontal,
   },
+  dot: {
+    fontSize: typography.heading,
+    fontWeight: 'bold', 
+  }
 });
 
 const getListingUrl = (listingId) => {
@@ -427,20 +435,3 @@ const getListingUrl = (listingId) => {
 };
 
 export default ViewMyListingScreen;
-
-
-/*
-Error Handling: The screen should handle potential errors while fetching listings, such as showing an error message or a retry button.
-
-Loading State: Consider adding a loading indicator while the listings are being fetched.
-
-Empty State: Display a message when the user has no listings.
-
-Styling: Adjust the styling according to your app's design theme.
-
-Image Handling: The code assumes that the first image URL in the imageUrls array is the main image for the listing. Make sure this aligns with your data structure. Also, handle cases where an image might not be available.
-
-Navigation Parameters: When navigating to the ViewListing screen, pass the necessary parameters (e.g., listingId) that the ViewListing screen might require to fetch and display the specific listing details.
-
-
-*/

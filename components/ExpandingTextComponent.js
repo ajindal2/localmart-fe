@@ -72,7 +72,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   },
   seeMoreText: {
     color: colors.primary,
-    marginTop: spacing.size5Vertical,
+    //marginTop: spacing.size5Vertical,
   },
 });
 

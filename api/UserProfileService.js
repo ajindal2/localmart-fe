@@ -121,7 +121,6 @@ export const getUserProfile = async (userId) => {
       name: 'profile-image.jpg', // or your image's name
     });
   
-    // Send the request to the server
     try {
       const response = await fetchWithTokenRefresh(apiUrl, {
         method: 'PUT',

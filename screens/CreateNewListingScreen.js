@@ -36,10 +36,6 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
   const styles = getStyles(colors, typography, spacing);
   const [isCreating, setIsCreating] = useState(false); // to disable button after single press
 
-  useEffect(() => {
-    console.log('Photos updated:', photos);
-  }, [photos]);
-
   useHideBottomTab(navigation, fromAccount);
 
   React.useLayoutEffect(() => {
@@ -291,11 +287,13 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           if (isEditing) {
             // Call API to update the listing
             await updateListing(listing._id, listingDetails);
-            Alert.alert('Listing updated successfully');
+            Alert.alert('Success', 'Listing updated successfully');
+            navigation.goBack();
           } else {
             // Call API to create a new listing
             await createListing(user._id, listingDetails);
-            Alert.alert('Listing created successfully');
+            Alert.alert('Success', 'Listing created successfully');
+            navigation.navigate('HomeScreen');
           }
           // Handle success
           // setShouldCreateListing(false); // Reset the flag
@@ -305,7 +303,6 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           setPrice('');
           setIsFree(false);
           setPhotos([]);
-          navigation.navigate('HomeScreen'); // Navigate to the homeScreen
       } catch (error) {
         if (error.message.includes('RefreshTokenExpired')) {
           logout();

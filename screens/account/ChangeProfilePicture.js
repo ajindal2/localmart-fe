@@ -45,55 +45,57 @@ const ChangeProfilePicture = ({ route, navigation }) => {
 
         // Check for 'assets' array for SDK 48 and later
         if (pickerResult.assets && pickerResult.assets.length > 0) {
-            setImage(pickerResult.assets[0].uri);
+            //setImage(pickerResult.assets[0].uri);
+            // Use the new URI with cache-busting query parameter
+            setImage(`${pickerResult.assets[0].uri}?${Date.now()}`);
         } else {
             // Fallback for older SDK versions
-            setImage(pickerResult.uri);
+            // Use the new URI with cache-busting query parameter
+            setImage(`${pickerResult.uri}?${Date.now()}`);
         }
 
     } catch (error) {
         console.error("Error taking photo: ", error);
         Alert.alert('Error', 'An error occurred while taking the photo.');
     }
-};
+  };
 
-const handleChoosePhoto = async () => {
-  try {
-      // Request media library permissions
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (permissionResult.granted === false) {
-          Alert.alert('Permission Required', 'Permission to access the media library is required!');
-          return;
-      }
+  const handleChoosePhoto = async () => {
+    try {
+        // Request media library permissions
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (permissionResult.granted === false) {
+            Alert.alert('Permission Required', 'Permission to access the media library is required!');
+            return;
+        }
 
-      // Launch the image library with additional options
-      const pickerResult = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: false, // Allow basic editing, adjust as needed
-          aspect: [4, 3],      // Aspect ratio, adjust as needed
-          quality: 0.5,        // Adjust for quality vs file size
-      });
+        // Launch the image library with additional options
+        const pickerResult = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: false, // Allow basic editing, adjust as needed
+            aspect: [4, 3],      // Aspect ratio, adjust as needed
+            quality: 0.5,        // Adjust for quality vs file size
+        });
 
-      // Handle the case where the picker is used but no photo is selected
-      if (pickerResult.canceled === true) {
-          return;
-      }
+        // Handle the case where the picker is used but no photo is selected
+        if (pickerResult.canceled === true) {
+            return;
+        }
 
-      // Check for 'assets' array for SDK 48 and later
-      if (pickerResult.assets && pickerResult.assets.length > 0) {
-        // Use the new URI with cache-busting query parameter
-        setImage(`${pickerResult.assets[0].uri}?${Date.now()}`);
-      } else {
-        // Fallback for older SDK versions
-        // Use the new URI with cache-busting query parameter
-        setImage(`${pickerResult.uri}?${Date.now()}`);
-      }
-
-  } catch (error) {
+        // Check for 'assets' array for SDK 48 and later
+        if (pickerResult.assets && pickerResult.assets.length > 0) {
+          // Use the new URI with cache-busting query parameter
+          setImage(`${pickerResult.assets[0].uri}?${Date.now()}`);
+        } else {
+          // Fallback for older SDK versions
+          // Use the new URI with cache-busting query parameter
+          setImage(`${pickerResult.uri}?${Date.now()}`);
+        }
+    } catch (error) {
       console.error("Error selecting photo: ", error);
       Alert.alert('Error', 'An error occurred while selecting the photo.');
-  }
-};
+    }
+  };
 
   const handleConfirmPhoto = async () => {
     if (!user) {
@@ -105,7 +107,8 @@ const handleChoosePhoto = async () => {
       const result = await uploadProfileImage(user._id, image);
       Alert.alert('Profile Image Updated', 'Your profile image has been updated successfully.');
       // Navigate back or refresh the profile view if necessary
-      navigation.navigate('MyProfile');
+      //navigation.navigate('MyProfile');
+      navigation.goBack();
     } catch (error) {
       if (error.message.includes('RefreshTokenExpired')) {
         logout();
@@ -131,7 +134,10 @@ const handleChoosePhoto = async () => {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-      <Image source={image ? { uri: image } : userProfilePicture ? { uri: userProfilePicture } : DEFAULT_IMAGE_URI} style={styles.image} />
+      <Image   
+        source={image ? { uri: image } : (typeof userProfilePicture === 'string' ? { uri: userProfilePicture } : DEFAULT_IMAGE_URI)}
+        style={styles.image} 
+      />
       </View>
       <View style={styles.buttonContainer}>
         <ButtonComponent title="Take photo" type="secondary" iconName="camera"

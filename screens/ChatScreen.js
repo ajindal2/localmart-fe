@@ -70,7 +70,7 @@ const ChatScreen = ({ route, navigation }) => {
           <Image source={{ uri: listing.imageUrls[0] }} style={styles.listingImage} />
           <View style={styles.listingDetails}>
             <Text style={styles.listingTitle}>{listing.title}</Text>
-            <Text style={styles.listingPrice}>${listing.price.toString()}</Text>
+            <Text style={styles.listingPrice}>{`$${listing.price.toFixed(2)}`}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -229,7 +229,7 @@ const ChatScreen = ({ route, navigation }) => {
             onSend={(newMessages) => onSend(newMessages)}
             user={{ _id: user._id }}
             renderBubble={renderBubble}
-            renderMessage={renderMessage} // Custom render function for messages
+            renderMessage={renderMessage} 
           />
         </>
       )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
 import ProfileImageWithEditIcon from '../../components/ProfileImageWithEditIcon';
 import { getUser, updateUser } from '../../api/UserService';
@@ -13,6 +13,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { DEFAULT_IMAGE_URI } from '../../constants/AppConstants'
 import NoInternetComponent from '../../components/NoInternetComponent';
 import useNetworkConnectivity from '../../components/useNetworkConnectivity';
+import { useFocusEffect } from '@react-navigation/native'; 
 
 
 const MyProfile = ({ navigation }) => {
@@ -44,7 +45,8 @@ const MyProfile = ({ navigation }) => {
 
   useHideBottomTab(navigation, true);
 
-  useEffect(() => {
+  useFocusEffect(
+    useCallback(() => {
     const fetchUserProfile = async () => {
       if (!user) {
         console.error('User is null, cannot fetchUserProfile');
@@ -90,7 +92,8 @@ const MyProfile = ({ navigation }) => {
     fetchUserProfile();
     setIsUserAuthDetailsChanged(false);
     setIsUserProfileDetailsChanged(false);
-  }, [user]);
+  }, [user])
+  );
 
   const handleUpdateProfile = async () => {
     if (!user) {
@@ -108,7 +111,12 @@ const MyProfile = ({ navigation }) => {
   
       // Update User Profile Details if they have been changed. The server will make sure of creating the Profile is it doesnt exist.
       if (isUserProfileDetailsChanged) {
-        await updateUserProfile(user._id, userProfileDetails);
+        // Create a new object with only the "aboutMe" field. B'coz profilePicture is never edited from this page.
+        const updatedUserProfileDetails = {
+          aboutMe: userProfileDetails.aboutMe
+        };
+        
+        await updateUserProfile(user._id, updatedUserProfileDetails);
       }
   
       setIsLoading(false);
@@ -141,7 +149,7 @@ const MyProfile = ({ navigation }) => {
     navigation.navigate('ChangeProfilePicture', {
       profilePicture: userProfileDetails.profilePicture,
     });
-  }, [navigation]);
+  }, [navigation, userProfileDetails]);
 
   const handleUpdatePasswordScreen = React.useCallback(() => {
     navigation.navigate('UpdatePasswordScreen');
@@ -157,7 +165,7 @@ const MyProfile = ({ navigation }) => {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       {isLoading ? (
          <ActivityIndicator size="large" color={colors.primary} />
     ) : error ? (
@@ -186,6 +194,7 @@ const MyProfile = ({ navigation }) => {
             editable={isAboutMeEditable}
             onChangeText={onChangeAboutMe}          
             style={styles.input}
+            textAlignVertical="top"
           />
           <TouchableOpacity onPress={() => setIsAboutMeEditable(true)} style={styles.iconContainer}>
             <Icon name="pencil" size={typography.iconSize} color={colors.iconColor} />
@@ -277,7 +286,7 @@ const profilePictureSize = screenWidth * 0.3; // for example, 30% of the screen 
 
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
-      flex: 1,
+     //flex: 1,
       padding: spacing.size10Horizontal,
     },
     errorContainer: {

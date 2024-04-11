@@ -4,7 +4,7 @@ import { useTheme } from './ThemeContext';
 
 const { width } = Dimensions.get('window');
 
-const InputComponent = ({ placeholder, value, onChangeText, secureTextEntry, multiline, keyboardType, editable, style }) => {
+const InputComponent = ({ placeholder, value, onChangeText, secureTextEntry, multiline, keyboardType, editable, style, textAlignVertical }) => {
   const { colors, typography, spacing } = useTheme();
 
   // Move the styles inside the component to access the theme
@@ -24,7 +24,7 @@ const InputComponent = ({ placeholder, value, onChangeText, secureTextEntry, mul
     <TextInput
       style={[inputStyles.input, style]} 
       placeholder={placeholder}
-      placeholderTextColor={colors.secondaryText}
+      placeholderTextColor={editable ? colors.secondaryText : '#c3c3c3'} 
       cursorColor={colors.primary}
       value={value}
       onChangeText={onChangeText}
@@ -32,6 +32,7 @@ const InputComponent = ({ placeholder, value, onChangeText, secureTextEntry, mul
       keyboardType={keyboardType}
       multiline={multiline}
       editable={editable}
+      textAlignVertical={textAlignVertical}
     />
   );
 };

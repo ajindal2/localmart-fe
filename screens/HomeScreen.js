@@ -77,11 +77,12 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  const registerForPushNotificationsAsync = async () => {
+  /*const registerForPushNotificationsAsync = async () => {
     let token;
     // Check if the token already exists
     //await AsyncStorage.removeItem('pushToken');
     token = await AsyncStorage.getItem('pushToken');
+    console.log('token is: ', token);
 
     if (token) {
       return;
@@ -135,7 +136,56 @@ const HomeScreen = ({ navigation }) => {
       // Handle any errors that may occur during the initial call
       console.error('An unexpected error occurred when trying to send the push token:', error);
     }
+  }*/
+
+  const registerForPushNotificationsAsync = async () => {
+    if (!Constants.isDevice) {
+        console.log('Must use physical device for Push Notifications');
+        return;
+    }
+
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+    }
+
+    if (finalStatus !== 'granted') {
+        console.log('Failed to get push token for push notification!');
+        return;
+    }
+
+    const token = (await Notifications.getExpoPushTokenAsync({
+      projectId: Constants.expoConfig?.extra?.eas?.projectId,
+    })).data;
+
+    if (Platform.OS === 'android') {
+        Notifications.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#FF231F7C',
+        });
+    }
+
+  // Save the token in AsyncStorage and send it to backend
+  // Check if the token is different from the one stored or if there's a new user
+  const previousToken = await AsyncStorage.getItem('pushToken');
+  const previousUser = await AsyncStorage.getItem('userId');
+
+  if (token !== previousToken || user._id !== previousUser) {
+      await AsyncStorage.setItem('pushToken', token);
+      await AsyncStorage.setItem('userId', user._id);
+      // Send the token to backend server associated with the `currentUser`
+      try {
+          await sendPushToken(user._id, token)
+      } catch (error) {
+          console.error(`Error sending push token to backend for user ${user._id}: `, error);
+      }
+  }
 }
+
 
 const fetchListings = async (searchKey = '') => {
 

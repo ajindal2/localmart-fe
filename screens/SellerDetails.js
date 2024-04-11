@@ -152,18 +152,22 @@ const SellerDetails = ({ route, navigation }) => {
                     </View>
                   </View>
 
-                  <Text 
-                  style={styles.ratingText} 
-                  numberOfLines={3} 
-                  ellipsizeMode='tail'
-                  >
-                  {ratingWithProfile.text}
-                  </Text>
+                  {ratingWithProfile.text && ratingWithProfile.text.trim().length > 0 && (
+                    <>
+                      <Text 
+                        style={styles.ratingText} 
+                        numberOfLines={3} 
+                        ellipsizeMode='tail'
+                      >
+                        {ratingWithProfile.text}
+                      </Text>
 
-                  {ratingWithProfile.text.length > 100 && ( // Assuming 100 characters as the cutoff
-                  <Text style={styles.seeMoreText}>See more</Text>
+                      {ratingWithProfile.text.length > 100 && ( // Assuming 100 characters as the cutoff
+                        <Text style={styles.seeMoreText}>See more</Text>
+                      )}
+                    </>
                   )}
-
+                 
               </View>
             ))}
           </View>

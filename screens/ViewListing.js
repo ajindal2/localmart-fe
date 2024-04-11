@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../AuthContext';
 import { getSellerRatings } from '../api/RatingsService';
@@ -216,13 +216,6 @@ const ViewListing = ({ route, navigation }) => {
       
     }, [item, user, route.params]);
 
-    if (!item) {
-      // TODO add Activity Indicator instead
-      // Render a loading indicator or null if no item data is available yet
-      return <Text>Loading...</Text>;
-    }
-
-  
   if (!isConnected) {
     return (
       <View style={styles.container}>
@@ -233,6 +226,10 @@ const ViewListing = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
+      {!item ? (
+        <ActivityIndicator size="large" color={colors.primary} />
+      ) : (
+      <>
       <ScrollView style={styles.topContainer}>
       <View style={styles.imageContainer}>
         {/* Section 1: Images, Title, and Price */}
@@ -279,7 +276,7 @@ const ViewListing = ({ route, navigation }) => {
         />
       
         <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.price}>${item.price}</Text>
+        <Text style={styles.price}>{`$${item.price.toFixed(2)}`}</Text>
       </View>
 
         {/* Section 2: Seller Details */}
@@ -346,18 +343,20 @@ const ViewListing = ({ route, navigation }) => {
               <ListingMap location={item.location.coordinates} />
             )}
           </View>
-    </ScrollView>
+      </ScrollView>
 
-    <View style={styles.buttonContainer}>
-      {user && sellerProfile && sellerProfile.userId._id !== user._id && (
-        <ButtonComponent 
-          title="Message Seller"
-          type="primary"
-          onPress={() => handleSend(sellerProfile.userId._id, user._id, item._id)}
-          style={{ width: '100%', flexDirection: 'row' }}
-        />
-      )}
-    </View>
+      <View style={styles.buttonContainer}>
+        {user && sellerProfile && sellerProfile.userId._id !== user._id && (
+          <ButtonComponent 
+            title="Message Seller"
+            type="primary"
+            onPress={() => handleSend(sellerProfile.userId._id, user._id, item._id)}
+            style={{ width: '100%', flexDirection: 'row' }}
+          />
+        )}
+      </View>
+    </>
+    )}
     </View>
   );
 };
@@ -480,7 +479,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: spacing.size5Vertical
+    //marginTop: spacing.size5Vertical
   },
   ratingCount: {
     fontSize: typography.subHeading,
