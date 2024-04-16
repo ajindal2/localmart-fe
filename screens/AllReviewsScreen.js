@@ -7,6 +7,7 @@ import { DEFAULT_IMAGE_URI } from '../constants/AppConstants'
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
 import TagsSummary from '../components/TagsSummary';
+import ExpandingTextComponent from '../components/ExpandingTextComponent';
 
 
 const AllReviewsScreen = ({ route, navigation }) => {
@@ -79,19 +80,7 @@ const AllReviewsScreen = ({ route, navigation }) => {
                     </View>
 
                     {ratingWithProfile.text && ratingWithProfile.text.trim().length > 0 && (
-                      <>
-                        <Text 
-                          style={styles.ratingText} 
-                          numberOfLines={3} 
-                          ellipsizeMode='tail'
-                        >
-                          {ratingWithProfile.text}
-                        </Text>
-
-                        {ratingWithProfile.text.length > 100 && ( // Assuming 100 characters as the cutoff
-                          <Text style={styles.seeMoreText}>See more</Text>
-                        )}
-                      </>
+                      <ExpandingTextComponent description={ratingWithProfile.text} />
                     )}
                 </View>
                 ))}

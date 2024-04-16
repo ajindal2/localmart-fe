@@ -41,6 +41,20 @@ const MyMessages = ({ navigation }) => {
       // Filter out any chats that don't have messages
       fetchedChats = fetchedChats.filter(chat => chat.messages && chat.messages.length > 0);
 
+      // Sort chats by the most recent message's sentAt field in descending order
+      fetchedChats.sort((a, b) => {
+        // Get the last message's sentAt for each chat
+        const lastMessageA = a.messages[a.messages.length - 1].sentAt;
+        const lastMessageB = b.messages[b.messages.length - 1].sentAt;
+
+        // Convert sentAt to Date objects if they're not already
+        const dateA = new Date(lastMessageA);
+        const dateB = new Date(lastMessageB);
+
+        // Return the comparison result
+        return dateB - dateA; // For descending order; use dateA - dateB for ascending order
+      });
+
       // Reset the error state in case of successful fetch
       setError(null);
       setChats(fetchedChats);
@@ -50,6 +64,27 @@ const MyMessages = ({ navigation }) => {
       } 
       setError(errorMessageDetails);
       console.error("Error fetching chats ", error);
+    }
+  };
+
+  const formatDate = (date) => {
+    const messageDate = new Date(date);
+    const now = new Date();
+    const oneDay = 24 * 60 * 60 * 1000; // milliseconds in one day
+    const diff = now - messageDate;
+  
+    const withinOneDay = diff < oneDay;
+    const withinOneYear = now.getFullYear() === messageDate.getFullYear();
+  
+    if (withinOneDay) {
+      // Use 'hour', 'minute' to show the time for messages within the last 24 hours
+      return messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+    } else if (!withinOneYear) {
+      // Use 'year', 'month', 'day' to format as MM/DD/YYYY for dates older than one year
+      return messageDate.toLocaleDateString([], { year: 'numeric', month: '2-digit', day: '2-digit' });
+    } else {
+      // Show only month and day for dates that are within the past year but older than a week
+      return messageDate.toLocaleDateString([], { month: 'short', day: 'numeric' }); // 'short' for abbreviated month
     }
   };
   
@@ -115,7 +150,7 @@ const MyMessages = ({ navigation }) => {
                       : lastMessageContent}
                   </Text>
                   <Text style={styles.timestamp}>
-                    {new Date(lastMessageTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {formatDate(lastMessageTimestamp)}
                   </Text>
                 </View>
               </View>

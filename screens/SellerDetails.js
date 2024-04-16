@@ -12,6 +12,7 @@ import { DEFAULT_IMAGE_URI } from '../constants/AppConstants'
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
 import TagsSummary from '../components/TagsSummary';
+import ExpandingTextComponent from '../components/ExpandingTextComponent';
 
 
 const SellerDetails = ({ route, navigation }) => {
@@ -31,7 +32,7 @@ const SellerDetails = ({ route, navigation }) => {
     const errorMessageTitle = "No Listings Found";
     const errorMessageDetails = "Failed to load seller listings";
     const emptyListingsMessage = "This seller does not have other listings. LocalMart is a growing marketplace, please try again later.";
-
+    
     const formatJoinedDate = (dateString) => {
       const date = new Date(dateString);
       const options = { month: 'short', year: 'numeric' };
@@ -52,6 +53,20 @@ const SellerDetails = ({ route, navigation }) => {
         ...prevErrors,
         [imageId]: true, // Mark this image as errored
       }));
+    };
+
+    // Helper function to determine the correct image source
+    const getImageSource = (imagePath) => {
+      // Check if imagePath is a number, typical of local images loaded via require()
+      if (typeof imagePath === 'number') {
+        return imagePath;  // Return the local image directly
+      }
+      // Check if imagePath is a network URL
+      if (typeof imagePath === 'string' && (imagePath.startsWith('http') || imagePath.startsWith('https'))) {
+        return { uri: imagePath };
+      }
+      // Handle default local image or any other cases
+      return DEFAULT_IMAGE_URI;
     };
 
     // Hide the bottom tab 
@@ -94,7 +109,7 @@ const SellerDetails = ({ route, navigation }) => {
     const ListHeader = () => (
       <>
         <View style={styles.topSection}>
-        <TouchableOpacity  activeOpacity={1} onPress={openImageModal} style={styles.imageContainer}>
+          <TouchableOpacity  activeOpacity={1} onPress={openImageModal} style={styles.imageContainer}>
             <Image 
               source={
                 sellerImageLoadError || !sellerProfile.profilePicture
@@ -105,11 +120,13 @@ const SellerDetails = ({ route, navigation }) => {
               onError={() => setSellerImageLoadError(true)}
             />
           </TouchableOpacity>
-          <Text style={styles.sellerName}>{sellerProfile.userId.displayName}</Text>
-          <Text style={styles.dateJoined}>Joined {formatJoinedDate(sellerProfile.userId.date)}</Text>
-          {sellerProfile.aboutMe && (
-            <Text style={styles.sellerDescription}>{sellerProfile.aboutMe}</Text>
-          )}
+          <View style={styles.topText}>
+            <Text style={styles.sellerName}>{sellerProfile.userId.displayName}</Text>
+            <Text style={styles.dateJoined}>Joined {formatJoinedDate(sellerProfile.userId.date)}</Text>
+            {sellerProfile.aboutMe && (
+              <ExpandingTextComponent description={sellerProfile.aboutMe} />
+            )}
+          </View>
         </View>
 
 
@@ -153,19 +170,7 @@ const SellerDetails = ({ route, navigation }) => {
                   </View>
 
                   {ratingWithProfile.text && ratingWithProfile.text.trim().length > 0 && (
-                    <>
-                      <Text 
-                        style={styles.ratingText} 
-                        numberOfLines={3} 
-                        ellipsizeMode='tail'
-                      >
-                        {ratingWithProfile.text}
-                      </Text>
-
-                      {ratingWithProfile.text.length > 100 && ( // Assuming 100 characters as the cutoff
-                        <Text style={styles.seeMoreText}>See more</Text>
-                      )}
-                    </>
+                    <ExpandingTextComponent description={ratingWithProfile.text} />
                   )}
                  
               </View>
@@ -235,7 +240,7 @@ const SellerDetails = ({ route, navigation }) => {
       <FullScreenImageModal
         isVisible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
-        imageUrls={[sellerProfile.profilePicture || DEFAULT_IMAGE_URI]}
+        imageUrls={[getImageSource(sellerProfile.profilePicture || DEFAULT_IMAGE_URI)]}
       />
     </View>
   );
@@ -300,12 +305,12 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
       fontSize: typography.pageTitle,
       fontWeight: 'bold',
       paddingBottom: spacing.size5Vertical,
-      paddingLeft: spacing.size10Horizontal,
-      paddingTop: spacing.size10Vertical,
     },
     dateJoined: {
       fontSize: typography.subHeading,
       paddingBottom: spacing.size5Vertical,
+    },
+    topText: {
       paddingLeft: spacing.size10Horizontal,
     },
     sellerDescription: {

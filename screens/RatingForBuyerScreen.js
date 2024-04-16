@@ -111,7 +111,9 @@ const RatingForBuyerScreen = ({ navigation, route }) => {
       <ListingHeader listing={listing} />
       <ScrollView contentContainerStyle={styles.container}>
         <Image source={selectedBuyer.profilePicture ? { uri: selectedBuyer.profilePicture } : DEFAULT_IMAGE_URI} style={styles.profileImage} />
-        <Text style={styles.title}>How was your experince selling to {selectedBuyer.userName}?</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>How was your experience selling to {selectedBuyer.userName}?</Text>
+        </View>
         <StarRating rating={rating} onRatingChange={setRating} size={30} />
         
         {/* Conditionally render tags only if a rating has been selected (rating > 0) */}
@@ -170,10 +172,15 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     right: 0,
     padding: spacing.size10Horizontal,
    },
+   titleContainer: {
+    width: '100%', // Ensures the container spans the entire width
+    alignItems: 'center', // Centers content horizontally in flex container
+  },
    title: {
     fontSize: typography.pageTitle,
     fontWeight: 'bold',
     marginBottom: spacing.size20Vertical,
+    textAlign: 'center', // Centers the text inside the Text component
   },
   profileImage: {
     width: imageSize,

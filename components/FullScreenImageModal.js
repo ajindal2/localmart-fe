@@ -55,7 +55,7 @@ const FullScreenImageModal = ({ isVisible, onClose, imageUrls, initialIndex }) =
           ref={scrollViewRef}
         >
           {imageUrls.map((url, index) => (
-            <Image key={index} source={{ uri: url }} style={{ width: screenWidth, height: '100%' }} />
+            <Image key={index} source={url} style={{ width: screenWidth, height: '100%' }} />
           ))}
         </ScrollView>
         <View style={styles.dotContainer}>{renderScrollDots()}</View>

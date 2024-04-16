@@ -51,12 +51,26 @@ const ViewListing = ({ route, navigation }) => {
     const openImageModal = () => {
       //setCurrentImageUrl(item.imageUrls);
       setIsModalVisible(true);
-  };
+    };
 
-  // Function to close the modal
-  const closeModal = () => {
-    setIsModalVisible(false);
-  };
+    // Function to close the modal
+    const closeModal = () => {
+      setIsModalVisible(false);
+    };
+
+    // Helper function to determine the correct image source
+    const getImageSource = (imagePath) => {
+      // Check if imagePath is a number, typical of local images loaded via require()
+      if (typeof imagePath === 'number') {
+        return imagePath;  // Return the local image directly
+      }
+      // Check if imagePath is a network URL
+      if (typeof imagePath === 'string' && (imagePath.startsWith('http') || imagePath.startsWith('https'))) {
+        return { uri: imagePath };
+      }
+      // Handle default local image or any other cases
+      return DEFAULT_LISTING_IMAGE_URI;
+    };
 
     const navigateToSellerDetails = React.useCallback(() => {
       navigation.navigate('SellerDetails', { sellerProfile, ratingsWithProfile, averageRating, tagsSummary });
@@ -271,7 +285,7 @@ const ViewListing = ({ route, navigation }) => {
         <FullScreenImageModal
           isVisible={isModalVisible}
           onClose={closeModal}
-          imageUrls={item.imageUrls} // Pass all image URLs
+          imageUrls={item.imageUrls ? item.imageUrls.map(getImageSource) : [DEFAULT_IMAGE_URI]}
           initialIndex={currentIndex}  // Pass the current index
         />
       
