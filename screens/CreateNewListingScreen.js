@@ -271,7 +271,6 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
 
         // If any errors, do not proceed with listing creation
         if (hasTitleError || priceErrorMessage || hasPhotoError || hasLocationError) {
-          console.log('Error: Required fields are missing');
           setIsCreating(false); 
           return;
         }

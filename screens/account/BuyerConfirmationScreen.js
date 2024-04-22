@@ -76,7 +76,7 @@ const BuyerConfirmationScreen = ({ navigation, route }) => {
             <TouchableOpacity key={buyer.buyerId} style={styles.buyerContainer} onPress={() => setSelectedBuyerId(buyer.buyerId)}>
             <Image source={buyer.profilePicture ? { uri: buyer.profilePicture } : DEFAULT_IMAGE_URI} style={styles.profileImage} />
             <View style={styles.buyerInfo}>
-                <Text style={styles.buyerName}>{buyer.userName}</Text>
+                <Text style={styles.buyerName}>{buyer.displayName}</Text>
                 <RadioButton
                 value={buyer}
                 status={selectedBuyerId === buyer.buyerId ? 'checked' : 'unchecked'}

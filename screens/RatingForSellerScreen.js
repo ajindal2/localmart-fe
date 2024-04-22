@@ -102,8 +102,10 @@ const RatingForSellerScreen = ({ navigation, route }) => {
         <View style={styles.headerContainer}>
           <Image source={{ uri: listing.imageUrls[0] }} style={styles.listingImage} />
           <View style={styles.listingDetails}>
-            <Text style={styles.listingTitle}>{listing.title}</Text>
-            <Text style={styles.listingPrice}>{`$${listing.price.toFixed(2)}`}</Text>
+          <Text style={styles.listingTitle} numberOfLines={1} ellipsizeMode="tail">
+            {listing.title}
+          </Text>
+          <Text style={styles.listingPrice}>{`$${listing.price.toFixed(2)}`}</Text>
           </View>
         </View>
       </View>
@@ -134,7 +136,7 @@ const RatingForSellerScreen = ({ navigation, route }) => {
           <ScrollView contentContainerStyle={styles.container}>
             <Image source={sellerDetails.profilePicture ? { uri: sellerDetails.profilePicture } : DEFAULT_IMAGE_URI} style={styles.profileImage} />
             <View style={styles.titleContainer}>
-              <Text style={styles.title}>How was your experience buying from {sellerDetails.userName}?</Text>
+              <Text style={styles.title}>How was your experience buying from {sellerDetails.displayName}?</Text>
             </View>
             <StarRating rating={rating} onRatingChange={setRating} size={30} />
             

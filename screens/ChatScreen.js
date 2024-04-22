@@ -69,8 +69,10 @@ const ChatScreen = ({ route, navigation }) => {
         <View style={styles.headerContainer}>
           <Image source={{ uri: listing.imageUrls[0] }} style={styles.listingImage} />
           <View style={styles.listingDetails}>
-            <Text style={styles.listingTitle}>{listing.title}</Text>
-            <Text style={styles.listingPrice}>{`$${listing.price.toFixed(2)}`}</Text>
+          <Text style={styles.listingTitle} numberOfLines={1} ellipsizeMode="tail">
+            {listing.title}
+          </Text>
+          <Text style={styles.listingPrice}>{`$${listing.price.toFixed(2)}`}</Text>
           </View>
         </View>
       </TouchableOpacity>
