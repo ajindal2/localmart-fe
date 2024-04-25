@@ -14,6 +14,7 @@ import {sendPushToken} from '../api/AppService';
 import { AuthContext } from '../AuthContext';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
+import * as Device from 'expo-device';
 
 
 const HomeScreen = ({ navigation }) => {
@@ -139,7 +140,7 @@ const HomeScreen = ({ navigation }) => {
   }*/
 
   const registerForPushNotificationsAsync = async () => {
-    if (!Constants.isDevice) {
+    if (!Device.isDevice) {
         console.log('Must use physical device for Push Notifications');
         return;
     }
@@ -156,8 +157,16 @@ const HomeScreen = ({ navigation }) => {
         return;
     }
 
+    const projectId =
+      Constants?.expoConfig?.extra?.eas?.projectId ??
+      Constants?.easConfig?.projectId;
+
+    if (!projectId) {
+      handleRegistrationError('Project ID not found');
+    }
+
     const token = (await Notifications.getExpoPushTokenAsync({
-      projectId: Constants.expoConfig?.extra?.eas?.projectId,
+      projectId: projectId,
     })).data;
 
     if (Platform.OS === 'android') {
@@ -179,7 +188,7 @@ const HomeScreen = ({ navigation }) => {
       await AsyncStorage.setItem('userId', user._id);
       // Send the token to backend server associated with the `currentUser`
       try {
-          await sendPushToken(user._id, token)
+          await sendPushToken(user._id, token);
       } catch (error) {
           console.error(`Error sending push token to backend for user ${user._id}: `, error);
       }

@@ -281,8 +281,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
 });
 
 const getListingUrl = (listingId) => {
-  return `localmart://listing/view/${listingId}`;
-  //return `https://www.localmart.com/listing/${listingId}`;
+  return `https://farmvox.com/listing/view/${listingId}`;
 };
 
 export default SavedItems;

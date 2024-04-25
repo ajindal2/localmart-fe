@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import AccountScreen from '../screens/account/AccountScreen';
 import MyProfile from '../screens/account/MyProfile';
+import ContactUs from '../screens/account/ContactUs';
 import ChangeProfilePicture from '../screens/account/ChangeProfilePicture';
 import ViewMyListingStackNavigator from './ViewMyListingStackNavigator';
 import SavedListingStackNavigator from './SavedListingStackNavigator';
@@ -23,6 +24,11 @@ function AccountStackNavigator() {
         options={{ 
           headerShown: true,
           title: 'My Profile' 
+        }}  /> 
+        <AccountStack.Screen name="ContactUs" component={ContactUs} 
+        options={{ 
+          headerShown: true,
+          title: 'Contact Us' 
         }}  /> 
         <AccountStack.Screen name="ChangeProfilePicture" component={ChangeProfilePicture}
         options={{ 

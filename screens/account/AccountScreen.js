@@ -5,6 +5,7 @@ import { getUserRatings } from '../../api/RatingsService';
 import { AuthContext } from '../../AuthContext';
 import { useTheme } from '../../components/ThemeContext';
 import { Dimensions } from 'react-native';
+import { Share } from 'react-native';
 import NoInternetComponent from '../../components/NoInternetComponent';
 import useNetworkConnectivity from '../../components/useNetworkConnectivity';
 
@@ -51,6 +52,18 @@ const AccountScreen = ({ navigation }) => {
     }
   }
 
+  const handleShareApp = async () => {
+    const title = 'Check out FarmVox, the marketplace for local produce!';
+    const url = 'https://farmvox.com/home';
+    try {
+      await Share.share({
+        message: `${title}\n\n ${url}`,
+      });
+    } catch (error) {
+      console.error('Error during sharing:', error.message);
+    }
+  }
+
   // renderItem expects an object with { item, index, separators, section }
   const renderItem = ({ item, index, separators, section }) => {
     const { width, height } = Dimensions.get('window');
@@ -61,6 +74,8 @@ const AccountScreen = ({ navigation }) => {
         navigation.navigate('SavedListingStackNavigator', { screen: 'SavedItem', params: { fromAccount: true } });
       } else if (item.key === 'user_reviews') {
         handleAllReviews();
+      } else if (item.key === 'invite_people') {
+        handleShareApp();
       } else {
         navigation.navigate(item.key);
       }

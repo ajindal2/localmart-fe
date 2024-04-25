@@ -41,7 +41,8 @@
     "react-native-star-rating": "^1.1.0",
     "react-native-toast-message": "^2.2.0",
     "socket.io-client": "^4.7.4",
-    "expo-device": "~5.4.0"
+    "expo-device": "~5.4.0",
+    "expo-document-picker": "~11.5.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

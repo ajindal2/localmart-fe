@@ -21,7 +21,7 @@ const sections = [
     },
     {
       data: [
-        { key: 'help_center', text: 'Help Center' },
+        { key: 'ContactUs', text: 'Contact Us' },
         { key: 'privacy_policy', text: 'Privacy Policy' },
         { key: 'terms_of_service', text: 'Terms of Service' },
         { key: 'logout', text: 'Logout' },

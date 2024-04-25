@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -16,44 +16,14 @@ import { Text } from 'react-native';
 
 const Stack = createStackNavigator();
 const navigationRef = createNavigationContainerRef();
+const prefix = Linking.createURL('/');
 
 const AppStack = () => {
   const { user } = useContext(AuthContext);
   const { addMessagesBadgeCount, messagesBadgeCount, setMessagesBadgeCount } = useMessagesBadgeCount();
 
-  /*const linking = {
-    prefixes: ['exp://', 'localmart://', 'https://www.localmart.com'], // Include all the URL prefixes your app can handle.
-    config: {
-      screens: {
-        HomeApp: { // This corresponds to the <Stack.Screen name="HomeApp" component={HomeAppStack} />
-          screens: {
-            Account: {
-              screens: {
-                AccountScreen: 'account',
-              },
-            },
-            Home: { // This matches the name of the Tab.Screen for the HomeStackNavigator within HomeAppStack
-              screens: {
-                HomeScreen: 'home', // This is for deep linking to the HomeScreen within the HomeStackNavigator
-                ViewListingStack: { // Assuming ViewListingStack is a stack navigator you want to deep link into
-                  path: 'listing',
-                  screens: {
-                    ViewListing: 'view/:listingId', // Specify the path for deep linking to a specific listing. Adjust the screen name as necessary.
-                  }
-                },
-                // Include other screens within HomeStackNavigator if you want them to be deep linkable.
-              },
-            },
-            // Include other Tab.Screens from HomeAppStack if you want them to be deep linkable.
-          },
-        },
-        // Include Auth if you want it to be deep linkable, but it's often not needed for auth flows.
-      },
-    },
-  };*/
-
   const linking = {
-    prefixes: ['exp://', 'localmart://', 'https://www.localmart.com'], // Include all the URL prefixes your app can handle.
+    prefixes: ['https://farmvox.com/'], 
     config: {
       screens: {
         HomeApp: {
@@ -63,10 +33,10 @@ const AppStack = () => {
                 HomeScreen: 'home',
                 ViewListingStack: {
                   screens: {
-                    ViewListing: 'listing/view/:id',
-                    SellerDetails: 'listing/view/:id/seller',
-                    AllReviewsScreen: 'listing/view/:id/reviews',
-                    ChatScreen: 'listing/view/:id/chat',
+                    ViewListing: 'listing/view/:listingId',
+                    //SellerDetails: 'listing/view/:id/seller',
+                    //AllReviewsScreen: 'listing/view/:id/reviews',
+                    //ChatScreen: 'listing/view/:id/chat',
                   },
                 },
                 SearchLocationPreferenceScreen: 'search-location',
@@ -79,38 +49,6 @@ const AppStack = () => {
       },
     },
   };
-  
-
-  const handleDeepLink = (event) => {
-    let { path, queryParams } = Linking.parse(event.url);
-    // Example: if your URL is 'exp://192.168.0.1:19000/listing/view/123'
-    // path might be '/listing/view/123'
-  
-    // You can split the path and decide where to navigate
-    const route = path.split('/')[0]; // 'listing'
-    const action = path.split('/')[1]; // 'view'
-    const id = path.split('/')[2]; // '123'
-
-    console.log(route, action, id);
-  
-    if (route === 'listing' && action === 'view' && id) {
-      // TODO to enable navigattion like this, add ref={navigationRef} to navigationCOntainer. 
-      // Downside of this is that the app needs to b open to navigate to teh correct page. If app is not open, clicking link lands on home page.
-      // But atleast it is wokring. Linking startegy is not wokring ata ll.
-      navigate('ViewListingStack', { 
-        screen: 'ViewListing', 
-        params: { listingId: id }
-      });
-    }
-  };
-
-  // Add a listener for deep link events
-  /*useEffect(() => {
-    Linking.addEventListener('url', handleDeepLink);
-
-    return () => Linking.removeEventListener('url', handleDeepLink);
-  }, []);*/
-
 
   // To handle in-app notifications
   useEffect(() => {
