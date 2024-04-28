@@ -15,7 +15,7 @@ import useNetworkConnectivity from '../components/useNetworkConnectivity';
 
 const LoginScreen = ({ navigation }) => {
   const isConnected = useNetworkConnectivity();
-  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isCreating, setIsCreating] = useState(false); // to disable button after single press
@@ -38,7 +38,7 @@ const LoginScreen = ({ navigation }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userName, password }),
+        body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
       if (data && data.access_token && data.refresh_token) {
@@ -54,7 +54,7 @@ const LoginScreen = ({ navigation }) => {
 
       } else {
         console.error('Error in login data:', data);
-        Alert.alert('Login failed', 'Invalid Username or Password');
+        Alert.alert('Login failed', 'Invalid Email or Password');
         setIsCreating(false); 
       }
     } catch (error) {
@@ -84,18 +84,12 @@ const LoginScreen = ({ navigation }) => {
     <View style={styles.inputContainer}>
       <Ionicons name="person-outline" size={typography.iconSize} color={colors.iconColor} />
       <InputComponent
-        placeholder="Username"
-        value={userName}
-        onChangeText={setUserName}
+        placeholder="Email Address"
+        value={email}
+        onChangeText={setEmail}
         style={styles.input}
       />
     </View>
-
-    <TouchableOpacity
-      style={styles.forgotUsername}
-      onPress={() => navigation.navigate('ForgotUserNameScreen')} >
-      <Text style={styles.forgotPasswordText}>Forgot User Name?</Text>
-    </TouchableOpacity>
 
     <View style={styles.inputContainer}>
       <Ionicons name="lock-closed-outline" size={typography.iconSize} color={colors.iconColor} />
@@ -185,10 +179,6 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   forgotPassword: {
     alignSelf: 'flex-end',
     marginBottom: spacing.size20Vertical,
-  },
-  forgotUsername: {
-   alignSelf: 'flex-end',
-    marginBottom: spacing.size10Vertical,
   },
   forgotPasswordText: {
     color: 'blue',

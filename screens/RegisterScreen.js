@@ -14,7 +14,6 @@ import useNetworkConnectivity from '../components/useNetworkConnectivity';
 
 const RegisterScreen = ({ navigation }) => {
   const isConnected = useNetworkConnectivity();
-  const [userName, setUserName] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -32,7 +31,6 @@ const RegisterScreen = ({ navigation }) => {
       // Clear the errors state when the screen is focused
       setErrors({}); 
       // clear the form fields 
-       setUserName('');
        setEmailAddress('');
        setPassword('');
        setDisplayName('');
@@ -42,14 +40,6 @@ const RegisterScreen = ({ navigation }) => {
   const validateInput = () => {
     let isValid = true;
     let newErrors = {};
-  
-    if (!userName || userName.length < 4) {
-      isValid = false;
-      newErrors.userName = 'Username must be at least 4 characters long.';
-    } else if (!/^(?=.*[A-Za-z])[A-Za-z\d]*$/.test(userName)) {
-      isValid = false;
-      newErrors.userName = 'Username must contain at least one letter and can only contain letters and numbers.';
-    }
   
     // Email validation (use a more robust regex in production)
     if (!emailAddress || !/\S+@\S+\.\S+/.test(emailAddress)) {
@@ -90,7 +80,7 @@ const RegisterScreen = ({ navigation }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userName, displayName, emailAddress, password }),
+        body: JSON.stringify({ displayName, emailAddress, password }),
     });
 
     // Check if the response is as expected
@@ -143,17 +133,6 @@ const RegisterScreen = ({ navigation }) => {
       <Image source={DEFAULT_LISTING_IMAGE_URI} style={styles.logo} />
       <Text style={styles.title}>Create Account</Text>
       <Text style={styles.description}>Your local marketplace for everything you need.</Text>
-  
-      <View style={styles.inputContainer}>
-        <Ionicons name="person-outline" size={typography.iconSize} color={colors.iconColor} />
-        <InputComponent
-          placeholder="Username"
-          value={userName}
-          onChangeText={setUserName}
-          style={styles.input}
-        />
-      </View>
-      {errors.userName && <Text style={styles.errorText}>{errors.userName}</Text>}
 
       <View style={styles.inputContainer}>
         <Ionicons name="md-person-circle-outline" size={typography.iconSize} color={colors.iconColor} />

@@ -27,32 +27,6 @@ export const forgotPassword = async (email) => {
   }
 };
 
-export const forgotUserName = async (email) => {
-  try {
-    const response = await fetch(`${BASE_URL}/auth/forgot-username`, { 
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email }),
-    });
-  
-    if (!response.ok) {
-      let errorCode = response.status;
-      if (errorCode === 429) {
-        throw new Error('Too many requests. Please try again in sometime.');
-      } else {
-        throw new Error('Failed to send forgot password email');
-      }
-    }
-  
-    return response.json();
-  } catch (error) {
-    console.error('Error handling forgot username', error);
-    throw error; 
-  }
-};
-
 export const sendContactUsForm = async (data, file) => {
   const token = await SecureStore.getItemAsync('token');
 

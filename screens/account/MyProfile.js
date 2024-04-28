@@ -27,7 +27,6 @@ const MyProfile = ({ navigation }) => {
   const [isAboutMeEditable, setIsAboutMeEditable] = useState(false); 
   const [userAuthDetails, setUserAuthDetails] = useState({
     emailAddress: '',
-    userName: '',
     displayName: '',
   });
   const [userProfileDetails, setUserProfileDetails] = useState({
@@ -60,7 +59,6 @@ const MyProfile = ({ navigation }) => {
 
         setUserAuthDetails({
           emailAddress: userAuthProfile.emailAddress,
-          userName: userAuthProfile.userName,
           displayName: userAuthProfile.displayName,
           date: userAuthProfile.date,
         });
@@ -200,24 +198,6 @@ const MyProfile = ({ navigation }) => {
             <Icon name="pencil" size={typography.iconSize} color={colors.iconColor} />
           </TouchableOpacity>
          </View>
-      </View>
-
-      <View style={styles.aboutSection}>
-        <Text style={styles.text}>User Name</Text>
-        <View style={styles.inputRow}>
-          <InputComponent
-            placeholder="User Name"
-            value={userAuthDetails.userName}          
-            editable={false}
-            style={styles.input}
-          />
-          <TouchableOpacity
-              onPress={() => Alert.alert('Information', 'User name cannot be edited. Contact us if you really need to change it.')}
-              style={styles.iconContainer}
-            >
-            <Icon name="question-circle" size={typography.iconSize} color={colors.iconColor} />
-          </TouchableOpacity>
-        </View>
       </View>
 
       <View style={styles.aboutSection}>
