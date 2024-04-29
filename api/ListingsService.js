@@ -90,6 +90,10 @@ export const createListing = async (userId, listingDetails) => {
     const locationString = JSON.stringify(listingDetails.location);
     formData.append('location', locationString);
 
+    if (listingDetails.category) {
+      formData.append('category', JSON.stringify(listingDetails.category));
+    }
+
     listingDetails.photos.forEach((photoUri, index) => {
       formData.append('images', { // Change this to 'images' to match server's expectation
         uri: photoUri,
@@ -129,6 +133,10 @@ export const updateListing = async (listingId, listingDetails) => {
     formData.append('description', listingDetails.description);
     formData.append('price', listingDetails.price);
     formData.append('location', JSON.stringify(listingDetails.location));
+
+    if (listingDetails.category) {
+      formData.append('category', JSON.stringify(listingDetails.category));
+    }
 
     listingDetails.photos.forEach((photoUri, index) => {
       formData.append('images', {

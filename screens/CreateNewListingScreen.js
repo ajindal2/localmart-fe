@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Switch, ScrollView, Alert, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Picker } from '@react-native-picker/picker';
 import { createListing, updateListing } from '../api/ListingsService';
 import { getSellerLocation } from '../api/SellerService';
 import { AuthContext } from '../AuthContext';
@@ -16,6 +17,16 @@ import useNetworkConnectivity from '../components/useNetworkConnectivity';
 
 
 const CreatingNewListingScreen = ({ navigation, route }) => {
+
+  const categories = [
+    { label: "Plants", value: "Plants", subCategories: [] },
+    { label: "Produce", value: "Produce", subCategories: [] },
+    { label: "Eggs", value: "Eggs", subCategories: [] },
+    { label: "Honey", value: "Honey", subCategories: [] },
+    { label: "Dairy", value: "Dairy", subCategories: [] },
+    { label: "Other", value: "Other", subCategories: [] },
+  ];
+
   const isConnected = useNetworkConnectivity();
   const { user, logout } = useContext(AuthContext);
   const [photos, setPhotos] = useState([]);
@@ -35,6 +46,8 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
   const [isCreating, setIsCreating] = useState(false); // to disable button after single press
+  const [selectedCategory, setSelectedCategory] = useState(categories[0]?.value);
+  const [selectedSubCategory, setSelectedSubCategory] = useState([]);
 
   useHideBottomTab(navigation, fromAccount);
 
@@ -98,6 +111,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
       setPhotos(listing.imageUrls || []);
       setPickupLocation(listing.location || {});
       setIsFree(listing.price === 0);
+      setSelectedCategory(listing.category ? listing.category.mainCategory || 'Other' : 'Other');
     }
   }, [isEditing, listing]);
 
@@ -280,7 +294,11 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           description,
           price: isFree ? '0' : price,
           photos,
-          location: pickupLocation
+          location: pickupLocation,
+          category: {
+            "mainCategory": selectedCategory,
+            "subCategories": [] //selectedSubCategory
+          },
         };
         try {
           if (isEditing) {
@@ -407,7 +425,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       
       <View style={styles.section}>
         <Text style={styles.text}>Add upto 10 photos</Text>
@@ -436,8 +454,53 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           style={{marginTop: spacing.size10Vertical, padding: spacing.size10Horizontal}}
           multiline
         />
-      <View style={styles.separator} />
+        <View style={styles.separator} />
+      </View>
 
+        
+      <View style={styles.section}>
+        <Text style={styles.text}>Category</Text>
+        
+        <View style={{
+            marginBottom: spacing.size10Vertical,
+            borderWidth: 1,
+            borderColor: colors.inputBorder,
+            borderRadius: 5,
+            overflow: 'hidden',  // Important for borderRadius to work on Android
+        }}>
+          <Picker
+            selectedValue={selectedCategory}
+            onValueChange={(itemValue, itemIndex) => {
+              setSelectedCategory(itemValue);
+              // Reset sub-category when main category changes
+              setSelectedSubCategory([]);
+            }}
+            style={{
+              width: '100%', // Ensure the Picker fills the View
+              backgroundColor: 'transparent'
+            }}
+            itemStyle={{
+              color: colors.secondaryText, // Set the font color for items (works only on iOS)
+            }}
+          >
+            {categories.map((category, index) => (
+              <Picker.Item key={index} label={category.label} value={category.value} />
+            ))}
+          </Picker>
+        </View>
+
+        {/* Conditionally render sub-category Picker */}
+        {categories.find(cat => cat.value === selectedCategory)?.subCategories.length > 0 && (
+          <Picker
+            selectedValue={selectedSubCategory}
+            onValueChange={(itemValue, itemIndex) => setSelectedSubCategory(itemValue)}
+            style={{marginBottom: spacing.size10Vertical}}
+          >
+            {categories.find(cat => cat.value === selectedCategory).subCategories.map((sub, index) => (
+              <Picker.Item key={index} label={sub} value={sub} />
+            ))}
+          </Picker>
+        )}
       </View>
 
       <View style={styles.section}>
@@ -517,7 +580,7 @@ const deleteIconSize = width * 0.05;
 
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
-    flex: 1,
+    //flex: 1,
     padding: spacing.size10Horizontal,
   },
   errorInput: {

@@ -38,7 +38,7 @@ const AllReviewsScreen = ({ route, navigation }) => {
     }
 
     return (
-        <ScrollView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
           {(!ratingsWithProfile || ratingsWithProfile.length === 0) ? (
               <View style={styles.errorContainer}>
               <Text style={styles.errorTitle}>{errorMessageTitle}</Text>
@@ -96,7 +96,7 @@ const imageSize = width * 0.12;
 
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
-      flex: 1,
+      //flex: 1,
     },
     section: {
     },
