@@ -7,7 +7,7 @@ import InputComponent from '../components/InputComponent';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../components/ThemeContext';
 import { BASE_URL } from '../constants/AppConstants';
-import { DEFAULT_LISTING_IMAGE_URI } from '../constants/AppConstants'
+import {APP_NAME_IMAGE} from '../constants/AppConstants';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
 
@@ -80,7 +80,7 @@ const RegisterScreen = ({ navigation }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ displayName, emailAddress, password }),
+        body: JSON.stringify({displayName, emailAddress, password }),
     });
 
     // Check if the response is as expected
@@ -129,10 +129,9 @@ const RegisterScreen = ({ navigation }) => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Image source={DEFAULT_LISTING_IMAGE_URI} style={styles.logo} />
-      <Text style={styles.title}>Create Account</Text>
-      <Text style={styles.description}>Your local marketplace for everything you need.</Text>
+    <ScrollView contentContainerStyle={styles.mainContainer}>
+      <Image source={APP_NAME_IMAGE} style={styles.logo} />
+      <Text style={styles.title}>Join FarmVox</Text>
 
       <View style={styles.inputContainer}>
         <Ionicons name="md-person-circle-outline" size={typography.iconSize} color={colors.iconColor} />
@@ -182,7 +181,7 @@ const RegisterScreen = ({ navigation }) => {
         loading={isCreating} 
         type="primary" 
         onPress={handleRegister}           
-        style={{ width: '100%', flexDirection: 'row' }}
+        style={{ width: '100%', flexDirection: 'row',  marginTop: spacing.size10Vertical }}
       />
   
       <View style={styles.orContainer}>
@@ -199,22 +198,22 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   const { width } = Dimensions.get('window');
-  const logoSize = width * 0.4; 
+  const logoSize = width * 0.5; 
 
   const getStyles = (colors, typography, spacing) => StyleSheet.create({
-    container: {
+    mainContainer: {
       flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
       padding: spacing.size20Horizontal,
+      alignItems: 'center',
     },
     logo: {
       width: logoSize,
-      height: logoSize,
-      marginBottom: spacing.size20Vertical,
+      height: 0.25 * logoSize,
+      marginTop: spacing.sizeExtraLarge,
+      marginBottom: spacing.sizeLarge
     },
     title: {
-      fontSize: typography.authTitle,
+      fontSize: typography.pageTitle,
       fontFamily: 'Montserrat', // Use Montserrat font for the title
       color: colors.titleColor, // Use dark color for the text
       textAlign: 'center',
@@ -235,6 +234,7 @@ const RegisterScreen = ({ navigation }) => {
       paddingLeft: spacing.size10Horizontal,
       paddingRight: spacing.size10Horizontal,
       marginBottom: spacing.size10Vertical,
+      marginTop: spacing.size10Vertical,
       borderRadius: spacing.sm,
     },
     input: {

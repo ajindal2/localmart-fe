@@ -23,7 +23,7 @@ export const theme = {
   },
   typography: {
     // fontSizes
-    authTitle: 32 ,
+    authTitle: 24 ,
     iconLarge: 24,
     sectionTitle: 22,
     pageTitle: 20 ,

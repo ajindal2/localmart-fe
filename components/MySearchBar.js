@@ -16,7 +16,7 @@ const MySearchBar =  React.memo(({ value, onUpdate, navigation }) => {
 
   return (
     <SearchBar
-      placeholder="Search Localmart"
+      placeholder="Search FarmVox"
       placeholderTextColor={colors.secondaryText}
       containerStyle={{
         backgroundColor: 'transparent',

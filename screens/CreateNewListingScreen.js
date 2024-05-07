@@ -19,8 +19,8 @@ import useNetworkConnectivity from '../components/useNetworkConnectivity';
 const CreatingNewListingScreen = ({ navigation, route }) => {
 
   const categories = [
-    { label: "Plants", value: "Plants", subCategories: [] },
     { label: "Produce", value: "Produce", subCategories: [] },
+    { label: "Plants", value: "Plants", subCategories: [] },
     { label: "Eggs", value: "Eggs", subCategories: [] },
     { label: "Honey", value: "Honey", subCategories: [] },
     { label: "Dairy", value: "Dairy", subCategories: [] },

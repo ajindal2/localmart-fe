@@ -8,7 +8,7 @@ import InputComponent from '../components/InputComponent';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../components/ThemeContext';
 import { BASE_URL } from '../constants/AppConstants';
-import { DEFAULT_LISTING_IMAGE_URI } from '../constants/AppConstants'
+import {APP_NAME_IMAGE} from '../constants/AppConstants';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
 
@@ -77,9 +77,8 @@ const LoginScreen = ({ navigation }) => {
 
   return (
   <View style={styles.container}>
-    <Image source={DEFAULT_LISTING_IMAGE_URI} style={styles.logo} />
-    <Text style={styles.title}>Welcome Back</Text>
-    <Text style={styles.description}>Your local marketplace for groceries.</Text>
+    <Image source={APP_NAME_IMAGE} style={styles.logo} />
+    <Text style={styles.title}>Log in</Text>
 
     <View style={styles.inputContainer}>
       <Ionicons name="person-outline" size={typography.iconSize} color={colors.iconColor} />
@@ -134,22 +133,23 @@ const LoginScreen = ({ navigation }) => {
 };
 
 const { width } = Dimensions.get('window');
-const logoSize = width * 0.4; 
+const logoSize = width * 0.5; 
 
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+   // justifyContent: 'center',
     padding: spacing.size20Horizontal,
   },
   logo: {
     width: logoSize,
-    height: logoSize,
-    marginBottom: spacing.size20Vertical,
+    height: 0.25 * logoSize,
+    marginTop: spacing.sizeExtraLarge,
+    marginBottom: spacing.sizeLarge
   },
   title: {
-    fontSize: typography.authTitle,
+    fontSize: typography.pageTitle,
     fontFamily: 'Montserrat', // Use Montserrat font for the title
     color: colors.titleColor, // Use dark color for the text
     textAlign: 'center',

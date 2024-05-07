@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, ImageBackground, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
 import ButtonComponent from '../components/ButtonComponent';
 import { useFonts } from 'expo-font';
 import { useTheme } from '../components/ThemeContext';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
+import {APP_NAME_IMAGE, BASKET_IMAGE} from '../constants/AppConstants';
 
 
 const WelcomeScreen = ({ navigation }) => {
@@ -32,14 +33,12 @@ const WelcomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ImageBackground 
-        source={require('../assets/bckgrnd.png')} 
-        resizeMode="cover" 
-        style={styles.imageBackground}
-      >
-        <Text style={styles.title}>Welcome to LocalMart!</Text>
-        <Text style={styles.description}>Your local marketplace for everything you need.</Text>
-      </ImageBackground>
+      <Image source={APP_NAME_IMAGE} style={styles.logo} />
+      <Image source={BASKET_IMAGE} style={styles.basket} />
+      
+        <Text style={styles.title}>Giving voice to local farms!</Text>
+        <Text style={styles.description}>Your marketplace for everything local - backyard produce, eggs, honey, produce, plants and much more.</Text>
+      
       <View style={styles.buttonContainer}>
         <ButtonComponent 
           title="Login" 
@@ -58,17 +57,23 @@ const WelcomeScreen = ({ navigation }) => {
   );
 };
 
+const { width } = Dimensions.get('window');
+const logoSize = width * 0.5; 
+
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  imageBackground: {
-    width: '100%',
-    height: '50%',
-    justifyContent: 'flex-end',
     padding: spacing.size20Horizontal,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logo: {
+    width: logoSize,
+    height: 0.25 * logoSize,
+  },
+  basket: {
+    width: 1.1 * logoSize,
+    height: 1.1 * logoSize,
   },
   title: {
     fontSize: typography.authTitle,
@@ -87,7 +92,8 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between', // Adjust to 'space-between' for even spacing
     width: '100%',
-    padding: spacing.size20Horizontal, // Only apply padding to the sides
+    paddingTop: spacing.size20Horizontal,
+    //padding: spacing.size20Horizontal, // Only apply padding to the sides
   },
   // Button styles are moved to ButtonComponent
 });

@@ -12,7 +12,7 @@ function HomeStackNavigator() {
         <HomeStack.Screen name="HomeScreen" component={HomeScreen} 
         options={{ 
           headerShown: true,
-          title: 'Home' 
+         // title: 'Home' 
         }} /> 
         <HomeStack.Screen name="ViewListingStack" component={ViewListingStackNavigator} options={{ headerShown: false }} /> 
         <HomeStack.Screen name="SearchLocationPreferenceScreen" component={SearchLocationPreferenceScreen} 

@@ -31,7 +31,7 @@ const SellerDetails = ({ route, navigation }) => {
     const styles = getStyles(colors, typography, spacing);
     const errorMessageTitle = "No Listings Found";
     const errorMessageDetails = "Failed to load seller listings";
-    const emptyListingsMessage = "This seller does not have other listings. LocalMart is a growing marketplace, please try again later.";
+    const emptyListingsMessage = "This seller does not have other listings. FarmVox is a growing marketplace, please try again later.";
     
     const formatJoinedDate = (dateString) => {
       const date = new Date(dateString);

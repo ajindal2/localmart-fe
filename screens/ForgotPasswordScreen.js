@@ -35,7 +35,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.instructions}>
-        Please enter the email you used to sign up at Localmart.
+        Please enter the email you used to sign up at FarmVox.
       </Text>
       <View style={styles.inputContainer}>
         <InputComponent

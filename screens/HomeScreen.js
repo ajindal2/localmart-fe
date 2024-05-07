@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, Image, Dimensions } from 'react-native';
 import MySearchBar from '../components/MySearchBar';
 import { getListings } from '../api/ListingsService';
 import LocationInfoDisplay from '../components/LocationInfoDisplay';
@@ -15,6 +15,7 @@ import { AuthContext } from '../AuthContext';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
 import * as Device from 'expo-device';
+import {APP_NAME_IMAGE} from '../constants/AppConstants';
 
 
 const HomeScreen = ({ navigation }) => {
@@ -34,8 +35,19 @@ const HomeScreen = ({ navigation }) => {
   const styles = getStyles(colors, typography, spacing);
   const errorMessageTitle = "No Listings Found";
   const errorMessageDetails = "We're experiencing some problems on our end. Please try again later.";
-  const emptyListingsMessage = "There are no listings available at the moment for your keyword/ location. LocalMart is a growing marketplace, please try again later.";
+  const emptyListingsMessage = "There are no listings available at the moment for your keyword/ location. FarmVox is a growing marketplace, please try again later.";
 
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <Image 
+          source={APP_NAME_IMAGE}
+          style={styles.logo} 
+        />
+      )
+    });
+  }, [navigation]);
+  
   useEffect(() => {
     const timerId = setTimeout(() => {
       setDebouncedSearch(search);
@@ -195,7 +207,6 @@ const HomeScreen = ({ navigation }) => {
   }
 }
 
-
 const fetchListings = async (searchKey = '') => {
 
     setError(null); // Reset the error state
@@ -308,6 +319,9 @@ const fetchListings = async (searchKey = '') => {
   );
 };
 
+const { width } = Dimensions.get('window');
+const logoSize = width * 0.3; 
+
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
     flex: 1,
@@ -329,6 +343,10 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     marginTop: spacing.size10Vertical,
     textAlign: 'center',
     paddingHorizontal: spacing.size20Horizontal,
+  },
+  logo: {
+    width: logoSize,
+    height: 0.25 * logoSize,
   },
 });
 
