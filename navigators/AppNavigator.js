@@ -23,7 +23,7 @@ const AppStack = () => {
   const { addMessagesBadgeCount, messagesBadgeCount, setMessagesBadgeCount } = useMessagesBadgeCount();
 
   const linking = {
-    prefixes: ['https://farmvox.com/'], 
+    prefixes: [Linking.createURL('/'), 'farmvox://', 'https://farmvox.com/'],
     config: {
       screens: {
         HomeApp: {
@@ -34,15 +34,10 @@ const AppStack = () => {
                 ViewListingStack: {
                   screens: {
                     ViewListing: 'listing/view/:listingId',
-                    //SellerDetails: 'listing/view/:id/seller',
-                    //AllReviewsScreen: 'listing/view/:id/reviews',
-                    //ChatScreen: 'listing/view/:id/chat',
                   },
                 },
-                SearchLocationPreferenceScreen: 'search-location',
               },
             },
-            // Add other tabs here
           },
         },
         Auth: 'auth',

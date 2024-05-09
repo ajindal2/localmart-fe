@@ -187,12 +187,12 @@ const ChatScreen = ({ route, navigation }) => {
       });
     }
     // Update the local state with the new message so it renders immediately
-    /*setMessages(previousMessages => {
+    setMessages(previousMessages => {
       const newUniqueMessages = newMessages.filter(newMsg => 
         !previousMessages.some(prevMsg => prevMsg._id === newMsg._id)
       );
       return GiftedChat.append(previousMessages, newUniqueMessages);
-    });*/
+    });
   };
 
   const onMessagePress = (message) => {

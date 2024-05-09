@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Linking, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, Linking, TouchableOpacity, Text, Platform } from 'react-native';
 import MapView, { Circle } from 'react-native-maps';
 import { useTheme } from './ThemeContext';
 

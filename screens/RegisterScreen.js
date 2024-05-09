@@ -57,9 +57,9 @@ const RegisterScreen = ({ navigation }) => {
     if (!displayName || displayName.length < 2 || displayName.length > 30) {
       isValid = false;
       newErrors.displayName = 'Display Name must be between 2 and 30 characters.';
-    } else if (!/^[A-Za-z]+$/.test(displayName)) {
+    } else if (!/^[A-Za-z][A-Za-z0-9 ]*$/.test(displayName)) {
       isValid = false;
-      newErrors.displayName = 'Display Name must contain only letters.';
+      newErrors.displayName = 'Display name must start with a letter and can only contain letters, numbers, and spaces.';
     }
   
     setErrors(newErrors);
@@ -134,7 +134,7 @@ const RegisterScreen = ({ navigation }) => {
       <Text style={styles.title}>Join FarmVox</Text>
 
       <View style={styles.inputContainer}>
-        <Ionicons name="md-person-circle-outline" size={typography.iconSize} color={colors.iconColor} />
+        <Ionicons name="person-outline" size={typography.iconSize} color={colors.iconColor} />
         <InputComponent
           placeholder="Display Name"
           value={displayName}
@@ -142,7 +142,7 @@ const RegisterScreen = ({ navigation }) => {
           style={styles.input}
         />
         <TouchableOpacity onPress={() => Alert.alert("Display Name Info", "Your display name is how others will see you in the app. It can be your real name or a nickname.")}>
-          <Ionicons name="md-information-circle-outline" size={typography.iconSize} color={colors.iconColor} style={{ marginLeft: 10 }} />
+          <Ionicons name="help-outline" size={typography.iconSize} color={colors.iconColor} style={{ marginLeft: 10 }} />
         </TouchableOpacity>
       </View>
       {errors.displayName && <Text style={styles.errorText}>{errors.displayName}</Text>}

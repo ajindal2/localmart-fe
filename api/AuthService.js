@@ -65,3 +65,29 @@ export const sendContactUsForm = async (data, file) => {
     throw error;
   }
 }
+
+export const invalidateRefreshToken = async() => {
+  try {
+    const token = await SecureStore.getItemAsync('token');
+    const refreshToken = await SecureStore.getItemAsync('refreshToken');
+
+    const response = await fetch(`${BASE_URL}/auth/logout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+
+    return await response.json(); // Assuming server returns a confirmation message
+  } catch (error) {
+    console.error('Error invalidating refresh token:', error);
+    throw error;
+  }
+}
+

@@ -9,7 +9,7 @@ import useHideBottomTab from '../../utils/HideBottomTab';
 import InputComponent from '../../components/InputComponent';
 import ButtonComponent from '../../components/ButtonComponent';
 import { useTheme } from '../../components/ThemeContext';
-import Icon from 'react-native-vector-icons/FontAwesome'; 
+import { Ionicons } from '@expo/vector-icons';
 import { DEFAULT_IMAGE_URI } from '../../constants/AppConstants'
 import NoInternetComponent from '../../components/NoInternetComponent';
 import useNetworkConnectivity from '../../components/useNetworkConnectivity';
@@ -64,9 +64,17 @@ const MyProfile = ({ navigation }) => {
         });
        
         if (userProfile) {
+          let profilePictureUrl = userProfile.profilePicture || DEFAULT_IMAGE_URI;
+
+          // Check if the URL is external before applying cache busting
+          if (typeof profilePictureUrl === 'string' && (profilePictureUrl.startsWith('http://') || profilePictureUrl.startsWith('https://'))) {
+              // Add cache busting only if it's an external URL
+              profilePictureUrl += `?v=${new Date().getTime()}`;
+          }
+
           setUserProfileDetails({
             aboutMe: userProfile.aboutMe || '', 
-            profilePicture: userProfile.profilePicture || DEFAULT_IMAGE_URI,
+            profilePicture: profilePictureUrl,
           })
         } else {
           setUserProfileDetails({
@@ -195,7 +203,7 @@ const MyProfile = ({ navigation }) => {
             textAlignVertical="top"
           />
           <TouchableOpacity onPress={() => setIsAboutMeEditable(true)} style={styles.iconContainer}>
-            <Icon name="pencil" size={typography.iconSize} color={colors.iconColor} />
+          <Ionicons name="pencil-outline" size={typography.iconSize} color={colors.iconColor} />
           </TouchableOpacity>
          </View>
       </View>
@@ -213,7 +221,7 @@ const MyProfile = ({ navigation }) => {
               onPress={() => Alert.alert('Information', 'Display name cannot be edited. Contact us if you really need to change it.')}
               style={styles.iconContainer}
             >
-            <Icon name="question-circle" size={typography.iconSize} color={colors.iconColor} />
+            <Ionicons name="help-outline" size={typography.iconSize} color={colors.iconColor} />
           </TouchableOpacity>
         </View>
       </View>
@@ -230,7 +238,7 @@ const MyProfile = ({ navigation }) => {
             style={styles.input}
           />
           <TouchableOpacity onPress={() => setIsEmailEditable(true)} style={styles.iconContainer}>
-            <Icon name="pencil" size={typography.iconSize} color={colors.iconColor} />
+            <Ionicons name="pencil" size={typography.iconSize} color={colors.iconColor} />
           </TouchableOpacity>
         </View>
       </View>
@@ -244,7 +252,7 @@ const MyProfile = ({ navigation }) => {
             style={styles.input}
           />
           <TouchableOpacity onPress={handleUpdatePasswordScreen} style={styles.iconContainer}>
-            <Icon name="pencil" size={typography.iconSize} color={colors.iconColor} />
+            <Ionicons name="pencil" size={typography.iconSize} color={colors.iconColor} />
           </TouchableOpacity>
         </View>
       </View>

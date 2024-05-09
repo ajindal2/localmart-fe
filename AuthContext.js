@@ -1,5 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
+import { invalidateRefreshToken } from './api/AuthService';
+
 
 export const AuthContext = createContext();
 
@@ -25,6 +27,8 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     
     try {
+      await invalidateRefreshToken();
+
       await SecureStore.deleteItemAsync('token');
       await SecureStore.deleteItemAsync('user');
       setToken(null);

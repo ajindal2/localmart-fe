@@ -113,13 +113,20 @@ export const getUserProfile = async (userId) => {
     const token = await SecureStore.getItemAsync('token');
     const apiUrl = `${BASE_URL}/userProfile/${userId}/image`;
   
+    let file = { uri: imageUri, type: 'image/jpeg', name: 'profile-image.jpg' }; // Default to JPEG
+
+    if (imageUri.endsWith('.png')) {
+      file.type = 'image/png'; // Change mime type for PNG files
+      file.name = 'profile-image.png'; // Change file extension for PNG files
+    }
     // Create the form data to send to the server
     let formData = new FormData();
-    formData.append('file', {
+    /*formData.append('file', {
       uri: imageUri,
       type: 'image/jpeg', // or your image's mime type
       name: 'profile-image.jpg', // or your image's name
-    });
+    });*/
+    formData.append('file', file);
   
     try {
       const response = await fetchWithTokenRefresh(apiUrl, {

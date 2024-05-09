@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, Image, Dimensions, Platform } from 'react-native';
 import MySearchBar from '../components/MySearchBar';
 import { getListings } from '../api/ListingsService';
 import LocationInfoDisplay from '../components/LocationInfoDisplay';

@@ -95,10 +95,23 @@ export const createListing = async (userId, listingDetails) => {
     }
 
     listingDetails.photos.forEach((photoUri, index) => {
-      formData.append('images', { // Change this to 'images' to match server's expectation
+      // Determine the file extension
+      const fileExtension = photoUri.split('.').pop().toLowerCase(); // Extract extension and make it lowercase
+    
+      // Set the appropriate MIME type and file name extension
+      let mimeType = 'image/jpeg'; // Default to JPEG
+      let fileName = `photo${index}.jpg`;
+    
+      if (fileExtension === 'png') {
+        mimeType = 'image/png';
+        fileName = `photo${index}.png`; // Adjust the file extension for PNG
+      }
+    
+      // Append the image file to the FormData object
+      formData.append('images', {
         uri: photoUri,
-        type: 'image/jpeg', // Adjust based on actual image type
-        name: `photo${index}.jpg`, // Name of the file
+        type: mimeType,
+        name: fileName,
       });
     });
 
