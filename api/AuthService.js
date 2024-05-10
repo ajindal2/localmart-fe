@@ -80,14 +80,11 @@ export const invalidateRefreshToken = async() => {
       body: JSON.stringify({ refreshToken }),
     });
 
-    if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`);
+    if (response.ok) {
+      return await response.json(); 
     }
-
-    return await response.json(); // Assuming server returns a confirmation message
   } catch (error) {
     console.error('Error invalidating refresh token:', error);
-    throw error;
   }
 }
 

@@ -6,7 +6,7 @@ class ChatService {
   }
 
   initializeSocket() {
-    this.socket = io("http://192.168.86.24:3000", {
+    this.socket = io(process.env.API_URL, {
       //transports: ['websocket'], // Uncomment if you want to force WebSocket transport
     });
 

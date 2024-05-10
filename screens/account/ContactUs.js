@@ -89,7 +89,7 @@ const ContactUs = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Contact Us</Text>
-      <Text style={styles.description}>Feel free to ask us anything or provide feedback!</Text>
+      <Text style={styles.description}>Feel free to ask us anything, feature requests or provide feedback!</Text>
 
       <View style={styles.section}>
         <Text style={styles.text}>
