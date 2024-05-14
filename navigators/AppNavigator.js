@@ -115,6 +115,25 @@ const AppStack = () => {
     };
   }, [user]);
 
+  // Logic to handle a push notification click such that user lands on MyMessages page
+  useEffect(() => {
+    // Function to handle the response
+    const handleNotificationResponse = (response) => {
+      navigate('MyMessages', {} );
+    };
+
+   // Check for the notification that opened the app
+   Notifications.getLastNotificationResponseAsync().then(response => {
+    handleNotificationResponse(response);
+  });
+
+  // Listen for new notification interactions
+  const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      handleNotificationResponse(response);
+  });
+    return () => subscription.remove(); // Clean up the listener
+  }, []);
+
   return (
     <NavigationContainer linking={linking} fallback={<Text>Loading...</Text>}>
       <Stack.Navigator>

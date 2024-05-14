@@ -310,9 +310,12 @@ const fetchListings = async (searchKey = '') => {
         )}
         onEndReached={loadMoreListings} 
         onEndReachedThreshold={0.5}
-        // Using index condition because of the dummy item insertged when odd listings since taht wont have _id field.
+        // Using index condition because of the dummy item inserted when odd listings since that wont have _id field.
         keyExtractor={(item, index) => item._id ? item._id.toString() : index.toString()}
         numColumns={2}
+        initialNumToRender={10} 
+        maxToRenderPerBatch={6} // Number of items to render per batch
+        windowSize={9} // Determines the number of items rendered outside of the viewport
       />
       )}
     </View>

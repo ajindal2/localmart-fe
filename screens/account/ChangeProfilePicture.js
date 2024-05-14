@@ -35,7 +35,7 @@ const ChangeProfilePicture = ({ route, navigation }) => {
         const pickerResult = await ImagePicker.launchCameraAsync({
             allowsEditing: false, // Allow basic editing, adjust as needed
             aspect: [4, 3],      // Aspect ratio, adjust as needed
-            quality: 0.5,        // Adjust for quality vs file size
+            quality: 0.8,        // Adjust for quality vs file size
         });
 
         // Handle the case where the camera is used but no photo is taken
@@ -74,7 +74,7 @@ const ChangeProfilePicture = ({ route, navigation }) => {
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: false, // Allow basic editing, adjust as needed
             aspect: [4, 3],      // Aspect ratio, adjust as needed
-            quality: 0.5,        // Adjust for quality vs file size
+            quality: 0.8,        // Adjust for quality vs file size
         });
 
         // Handle the case where the picker is used but no photo is selected

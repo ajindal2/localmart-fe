@@ -14,6 +14,7 @@ import InputComponent from '../components/InputComponent';
 import ButtonComponent from '../components/ButtonComponent';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
+import * as Network from 'expo-network';
 
 
 const CreatingNewListingScreen = ({ navigation, route }) => {
@@ -210,7 +211,18 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
     );
   };
   
+  const getImageQuality = async () => {
+    const networkState = await Network.getNetworkStateAsync();
+    if (networkState.isConnected && networkState.type !== Network.NetworkStateType.CELLULAR) {
+      return 0.8; // Higher quality for non-cellular connections
+    } else {
+      return 0.5; // Lower quality for cellular or less reliable connections
+    }
+  };
+
   const handleAddPhoto = async () => {
+    const quality = await getImageQuality();
+
     const remainingSlots = 10 - photos.length;
     if (remainingSlots <= 0) {
       alert('You can only add up to 10 photos.');
@@ -227,7 +239,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
       aspect: [4, 3],
-      quality: 1,
+      quality: quality,
       allowsMultipleSelection: true,
       selectionLimit: remainingSlots, // Limit the number of selectable images
     });
