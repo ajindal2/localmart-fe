@@ -63,19 +63,19 @@ class ChatService {
 
   sendMessage(createMessageDTO, chatId) {
     return new Promise((resolve, reject) => {
-        if (!this.socket) {
-          console.log('Socket not initialized');
-          reject('Socket not initialized');
-          return;
-        }
-        this.socket.emit('chat', { createMessageDTO, chatId });
-  
-        // Listen for 'error' event from the server
-        this.socket.once('error', (error) => {
-          console.error('Error sending message:', error);
-          reject(error);
-        });
+      if (!this.socket) {
+        console.log('Socket not initialized');
+        reject('Socket not initialized');
+        return;
+      }
+      this.socket.emit('chat', { createMessageDTO, chatId });
+
+      // Listen for 'error' event from the server
+      this.socket.once('error', (error) => {
+        console.error('Error sending message:', error);
+        reject(error);
       });
+    });
   }
 
   // Not in use. Using RestService instead

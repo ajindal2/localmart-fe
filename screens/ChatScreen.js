@@ -118,22 +118,26 @@ const ChatScreen = ({ route, navigation }) => {
     // Join the chat room
     ChatService.socket.emit('joinRoom', chat._id);
   
-    const handleNewMessages = (newMessages) => {
-    setMessages(previousMessages => {
-        // Immediately deduplicate new messages based on _id
-        const deduplicatedNewMessages = newMessages.filter(newMsg => 
-          !previousMessages.some(prevMsg => prevMsg._id === newMsg._id)
-        );
-    
-        // Transform deduplicated new messages
-        const transformedNewMessages = transformMessages(deduplicatedNewMessages);
-    
-        // Combine with previous messages and sort (if sorting is needed)
-        const combinedMessages = [...previousMessages, ...transformedNewMessages];
-        combinedMessages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    
-        return combinedMessages;
-      });
+    const handleNewMessages = (data) => {
+      const { messages, senderId } = data;
+
+      if (senderId !== user._id) {
+        setMessages(previousMessages => {
+          // Immediately deduplicate new messages based on _id
+          const deduplicatedNewMessages = messages.filter(newMsg => 
+            !previousMessages.some(prevMsg => prevMsg._id === newMsg._id)
+          );
+      
+          // Transform deduplicated new messages
+          const transformedNewMessages = transformMessages(deduplicatedNewMessages);
+      
+          // Combine with previous messages and sort (if sorting is needed)
+          const combinedMessages = [...previousMessages, ...transformedNewMessages];
+          combinedMessages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      
+          return combinedMessages;
+        });
+      }
     };
   
     // Listen for new messages
@@ -187,12 +191,12 @@ const ChatScreen = ({ route, navigation }) => {
       });
     }
     // Update the local state with the new message so it renders immediately
-    /*setMessages(previousMessages => {
+    setMessages(previousMessages => {
       const newUniqueMessages = newMessages.filter(newMsg => 
         !previousMessages.some(prevMsg => prevMsg._id === newMsg._id)
       );
       return GiftedChat.append(previousMessages, newUniqueMessages);
-    });*/
+    });
   };
 
   const onMessagePress = (message) => {
@@ -200,7 +204,6 @@ const ChatScreen = ({ route, navigation }) => {
       // If the chat is a special system message, navigate to RatingForSellerScreen
       navigation.navigate('RatingForSellerScreen', { listing: chat.listingId,  buyerId: chat.buyerId});
     }
-    // Handle other types of messages as needed
   };
 
   const renderMessage = (messageProps) => {
