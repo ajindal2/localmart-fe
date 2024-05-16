@@ -77,7 +77,6 @@ const SavedItems = ({navigation, route}) => {
       icon: 'share-social-outline',
       text: 'Share Listing',
       onPress: () => {
-        console.log('Sharing listing:', item._id);
         handleShareListing(item._id);
         setActiveItemId(null);
       },
@@ -107,7 +106,7 @@ const SavedItems = ({navigation, route}) => {
             params: { item: item.listing }
           });
         } else {
-          console.log('Listing is null, navigation aborted');
+          console.error('Listing is null, navigation in SavedListings is aborted');
           Alert.alert('Error', 'An unknown error occured, please try again later');
         }
       }}

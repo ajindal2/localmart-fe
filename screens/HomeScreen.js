@@ -153,7 +153,7 @@ const HomeScreen = ({ navigation }) => {
 
   const registerForPushNotificationsAsync = async () => {
     if (!Device.isDevice) {
-        console.log('Must use physical device for Push Notifications');
+        console.error('Must use physical device for Push Notifications');
         return;
     }
 
@@ -165,7 +165,7 @@ const HomeScreen = ({ navigation }) => {
     }
 
     if (finalStatus !== 'granted') {
-        console.log('Failed to get push token for push notification!');
+        console.error('Failed to get push token for push notification');
         return;
     }
 

@@ -16,7 +16,7 @@ const shareListing = async (listingTitle, listingUrl) => {
       console.log('Sharing dismissed');
     }
   } catch (error) {
-    console.error('Error during sharing:', error.message);
+    console.error(`Error during sharing listing ${listingUrl}`, error.message);
   }
 };
 

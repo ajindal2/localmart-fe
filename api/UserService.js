@@ -14,7 +14,7 @@ export const getUser = async (userId) => {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      console.log('Error updating User', errorData);
+      console.error(`Error updating User ${userId}`, errorData);
       throw new Error('Error getting User', errorData);
     }
     return await response.json();
@@ -39,14 +39,14 @@ export const updateUser = async (userId, user) => {
   
       if (!response.ok) {
         const errorData = await response.json();
-        console.log('Error updating User', errorData);
+        console.error(`Error updating User ${userId}`, errorData);
         throw new Error('Error updating User', errorData);
       }
   
       const data = await response.json();
       return data; // Return the updated user data
     } catch (error) {
-      console.log('Error updating User', error);
+      console.error(`Error updating User ${userId}`, error);
       throw error;
     }
   };

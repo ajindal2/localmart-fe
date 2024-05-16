@@ -84,7 +84,7 @@ const UpdatePasswordScreen = ({navigation}) => {
           setErrors(errorData.errors);
         } else {
           // Handle other types of errors (e.g., not related to validation)
-          console.log(errorData.message || 'Failed to update password');
+          console.error(errorData.message || 'Failed to update password');
           Alert.alert('Error', errorData.message || 'Failed to update password');
         }
       } else {

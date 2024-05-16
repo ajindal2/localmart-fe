@@ -73,7 +73,7 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
           [
             { 
               text: "Cancel", 
-              onPress: () => console.log('Permission denied by user'), 
+              onPress: () => {console.error('Location rermission denied by user')}, 
               style: 'cancel'
             },
             { 
@@ -91,7 +91,7 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
     const requestLocationPermission = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-          console.log('Permission to access location was denied');
+          console.log('Location Permission to access location was denied');
           return;
       }
 

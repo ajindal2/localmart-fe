@@ -40,17 +40,16 @@ const UserLocationPreferencesScreen = ({ navigation }) => {
 
   const handleSubmit = async () => {
     try {
-        // Only update distance if it has been changed
-        if (initialDistance !== editedDistance) {
-            console.log('update distance');
-            await updateSearchDistance(user._id, editedDistance);
-            setInitialDistance(editedDistance); // Update the initial distance to reflect the new value
-            await AsyncStorage.setItem('searchLocationDistance', `${editedDistance}`);
-        }
-        navigation.goBack();
+      // Only update distance if it has been changed
+      if (initialDistance !== editedDistance) {
+          await updateSearchDistance(user._id, editedDistance);
+          setInitialDistance(editedDistance); // Update the initial distance to reflect the new value
+          await AsyncStorage.setItem('searchLocationDistance', `${editedDistance}`);
+      }
+      navigation.goBack();
     } catch (error) {
-        console.log("error occured: ", error);
-        // TODO
+      console.error(`Error occured when updating user location for ${user._id} `, error);
+      Alert.alert('An unknown error ocurred, please try again later');
     }
   };
 

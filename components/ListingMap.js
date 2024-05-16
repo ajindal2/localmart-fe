@@ -40,7 +40,7 @@ const ListingMap = ({ location }) => {
             if (supported) {
               return Linking.openURL(platformUrl);
             } else {
-              console.log("Don't know how to open this URL: " + platformUrl);
+              console.error("Don't know how to open this URL: " + platformUrl);
             }
           })
           .catch((err) => console.error('An error occurred', err));

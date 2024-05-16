@@ -189,7 +189,7 @@ const ViewMyListingScreen = ({navigation}) => {
               },
               {
                 text: 'No',
-                onPress: () => console.log('Cancelled delete'),
+                onPress: () => console.log('Cancelled delete listing'),
                 style: 'cancel',
               },
             ],

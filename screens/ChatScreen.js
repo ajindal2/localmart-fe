@@ -112,7 +112,6 @@ const ChatScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    //console.log('Setting up socket listener for chat: ', chat);
     ChatService.initializeSocket();
   
     // Join the chat room
@@ -144,9 +143,7 @@ const ChatScreen = ({ route, navigation }) => {
     ChatService.socket.on('messageRcvd', handleNewMessages);
   
     // Cleanup function to leave the room and remove the event listener
-    return () => {
-      console.log('Leaving chat room and removing socket listener');
-      
+    return () => {      
       // Emit an event to leave the room when the component unmounts or chat changes
       ChatService.socket.emit('leaveRoom', chat._id);
   

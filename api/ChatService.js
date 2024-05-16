@@ -10,9 +10,9 @@ class ChatService {
       //transports: ['websocket'], // Uncomment if you want to force WebSocket transport
     });
 
-    this.socket.on('connect', () => console.log('Connected to server'));
-    this.socket.on('disconnect', () => console.log('Disconnected from server'));
-    this.socket.on('connect_error', (error) => console.log('Connection error:', error));
+    this.socket.on('connect', () => {});
+    this.socket.on('disconnect', () => {});
+    this.socket.on('connect_error', (error) => console.error('Connection error:', error));
   }
 
   turnOffSockets() {
@@ -28,12 +28,8 @@ class ChatService {
 
   // Not in use
   disconnectSocket() {
-    console.log('Inside disconnectSocket');
     if (this.socket) {
-      console.log('Disconnecting socket');
-      this.socket.disconnect(() => {
-        console.log('Disconnect callback: Socket has been disconnected');
-      });
+      this.socket.disconnect(() => {});
     }
   }
 
@@ -41,7 +37,6 @@ class ChatService {
   createChat(createChatDTO) {
     return new Promise((resolve, reject) => {
       if (!this.socket) {
-        console.log('Socket not initialized');
         reject('Socket not initialized');
         return;
       }
@@ -64,7 +59,7 @@ class ChatService {
   sendMessage(createMessageDTO, chatId) {
     return new Promise((resolve, reject) => {
       if (!this.socket) {
-        console.log('Socket not initialized');
+        console.error(`Socket not initialized for chatId ${chatId}`);
         reject('Socket not initialized');
         return;
       }
@@ -82,7 +77,6 @@ class ChatService {
   getChats(userId) {
     return new Promise((resolve, reject) => {
       if (!this.socket) {
-        console.log('Socket not initialized');
         reject('Socket not initialized');
         return;
       }
@@ -107,7 +101,6 @@ class ChatService {
   getChat(chatId) {
     return new Promise((resolve, reject) => {
       if (!this.socket) {
-        console.log('Socket not initialized');
         reject('Socket not initialized');
         return;
       }

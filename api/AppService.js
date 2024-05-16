@@ -19,7 +19,6 @@ export const sendPushToken = async (userId, token, attempt = 0) => {
       throw new Error(`Error sending push token: ${response.status}`);
     }
 
-    console.log(`Token stored successfully on attempt ${attempt + 1}`);
   } catch (error) {
     console.error(`Attempt ${attempt + 1}: Failed to store token`, error);
     if (attempt < MAX_RETRIES) {
