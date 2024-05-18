@@ -14,6 +14,9 @@ export const forgotPassword = async (email) => {
   
     if (!response.ok) {
       let errorCode = response.status;
+      const errorData = await response.json();
+      console.error(`Error handling forgot password request for email ${email}`, errorData);
+
       if (errorCode === 429) {
         throw new Error('Too many requests. Please try again in sometime.');
       } else {
@@ -22,7 +25,7 @@ export const forgotPassword = async (email) => {
     }
     return response.json();
   } catch (error) {
-    console.error('Error handling forgot password', error);
+    console.error(`Error handling forgot password request for email ${email}`, error);
     throw error; 
   }
 };
@@ -55,13 +58,14 @@ export const sendContactUsForm = async (data, file) => {
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error(`Failed to send contact us email for ${data.email}`, errorData);
       throw new Error(errorData.message || 'Error sending email');
     }
 
     const result = await response.text();
     return result;
   } catch (error) {
-    console.error('Failed to send contact us email:', error);
+    console.error(`Failed to send contact us email for ${data.email}`, error);
     throw error;
   }
 }
@@ -82,9 +86,12 @@ export const invalidateRefreshToken = async() => {
 
     if (response.ok) {
       return await response.json(); 
+    } else {
+      const errorData = await response.json();
+      console.error(`Error invalidating refresh token ${refreshToken}`, errorData);
     }
   } catch (error) {
-    console.error('Error invalidating refresh token:', error);
+    console.error(`Error invalidating refresh token ${refreshToken}`, error);
   }
 }
 

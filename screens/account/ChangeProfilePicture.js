@@ -110,6 +110,7 @@ const ChangeProfilePicture = ({ route, navigation }) => {
       //navigation.navigate('MyProfile');
       navigation.goBack();
     } catch (error) {
+      console.error(`Could not update profile image for user ${user._id}`, error);
       if (error.message.includes('RefreshTokenExpired')) {
         logout();
       } else {

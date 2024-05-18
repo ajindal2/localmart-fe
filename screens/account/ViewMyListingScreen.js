@@ -94,7 +94,7 @@ const ViewMyListingScreen = ({navigation}) => {
       if (error.message.includes('RefreshTokenExpired')) {
         logout();
       } else {
-        console.error('Error marking listing as sold:', error);
+        console.error(`Error marking listing ${listing} as sold:`, error);
         Alert.alert('Error', 'Error updating status, please try again later.');
       }
     }
@@ -112,7 +112,7 @@ const ViewMyListingScreen = ({navigation}) => {
         logout();
       } else {
         // Just log and do nothing. User can start rating flow from this page later.
-        console.error('Error getting buyer details after marking as sold for user and listing:', user._id, listing._id, error);
+        console.error(`Error getting buyer details after marking as sold for user ${user._id} and listing ${listing._id}`, error);
       }
     }
   };
@@ -127,7 +127,7 @@ const ViewMyListingScreen = ({navigation}) => {
       if (error.message.includes('RefreshTokenExpired')) {
         logout();
       } else {
-        console.error('Error deleting listing:', error);
+        console.error(`Error deleting listing ${listingId}`, error);
         Alert.alert('Error', 'Error deleting listing, please try again later.');
       }
     }
@@ -149,7 +149,7 @@ const ViewMyListingScreen = ({navigation}) => {
       if (error.message.includes('RefreshTokenExpired')) {
         logout();
       } else {
-        console.error('Error handling RateMoreBuyers for user and listing:', user._id, listing._id, error);
+        console.error(`Error handling RateMoreBuyers for user ${user._id} and listing ${listing._id}`, error);
         Alert.alert('Error', 'An unknown error occured, please try again later.');
       }
     }

@@ -14,12 +14,12 @@ export const getUser = async (userId) => {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      console.error(`Error updating User ${userId}`, errorData);
+      console.error(`Error fetching user deatils for userId ${userId}`, errorData);
       throw new Error('Error getting User', errorData);
     }
     return await response.json();
   } catch (error) {
-    console.error('There has been a problem with your fetch operation:', error);
+    console.error(`Error fetching user deatils for userId ${userId}`, error);
     throw error;
   }
 };
@@ -71,7 +71,7 @@ export const updateUser = async (userId, user) => {
       // Handling !response.ok is done on the screen
       return response;
     } catch (error) {
-      console.error('Error updating password:', error);
+      console.error(`Error updating password for user ${userId}`, error);
       throw error; // Re-throw the error so it can be handled by the caller
     }
   };

@@ -19,11 +19,11 @@ export const getUserProfile = async (userId) => {
         return null;
       } else {
         const errorData = await response.json();
-        console.error('Error fetching user profile:', errorData);
+        console.error(`Error fetching user profile for userId ${userId}`, errorData);
         throw new Error(errorData.message || 'An error occurred. Please try again.');
       }
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error(`Error fetching user profile for userId ${userId}`, error);
       throw error;
     }
   };
@@ -46,11 +46,11 @@ export const getUserProfile = async (userId) => {
           return null;
         } else {
           const errorData = await response.json();
-          console.error('Error fetching user location:', errorData);
+          console.error(`Error fetching user location for user id ${userId}`, errorData);
           throw new Error(errorData.message || 'Error fetching user location');
         }
     } catch (error) {
-      console.error('Error fetching user location:', error);
+      console.error(`Error fetching user location for user id ${userId}`, error);
       throw error;
     }
   };
@@ -74,11 +74,11 @@ export const getUserProfile = async (userId) => {
         return profile;
       } else {
         const errorData = await response.json();
-        console.error('Error creating user profile:', errorData);
+        console.error(`Error creating user profile for user id ${userId}`, errorData);
         throw new Error(errorData.message || 'Error creating user profile');
       }
     } catch (error) {
-      console.error('Error creating user profile:', error);
+      console.error(`Error creating user profile for user id ${userId}`, error);
     }
   };
 
@@ -98,13 +98,14 @@ export const getUserProfile = async (userId) => {
   
       if (!response.ok) {
         const errorData = await response.json();
+        console.error(`Error updating user profile for userId ${userId}`, errorData);
         throw new Error(errorData.message || 'Error updating user profile');
       }
   
       const data = await response.json();
       return data; // Return the updated user data
     } catch (error) {
-        console.error('Error updating user profile:', error);
+        console.error(`Error updating user profile for userId ${userId}`, error);
         throw error;
     }
   };
@@ -142,10 +143,11 @@ export const getUserProfile = async (userId) => {
         return result;
       } else {
         const errorData = await response.json();
+        console.error(`Error uploading profile image for userId ${userId} and imageUri ${imageUri}`, errorData);
         throw new Error(errorData.message || 'Error uploading profile picture');
       }
     } catch (error) {
-      console.error('Error uploading profile image:', error);
+      console.error(`Error uploading profile image for userId ${userId} and imageUri ${imageUri}`, error);
       throw error;
     }
   };

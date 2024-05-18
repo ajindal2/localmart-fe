@@ -25,16 +25,16 @@ const BuyerConfirmationScreen = ({ navigation, route }) => {
     try {
       const selectedBuyer = buyers.find(buyer => buyer.buyerId === selectedBuyerId);
       if(user) {
-          const ratingsExists = await checkRatingExists(listing._id, user._id, selectedBuyerId);
-          if (!ratingsExists) {
-          // Rating does not exist, navigate to RatingForBuyerScreen
-          navigation.navigate('RatingForBuyerScreen', { selectedBuyer, listing});
-          } else {
-              Alert.alert('Error', 'The rating for this buyer is already recorded');
-          }
+        const ratingsExists = await checkRatingExists(listing._id, user._id, selectedBuyerId);
+        if (!ratingsExists) {
+        // Rating does not exist, navigate to RatingForBuyerScreen
+        navigation.navigate('RatingForBuyerScreen', { selectedBuyer, listing});
+        } else {
+            Alert.alert('Error', 'The rating for this buyer is already recorded');
+        }
       } 
     } catch (error) {
-        console.error('Failed to submit rating:', error);
+        console.error('Failed to submit rating', error);
         if (error.message.includes('RefreshTokenExpired')) {
           logout();
         } else {

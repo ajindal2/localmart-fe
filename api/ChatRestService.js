@@ -20,11 +20,11 @@ export const getChats = async (userId) => {
           return null;
         } else {
           const errorData = await response.json();
-          console.error('Error fetching chats:', errorData);
+          console.error(`Error fetching chats for user ${userId}`, errorData);
           throw new Error(errorData.message || 'Error fetching chats');
         }
       } catch (error) {
-        console.error('Error fetching chats:', error);
+        console.error(`Error fetching chats for user ${userId}`, error);
         throw error;
       }
   };
@@ -78,12 +78,12 @@ export const getChats = async (userId) => {
       } else {
         // TODO do retry in case of failure and dont surface it to the seller. Do not throw errro here.
         const errorData = await response.json();
-        console.error('Error creating system chat:', errorData);
+        console.error(`Error creating system chat for buyer ${buyerId} and listing ${listingId}`, errorData);
         throw new Error(errorData.message || 'Error creating system chat');
       }
     } catch (error) {
-      console.error('Error creating system chat:', error);
-      throw error; // Rethrow or handle the error as needed
+      console.error(`Error creating system chat for buyer ${buyerId} and listing ${listingId}`, error);
+      throw error; 
     }
   };
 
@@ -102,11 +102,11 @@ export const getChats = async (userId) => {
   
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Failed to mark messages as read:', errorData);
+        console.error(`Failed to mark messages as read for chatId ${chatId} and userId ${userId}`, errorData);
         throw new Error('Failed to mark messages as read');
       }
     } catch (error) {
-      console.error('Error marking messages as read:', error);
+      console.error(`Failed to mark messages as read for chatId ${chatId} and userId ${userId}`, error);
       throw error;
     }
   };
@@ -123,13 +123,13 @@ export const getChats = async (userId) => {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Failed to fetch notification count', errorData);
+        console.error(`Failed to fetch notification count for user ${userId}`, errorData);
         throw new Error('Failed to fetch notification count');
       }
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Error fetching notification count:', error);
+      console.error(`Failed to fetch notification count for user ${userId}`, error);
       throw error;
     }
 }
@@ -149,10 +149,10 @@ export const updateNotificationCount = async (userId, count) => {
     if (!response.ok) {
       // DOnt throw error, just silently log the error. Count will update when app becomes active again.
       const errorData = await response.json();
-      console.error('Error updating notification count:', errorData);
+      console.error(`Error updating notification count to ${count} for user ${userId}`, errorData);
     }
   } catch (error) {
-    console.error('Error updating notification count:', error);
+    console.error(`Error updating notification count to ${count} for user ${userId}`, error);
   }
 }
 
@@ -176,11 +176,11 @@ export const getBuyerInfoByListingId = async (listingId, sellerId) => {
       return null;
     } else {
       const errorData = await response.json();
-      console.error('Error fetching buyer information:', errorData);
+      console.error(`Error fetching buyer information for listing ${listingId} and seller ${sellerId}`, errorData);
       throw new Error(errorData.message || 'Error fetching buyer information');
     }
   } catch (error) {
-    console.error('Error fetching buyer information:', error);
+    console.error(`Error fetching buyer information for listing ${listingId} and seller ${sellerId}`, error);
     throw error;
   }
 };

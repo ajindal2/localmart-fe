@@ -80,17 +80,18 @@ const UpdatePasswordScreen = ({navigation}) => {
         // Handle server-side validation errors, e.g., incorrect current password
         setIsCreating(false); 
         const errorData = await response.json();
+        console.error(errorData.message || 'Failed to update password');
         if (errorData.errors) {
           setErrors(errorData.errors);
         } else {
           // Handle other types of errors (e.g., not related to validation)
-          console.error(errorData.message || 'Failed to update password');
           Alert.alert('Error', errorData.message || 'Failed to update password');
         }
       } else {
         Alert.alert('Password updated successfully!');
       }
     } catch (error) {
+      console.error(`Error handling update password for user ${user._id}`, error);
       if (error.message.includes('RefreshTokenExpired')) {
         logout();
       } 

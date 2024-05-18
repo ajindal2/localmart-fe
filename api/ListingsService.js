@@ -33,9 +33,25 @@ export const getListings = async (searchKey, locationParams, page = 1, limit = 5
     }
 
     const response = await fetch(url);
-    return await handleResponse(response); 
+    // return await handleResponse(response); 
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error(`Error fetching listings for searchKey ${searchKey}`, errorData);
+      let errorCode = response.status;
+      if (errorCode === 404) {
+        throw new Error('No listings found.');
+      } else if (errorCode >= 500) {
+        throw new Error('Internal server error. Please try again later.');
+      } else {
+        throw new Error(errorData.message || 'An error occurred. Please try again.');
+      }
+    }
+    const data = await response.json();
+    return data;
+
   } catch (error) {
-    console.error('Error fetching listings:', error.message);
+    console.error(`Error fetching listings for searchKey ${searchKey}`, error.message);
     throw error; // Re-throw the error for calling code to handle it further
   }
 };
@@ -50,10 +66,26 @@ export const getListingsByUser = async (userId) => {
         'Authorization': `Bearer ${token}`
       },
     });
-    return await handleResponse(response); 
+    //return await handleResponse(response); 
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error(`Error fetching listings for user ${userId}`, errorData);
+      let errorCode = response.status;
+      if (errorCode === 404) {
+        throw new Error('No listings found.');
+      } else if (errorCode >= 500) {
+        throw new Error('Internal server error. Please try again later.');
+      } else {
+        throw new Error(errorData.message || 'An error occurred. Please try again.');
+      }
+    }
+    const data = await response.json();
+    return data;
+
   } catch (error) {
     //return []; // Return an empty array in case of an error indicating empty seller listings for this user.
-    console.error('Error fetching listings:', error.message);
+    console.error(`Error fetching listings for user ${userId}`, error.message);
     throw error; // Re-throw the error for calling code to handle it further
   }
 };
@@ -66,11 +98,11 @@ export const getListingFromId = async (listingId) => {
         return listing;
       } else {
         const errorData = await response.json();
-        console.error('Failed to fetch the listing:', errorData);
+        console.error(`Failed to fetch the listing ${listingId}`, errorData);
         throw new Error(errorData.message || 'Failed to fetch listing');
       }
     } catch (error) {
-      console.error('Error fetching listing:', error);
+      console.error(`Error fetching listing ${listingId}`, error);
       throw error;
     }
 };
@@ -125,12 +157,13 @@ export const createListing = async (userId, listingDetails) => {
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error(`Error creating listing for user ${userId}`, errorData);
       throw new Error(errorData.message || 'Error creating listing');
     }
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error creating listing:', error);
+    console.error(`Error creating listing for user ${userId}`, error);
     throw error;
   }
 };
@@ -169,12 +202,13 @@ export const updateListing = async (listingId, listingDetails) => {
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error(`Error updating listing ${listingId}`, errorData);
       throw new Error(errorData.message || 'Error updating listing');
     }
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error updating listing:', error);
+    console.error(`Error updating listing ${listingId}`, error);
     throw error;
   }
 };
@@ -192,11 +226,12 @@ export const deleteListing = async (listingId) => {
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error(`Error deleting listing ${listingId}`, errorData);
       throw new Error(errorData.message || 'Failed to delete the listing.');
     }
 
   } catch (error) {
-    console.error('Error deleting listing:', error);
+    console.error(`Error deleting listing ${listingId}`, error);
     throw error; // Re-throw to allow further handling, e.g., showing an error message in the UI
   }
 };
@@ -216,10 +251,11 @@ export const updateListingStatus = async (listingId, status) => {
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error(`Error updating listing status ${status} for listing ${listingId}`, errorData);
       throw new Error(errorData.message || 'Failed to update listing status.');
     }
   } catch (error) {
-    console.error('Error updating listing status:', error);
+    console.error(`Error updating listing status ${status} for listing ${listingId}`, error);
     throw error; // Re-throw to allow further handling, e.g., showing an error message in the UI
   }
 };

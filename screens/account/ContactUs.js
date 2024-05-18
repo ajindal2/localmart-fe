@@ -34,6 +34,7 @@ const ContactUs = ({ navigation }) => {
       }
     } catch (error) {
       console.error('Error picking a document:', error);
+      Alert.alert('Error', 'Error attaching document');
     }
   };
 
@@ -65,6 +66,7 @@ const ContactUs = ({ navigation }) => {
       await sendContactUsForm(contactData, attachment);
       Alert.alert('Thank you for your message. Please allow us 24-48 hours to respond.');
     } catch (error) {
+      console.error(`Error sending contact us email for email ${email}, message ${message}, subject ${subject}`, error);
       if (error.message.includes('RefreshTokenExpired')) {
         logout();
       } else {

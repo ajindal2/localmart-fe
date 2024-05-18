@@ -11,12 +11,12 @@ export const getSellerRatings = async (sellerId) => {
         return sellerRatings;
       } else {
         const errorData = await response.json();
-        console.error('Failed to fetch ratings:', errorData);
+        console.error(`Error fetching ratings for ${sellerId}`, errorData);
         //throw new Error(errorData.message || 'Failed to fetch ratings');
         return []; // Return an empty array in case of an error indicating empty retings for this seller.
       }
     } catch (error) {
-      console.error('Error fetching ratings:', error);
+      console.error(`Error fetching ratings for seller ${sellerId}`, error);
       return []; // Return an empty array in case of an error indicating empty retings for this seller.
     }
 };
@@ -36,11 +36,11 @@ export const getUserRatings = async (userId) => {
         return userRatings;
       } else {
         const errorData = await response.json();
-        console.error(`Failed to fetch ratings for user ${userId}: `, errorData);
+        console.error(`Error fetching ratings for user ${userId}`, errorData);
         throw new Error(errorData.message || 'Failed to fetch ratings');
       }
     } catch (error) {
-      console.error('Error fetching ratings:', error);
+      console.error(`Error fetching ratings for user ${userId}`, error);
       throw error;
     }
 };
@@ -60,7 +60,7 @@ export const createRating = async (ratingDetails) => {
     if (!response.ok) {
       const errorData = await response.json();
       let errorCode = response.status;
-      console.error('Failed to create rating:', errorData);
+      console.error(`Failed to create rating for role ${ratingDetails.role}, listingId ${listingId}, ratedBy ${ratedBy}, ratedUser ${ratedUser}`, errorData);
       // ConflictException
       if (errorCode === 409) {
         throw new Error('Rating already exists');
@@ -72,7 +72,7 @@ export const createRating = async (ratingDetails) => {
     const rating = await response.json();
     return rating;
   } catch (error) {
-    console.error('Error creating rating:', error);
+    console.error(`Failed to create rating for role ${ratingDetails.role}, listingId ${listingId}, ratedBy ${ratedBy}, ratedUser ${ratedUser}`, error);
     throw error;
   }
 };
@@ -95,12 +95,12 @@ export const checkRatingExists = async (listingId, ratedBy, ratedUser) => {
       return exists;
     } else {
       const errorData = await response.json();
-      console.error('Failed to check rating existence', errorData.message);
+      console.error(`Error checking rating existence for listing ${listingId}, ratedBy ${ratedBy}, ratedUser ${ratedUser}`, errorData);
       // Returning false. Let the user continue and add a double check when creating rating if it already exists.
      return false;
     }
   } catch (error) {
-    console.error('Error checking rating existence:', error);
+    console.error(`Error checking rating existence for listing ${listingId}, ratedBy ${ratedBy}, ratedUser ${ratedUser}`, error);
     // Throwing error here and not returning false since it could be token refresh error.
     throw error;
   }

@@ -15,6 +15,9 @@ export const reverseGeocode = async (lat, lng) => {
       const data = await response.json();
   
       if (!response.ok) {
+        const errorData = await response.json();
+        console.error(`Error in reverse geocoding lat ${lat} and lng ${lng}`, errorData);
+
         if (data.message.includes('Invalid postal code format')) {
           throw new Error('Location is not in the United States.');
         } else {
@@ -24,7 +27,7 @@ export const reverseGeocode = async (lat, lng) => {
   
       return data; // Contains city, postalCode, and coordinates
     } catch (error) {
-      console.error('Error in reverse geocoding:', error);
+      console.error(`Error in reverse geocoding lat ${lat} and lng ${lng}`, error);
       throw error; // Re-throw the error to be handled by the calling function
     }
   };
@@ -42,6 +45,8 @@ export const reverseGeocode = async (lat, lng) => {
       const data = await response.json();
   
       if (!response.ok) {
+        const errorData = await response.json();
+        console.error(`Error validating postal code ${postalCode}`, errorData);
         if (data.message.includes('Invalid postal code format')) {
           throw new Error('Invalid postal code format. Please check and try again.');
         } else if (data.message.includes('Postal code not found')) {
@@ -55,7 +60,7 @@ export const reverseGeocode = async (lat, lng) => {
   
       return data;
     } catch (error) {
-      console.error('Validate Postal Code Error:', error.message);
+      console.error(`Error validating postal code ${postalCode}`, error.message);
       throw error;
     }
   };

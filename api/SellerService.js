@@ -20,11 +20,11 @@ export const getSeller = async (sellerId) => {
         return null;
       } else {
         const errorData = await response.json();
-        console.error('Error fetching seller:', errorData);
+        console.error(`Error fetching seller details for seller id ${sellerId}`, errorData);
         throw new Error(errorData.message || 'Error fetching seller');
       }
     } catch (error) {
-      console.error('Error fetching seller:', error);
+      console.error(`Error fetching seller details for seller id ${sellerId}`, error);
       throw error;
     }
 };
@@ -44,11 +44,11 @@ export const getSellerLocation = async (userId) => {
       return await response.json();
     } else {
       const errorData = await response.json();
-      console.error('Error fetching seller location:', errorData);
+      console.error(`Error fetching seller location for user id ${userId}`, errorData);
       throw new Error(errorData.message || 'Error fetching seller');
     }
   } catch (error) {
-    console.error('Error fetching seller location:', error);
+    console.error(`Error fetching seller location for user id ${userId}`, error);
     throw error;
   }
 };

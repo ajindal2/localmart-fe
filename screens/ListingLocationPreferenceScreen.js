@@ -50,7 +50,7 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
           if (error.message.includes('RefreshTokenExpired')) {
             logout();
           } 
-          console.error('Failed to retrieve location details:', error);
+          console.error(`Failed to update location with zipcode ${zipCode}`, error);
           Alert.alert('Error', error.message);
         }
         finally {
@@ -101,7 +101,6 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
 
   // Dynamically set the button title
   let buttonTitle = isCreating ? "Processing..." : "Update Location";
-
 
   if (!isConnected) {
     return (

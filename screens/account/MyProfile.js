@@ -85,6 +85,7 @@ const MyProfile = ({ navigation }) => {
         
         setIsLoading(false);
       } catch (error) {
+        console.error(`Error fetching profile for user ${user._id}`, error);
         if (error.message.includes('RefreshTokenExpired')) {
           logout();
         } else {
@@ -128,6 +129,7 @@ const MyProfile = ({ navigation }) => {
       setIsLoading(false);
       Alert.alert('Profile Updated', 'Your profile has been successfully updated.');
     } catch (error) {
+      console.error(`Error updating profile for user ${user._id}`, error);
       if (error.message.includes('RefreshTokenExpired')) {
         logout();
       } 

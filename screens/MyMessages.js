@@ -63,7 +63,7 @@ const MyMessages = ({ navigation }) => {
         logout();
       } 
       setError(errorMessageDetails);
-      console.error("Error fetching chats ", error);
+      console.error(`Error fetching chats for ${userId}`, error);
     }
   };
 

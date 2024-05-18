@@ -12,9 +12,25 @@ export const getSavedListings = async (userId) => {
         'Authorization': `Bearer ${token}`
       },
     });
-    return await handleResponse(response); 
+    //return await handleResponse(response); 
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error(`Failed to fetch saved listings for user ${userId}`, errorData);
+      let errorCode = response.status;
+      if (errorCode === 404) {
+        throw new Error('No listings found.');
+      } else if (errorCode >= 500) {
+        throw new Error('Internal server error. Please try again later.');
+      } else {
+        throw new Error(errorData.message || 'An error occurred. Please try again.');
+      }
+    }
+    const data = await response.json();
+    return data;
+
     } catch (error) {
-      console.error('Error fetching saved listings:', error);
+      console.error(`Failed to fetch saved listings for user ${userId}`, error);
       throw error; // Re-throw the error for calling code to handle it further
   }
 };
@@ -33,13 +49,13 @@ export const createSavedListing = async (userId, listingId) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Error creating saved listing:', errorData);
+      console.error(`Error creating saved listing for user ${userId}, listing ${listingId}`, errorData);
       throw new Error(errorData.message || 'Failed to create saved listing.');
     }
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error creating saved listing:', error);
+    console.error(`Error creating saved listing for user ${userId}, listing ${listingId}`, error);
     throw error;
   }
 };
@@ -58,12 +74,13 @@ export const deleteSavedListing = async (savedListingId) => {
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error(`Error deleting saved listing for listing ${savedListingId}`, errorData);
       throw new Error(errorData.message || 'Failed to delete saved listing.');
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Error deleting saved listing:', error);
+    console.error(`Error deleting saved listing for listing ${savedListingId}`, error);
     throw error;
   }
 };
@@ -77,11 +94,11 @@ export const checkSavedStatus = async (userId, listingId) => {
         return data;
       } else {
         const errorData = await response.json();
-        console.error('Error fetching saved status:', errorData);
+        console.error(`Error fetching saved status for user ${userId}, listing ${listingId}`, errorData);
         throw new Error(errorData.message || 'An error occurred. Please try again.');
       }
     } catch (error) {
-      console.error('Error fetching saved status:', error);
+      console.error(`Error fetching saved status for user ${userId}, listing ${listingId}`, error);
       throw error;
     }
 };

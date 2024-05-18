@@ -56,7 +56,7 @@ const RatingForBuyerScreen = ({ navigation, route }) => {
           screen: 'ViewMyListingScreen', 
         });
       } catch (error) {
-        console.error('Failed to submit rating:', error);
+        //console.error('Failed to submit rating:', error);
         if (error.message.includes('RefreshTokenExpired')) {
           logout();
         } else if (error.message.includes('Rating already exists')) {
@@ -73,7 +73,7 @@ const RatingForBuyerScreen = ({ navigation, route }) => {
       try {
         await createSystemChat(selectedBuyer.buyerId, listing._id);
       } catch (error) {
-        console.error('Failed to create system chat:', error);
+        //console.error('Failed to create system chat:', error);
         if (error.message.includes('RefreshTokenExpired')) {
           logout();
         }

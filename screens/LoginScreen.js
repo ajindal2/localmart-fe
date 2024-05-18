@@ -58,7 +58,7 @@ const LoginScreen = ({ navigation }) => {
         setIsCreating(false); 
       }
     } catch (error) {
-      console.error('Error logging in:', error);
+      console.error('Error logging in ', error);
       Alert.alert('Login error', 'An error occurred while trying to log in. Please try again in sometime');
     } finally {
       setIsCreating(false); 

@@ -67,7 +67,7 @@ class ChatService {
 
       // Listen for 'error' event from the server
       this.socket.once('error', (error) => {
-        console.error('Error sending message:', error);
+        console.error(`Error sending message for chat ${chatId}`, error);
         reject(error);
       });
     });

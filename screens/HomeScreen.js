@@ -90,67 +90,6 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  /*const registerForPushNotificationsAsync = async () => {
-    let token;
-    // Check if the token already exists
-    //await AsyncStorage.removeItem('pushToken');
-    token = await AsyncStorage.getItem('pushToken');
-    console.log('token is: ', token);
-
-    if (token) {
-      return;
-    }
-
-    //await AsyncStorage.removeItem('askedForNotificationPermission');
-    
-    const askedForPermission = await AsyncStorage.getItem('askedForNotificationPermission');
-    console.log('askedForNotificationPermission: ', askedForPermission);
-
-    try {
-        if (!askedForPermission) {
-            if (Constants.isDevice) {
-                const { status: existingStatus } = await Notifications.getPermissionsAsync();
-                let finalStatus = existingStatus;
-                if (existingStatus !== 'granted') {
-                    const { status } = await Notifications.requestPermissionsAsync();
-                    finalStatus = status;
-                }
-                if (finalStatus !== 'granted') {
-                    alert('Failed to get push token for push notification!');
-                    return;
-                }
-                token = (await Notifications.getExpoPushTokenAsync({
-                  projectId: Constants.expoConfig?.extra?.eas?.projectId,
-                })).data;
-            } else {
-                alert('Must use physical device for Push Notifications');
-            }
-
-            if (Platform.OS === 'android') {
-                Notifications.setNotificationChannelAsync('default', {
-                    name: 'default',
-                    importance: Notifications.AndroidImportance.MAX,
-                    vibrationPattern: [0, 250, 250, 250],
-                    lightColor: '#FF231F7C',
-                });
-            }
-            // Save a flag to local storage so we don't ask again
-            await AsyncStorage.setItem('askedForNotificationPermission', 'true');
-        } 
-    } catch (error) {
-        console.error('Error getting push token:', error);
-    }
-
-    // Save the token to local storage after it's generated
-    await AsyncStorage.setItem('pushToken', token);
-    try {
-      await sendPushToken(user._id, token);
-    } catch (error) {
-      // Handle any errors that may occur during the initial call
-      console.error('An unexpected error occurred when trying to send the push token:', error);
-    }
-  }*/
-
   const registerForPushNotificationsAsync = async () => {
     if (!Device.isDevice) {
         console.error('Must use physical device for Push Notifications');
@@ -208,7 +147,6 @@ const HomeScreen = ({ navigation }) => {
 }
 
 const fetchListings = async (searchKey = '') => {
-
     setError(null); // Reset the error state
     setLoading(true);
     setLoaded(false); // Reset loaded before fetching
@@ -269,7 +207,6 @@ const fetchListings = async (searchKey = '') => {
       currentPageRef.current += 1; // Update the ref value
     }
   };
-
 
   if (!isConnected) {
     return (

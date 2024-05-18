@@ -47,7 +47,7 @@ const AccountScreen = ({ navigation }) => {
         logout();
       } else {
         Alert.alert('Error', 'Error occurred when fetching ratings. Please try again later.');
-        console.error('Error fetching seller ratings', error);
+        console.error(`Error fetching seller ratings for userId ${user._id}`, error);
       }
     }
   }
@@ -60,7 +60,7 @@ const AccountScreen = ({ navigation }) => {
         message: `${title}\n\n ${url}`,
       });
     } catch (error) {
-      console.error('Error during sharing:', error.message);
+      console.error('Error during sharing', error);
     }
   }
 
