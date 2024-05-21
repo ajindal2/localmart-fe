@@ -31,7 +31,8 @@ export default ({ config }) => ({
     infoPlist: {
       NSLocationWhenInUseUsageDescription: "This app uses your location to show nearby listings."
     },
-    supportsTablet: true
+    supportsTablet: true,
+    bundleIdentifier: "com.farmvox.app"
   },
   android: {
     permissions: ["ACCESS_FINE_LOCATION"],

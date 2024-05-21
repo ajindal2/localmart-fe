@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions, Alert } from 'react-native';
 import { GiftedChat, Bubble, Time, Message } from 'react-native-gifted-chat';
-import {markMessagesAsRead} from '../api/ChatRestService';
+import { markMessagesAsRead, fetchLatestMessages } from '../api/ChatRestService';
 import ChatService from '../api/ChatService';
 import { AuthContext } from '../AuthContext';
 import useHideBottomTab from '../utils/HideBottomTab'; 
@@ -153,24 +153,32 @@ const ChatScreen = ({ route, navigation }) => {
     };
   }, [chat]); // Depend on `chat` to re-run this effect if the chat changes
   
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       try {
         if(user) {
           // Call the function to mark messages as read
           markMessagesAsRead(chat._id, user._id);
+          // Fetch the latest messages from the server
+          fetchLatestMessages(chat._id).then(latestMessages => {
+            const transformedMessages = transformMessages(latestMessages);
+            setMessages(transformedMessages);
+          }).catch(error => {
+            console.error(`Error fetching latest messages for chat ${chat._id}`, error);
+          });
         }
       } catch (error) {
         if (error.message.includes('RefreshTokenExpired')) {
           logout();
         } else {
-          console.error('Error deleting listing:', error);
+          console.error('Error marking messages as read:', error);
         }
       }
     });
   
     return unsubscribe;
-  }, [navigation]);
+  }, [navigation, user, chat]);
 
   const onSend = (newMessages = []) => {
     if(chat.isSystemMessage) {

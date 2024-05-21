@@ -19,6 +19,7 @@ const navigationRef = createNavigationContainerRef();
 const prefix = Linking.createURL('/');
 
 const AppStack = () => {
+  //const navigationRef = useRef(null);
   const { user } = useContext(AuthContext);
   const { addMessagesBadgeCount, messagesBadgeCount, setMessagesBadgeCount } = useMessagesBadgeCount();
 
@@ -117,25 +118,28 @@ const AppStack = () => {
 
   // Logic to handle a push notification click such that user lands on MyMessages page
   useEffect(() => {
-    // Function to handle the response
     const handleNotificationResponse = (response) => {
-      navigate('MyMessages', {} );
+      if (response) {
+        console.log("Inside handleNotificationResponse");
+        navigate('MyMessages', {});
+      }
     };
 
-   // Check for the notification that opened the app
-   Notifications.getLastNotificationResponseAsync().then(response => {
-    handleNotificationResponse(response);
-  });
-
-  // Listen for new notification interactions
-  const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+    // Check for the notification that opened the app
+    Notifications.getLastNotificationResponseAsync().then(response => {
       handleNotificationResponse(response);
-  });
+    });
+
+    // Listen for new notification interactions
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      handleNotificationResponse(response);
+    });
+
     return () => subscription.remove(); // Clean up the listener
   }, []);
 
   return (
-    <NavigationContainer linking={linking} fallback={<Text>Loading...</Text>}>
+    <NavigationContainer ref={navigationRef} linking={linking} fallback={<Text>Loading...</Text>}>
       <Stack.Navigator>
         {user ? (
           <Stack.Screen name="HomeApp" component={HomeAppStack} options={{ headerShown: false }} />
@@ -157,8 +161,12 @@ export default function AppNavigator() {
   );
 }
 
-function navigate(name, params) {
-  if (navigationRef.isReady()) {
-    navigationRef.navigate(name, params);
+const navigate = (name, params) => {
+  console.log('Inside Navigate');
+  if (navigationRef.current && navigationRef.current.isReady()) {
+    console.log('Inside navigationRef isReady');
+    navigationRef.current.navigate(name, params);
+  } else {
+    console.log('Navigation reference is not ready');
   }
-}
+};

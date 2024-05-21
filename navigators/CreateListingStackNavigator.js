@@ -13,7 +13,8 @@ function CreateListingStackNavigator() {
         component={CreateNewListingScreen}
         options={{ 
           headerShown: true,
-          title: 'Create listing' 
+          title: 'Create listing',
+          headerBackTitleVisible: false, // This hides the back title on iOS  
         }} 
       />
       <ListingStack.Screen
@@ -21,7 +22,8 @@ function CreateListingStackNavigator() {
         component={ListingLocationPreferenceScreen}
         options={{ 
           headerShown: true,
-          title: 'Set a location' 
+          title: 'Set a location',
+          headerBackTitleVisible: false, // This hides the back title on iOS 
         }} 
       />
     </ListingStack.Navigator>

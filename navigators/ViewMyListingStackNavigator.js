@@ -18,6 +18,7 @@ function ViewMyListingStackNavigator() {
         options={{ 
           headerShown: true,
           title: 'My Listings',
+          headerBackTitleVisible: false, // This hides the back title on iOS 
         }} 
       />
       <ViewMyListingStack.Screen
@@ -26,6 +27,7 @@ function ViewMyListingStackNavigator() {
         options={{ 
           headerShown: true,
           title: 'Select Buyer',
+          headerBackTitleVisible: false, // This hides the back title on iOS 
         }} 
       />
       <ViewMyListingStack.Screen
@@ -34,6 +36,7 @@ function ViewMyListingStackNavigator() {
         options={{ 
           headerShown: true,
           title: 'Rate Buyer',
+          headerBackTitleVisible: false, // This hides the back title on iOS 
         }} 
       />
       <ViewMyListingStack.Screen

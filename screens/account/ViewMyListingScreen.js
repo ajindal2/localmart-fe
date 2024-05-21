@@ -78,7 +78,7 @@ const ViewMyListingScreen = ({navigation}) => {
             fromAccount: true, // To hide the bottom tab when navigating from here.
           },
         })}
-       style={{ marginRight: 20 }}/>     
+       style={{ marginRight: spacing.size20Horizontal }}/>     
       ),
     });
   }, [navigation]);

@@ -6,6 +6,7 @@ import { createListing, updateListing } from '../api/ListingsService';
 import { getSellerLocation } from '../api/SellerService';
 import { AuthContext } from '../AuthContext';
 import * as ImagePicker from 'expo-image-picker';
+import RNPickerSelect from 'react-native-picker-select';
 import { useFocusEffect } from '@react-navigation/native';
 import {reverseGeocode} from '../api/LocationService'
 import useHideBottomTab from '../utils/HideBottomTab'; 
@@ -41,6 +42,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
   const [priceError, setPriceError] = useState('');
   const [photoError, setPhotoError] = useState('');
   const [locationError, setLocationError] = useState('');
+  const [categoryError, setCategoryError] = useState('');
   const [isEditing] = useState(route.params?.isEditing || false);
   const [listing] = useState(route.params?.listing || {});
   const fromAccount = route.params?.fromAccount;
@@ -179,6 +181,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
               setPrice('');
               setPhotos([]);
               setIsFree(false);
+              setSelectedCategory('');
   
               // Refetch and reset the seller's original location
               try {
@@ -284,19 +287,20 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
         }
 
         setIsCreating(true); 
-
         const hasTitleError = !title.trim();
         const hasPhotoError = photos.length === 0;
         const priceErrorMessage = validatePrice(price);
         const hasLocationError = pickupLocation == null || !pickupLocation || (!pickupLocation.coordinates && !pickupLocation.postalCode);
+        const hasCategoryError = selectedCategory == null || selectedCategory == '';
 
         setPriceError(priceErrorMessage);
         setTitleError(hasTitleError ? 'Title cannot be empty' : '');
         setPhotoError(hasPhotoError ? 'Add at least 1 photo' : '');
         setLocationError(hasLocationError ? 'Location cannot be empty' : '');
+        setCategoryError(hasCategoryError ? 'Category cannot be empty' : '');
 
         // If any errors, do not proceed with listing creation
-        if (hasTitleError || priceErrorMessage || hasPhotoError || hasLocationError) {
+        if (hasTitleError || priceErrorMessage || hasPhotoError || hasLocationError || hasCategoryError) {
           setIsCreating(false); 
           return;
         }
@@ -332,6 +336,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           setPrice('');
           setIsFree(false);
           setPhotos([]);
+          setSelectedCategory('');
       } catch (error) {
         if (error.message.includes('RefreshTokenExpired')) {
           logout();
@@ -359,6 +364,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
       setPriceError('');
       setPhotoError('');
       setLocationError('');
+      setCategoryError('');
       setIsCreating(false); 
       // Optionally reset form fields
       // setTitle('');
@@ -453,6 +459,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
 
         <InputComponent
            placeholder="What are you selling?"
+           editable={true} 
            onChangeText={setTitle}
            value={title}
            style={[titleError ? styles.errorInput : {marginTop: spacing.size10Vertical, padding:spacing.size10Horizontal}]}
@@ -461,6 +468,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
 
         <InputComponent
           placeholder="Description"
+          editable={true} 
           value={description}          
           onChangeText={setDescription}
           style={{marginTop: spacing.size10Vertical, padding: spacing.size10Horizontal}}
@@ -472,33 +480,36 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
         
       <View style={styles.section}>
         <Text style={styles.text}>Category</Text>
-        
-        <View style={{
-            marginBottom: spacing.size10Vertical,
-            borderWidth: 1,
-            borderColor: colors.inputBorder,
-            borderRadius: 5,
-            overflow: 'hidden',  // Important for borderRadius to work on Android
-        }}>
-          <Picker
-            selectedValue={selectedCategory}
-            onValueChange={(itemValue, itemIndex) => {
-              setSelectedCategory(itemValue);
-              // Reset sub-category when main category changes
-              setSelectedSubCategory([]);
-            }}
-            style={{
-              width: '100%', // Ensure the Picker fills the View
-              backgroundColor: 'transparent'
-            }}
-            itemStyle={{
-              color: colors.secondaryText, // Set the font color for items (works only on iOS)
-            }}
-          >
-            {categories.map((category, index) => (
-              <Picker.Item key={index} label={category.label} value={category.value} />
-            ))}
-          </Picker>
+
+        <View style={[styles.pickerContainer, categoryError ? styles.errorPickerContainer : {}]}>
+        <RNPickerSelect
+          onValueChange={(value) => {
+            setSelectedCategory(value);
+            // Reset sub-category when main category changes
+            setSelectedSubCategory([]);
+          }}
+          items={categories}
+          style={{
+            inputIOS: styles.inputIOS,
+            inputAndroid: styles.inputAndroid,
+            iconContainer: styles.iconContainer,
+            placeholder: {
+              color: colors.secondaryText,
+            },
+          }}
+          useNativeAndroidPickerStyle={false} // This ensures the same style is applied on Android
+          placeholder={{
+            label: 'Select a category',
+            value: null,
+          }}
+          Icon={() => {
+            return (
+              <View style={styles.icon}>
+                <View style={styles.iconArrow} />
+              </View>
+            );
+          }}
+        />
         </View>
 
         {/* Conditionally render sub-category Picker */}
@@ -513,6 +524,9 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
             ))}
           </Picker>
         )}
+        {categoryError ? <Text style={styles.errorMessage}>{categoryError}</Text> : null}
+
+        <View style={styles.separator} />
       </View>
 
       <View style={styles.section}>
@@ -533,16 +547,18 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
         {priceError ? <Text style={styles.errorMessage}>{priceError}</Text> : null}
 
         <View style={styles.toggleContainer}>
-          <Text>Free</Text>
-          <Switch
-            value={isFree}
-            trackColor={{ false: colors.darkGrey, true: colors.primary }} // Colors for the track
-            thumbColor={isFree ? colors.secondary : colors.lightWhite} // Color for the thumb
-            onValueChange={(value) => {
-              setIsFree(value);
-              setPrice(value ? '0' : ''); // Set price to '0' if free, else empty string
-            }}
-          />
+          <Text style={styles.toggleText}>Free</Text>
+          <View style={styles.switchContainer}>
+            <Switch
+              value={isFree}
+              trackColor={{ false: colors.darkGrey, true: colors.primary }} // Colors for the track
+              thumbColor={isFree ? colors.secondary : colors.lightWhite} // Color for the thumb
+              onValueChange={(value) => {
+                setIsFree(value);
+                setPrice(value ? '0' : ''); // Set price to '0' if free, else empty string
+              }}
+            />
+          </View>
         </View>
         <View style={styles.separator} />
       </View>
@@ -622,8 +638,15 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     backgroundColor: typography.disabledBox,
   },
   toggleContainer: {
+    marginTop: spacing.size10Vertical,
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  toggleText: {
+    marginRight: spacing.size5Horizontal,
+  },
+  switchContainer: {
+    transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }], // Adjust the scale to increase/decrease size
   },
   photosContainer: {
     flexDirection: 'row',
@@ -634,7 +657,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   photoSlot: {
     width: photoSlotSize,
     height: photoSlotSize,
-    borderColor: colors.darkGrey,
+    borderColor: colors.inputBorder,
     borderWidth: 1,
     borderRadius: 5,
     alignItems: 'center',
@@ -701,6 +724,52 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   longPressText: {
     color: colors.white,
     fontSize: typography.small,
+  },
+  pickerContainer: {
+    marginTop: spacing.size10Vertical, 
+    //marginBottom: spacing.size20Vertical, 
+    padding:spacing.size10Horizontal,
+    borderWidth: 1,
+    borderColor: colors.inputBorder,
+    borderRadius: 5,
+    overflow: 'hidden', // Ensure the border radius is applied correctly
+  },
+  errorPickerContainer: {
+    borderWidth: 1,
+    borderColor: colors.error,
+  },
+  inputIOS: {
+    width: '100%',
+    fontSize: typography.fontSize,
+    borderWidth: 0, // 0 to not show the inner border
+    borderColor: colors.inputBorder,
+    color: colors.secondaryText,
+  },
+  inputAndroid: {
+    width: '100%',
+    fontSize: typography.fontSize,
+    borderWidth: 0, // 0 to not show the inner border
+    borderColor: colors.inputBorder,
+    color: colors.secondaryText,
+  },
+  iconContainer: {
+    position: 'absolute',
+    top: '50%',
+    right: spacing.xs,
+    transform: [{ translateY: -5 }],
+  },
+  icon: {
+    backgroundColor: 'transparent',
+  },
+  iconArrow: {
+    borderTopWidth: 10,
+    borderTopColor: colors.inputBorder,
+    borderRightWidth: 10,
+    borderRightColor: 'transparent',
+    borderLeftWidth: 10,
+    borderLeftColor: 'transparent',
+    width: 0,
+    height: 0,
   },
 });
 

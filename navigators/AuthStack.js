@@ -16,7 +16,8 @@ function AuthStack() {
       <Stack.Screen name="RegisterScreen" component={RegisterScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} options={{ 
         headerShown: true,
-        title: 'Reset Password' 
+        title: 'Reset Password',
+        headerBackTitleVisible: false, // This hides the back title on iOS 
       }} />
     </Stack.Navigator>
   );

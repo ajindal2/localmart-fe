@@ -58,6 +58,33 @@ export const getChats = async (userId) => {
     }
   };
 
+  export const fetchLatestMessages = async (chatId) => {
+    const token = await SecureStore.getItemAsync('token');
+  
+    try {
+      const response = await fetchWithTokenRefresh(`${BASE_URL}/chat/${chatId}/messages`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+      });
+      if (response.ok) {
+        const messages = await response.json();
+        return messages;
+      } else if (response.status === 404) {
+        // No messages found, return an empty array or handle as needed
+        return [];
+      } else {
+        const errorData = await response.json();
+        console.error(`Error fetching messages for chat ${chatId}`, errorData);
+        throw new Error(errorData.message || 'Error fetching messages');
+      }
+    } catch (error) {
+      console.error(`Error fetching messages for chat ${chatId}`, error);
+      throw error;
+    }
+  };
+
   // To send create a message and send notification to buyer to rate the seller.
   export const createSystemChat = async (buyerId, listingId) => {
     const token = await SecureStore.getItemAsync('token');

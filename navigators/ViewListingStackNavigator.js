@@ -13,30 +13,33 @@ function ViewListingStackNavigator() {
        options={{ 
           headerShown: true,
           title: 'Listing details',
+          headerBackTitleVisible: false, // This hides the back title on iOS 
         }} />
       <ViewListingStack.Screen name="SellerDetails" component={SellerDetails} 
       options={{ 
         headerShown: true,
         title: 'Seller details',
-        //tabBarStyle: { display: 'none' } 
+        headerBackTitleVisible: false, // This hides the back title on iOS 
       }} />
       <ViewListingStack.Screen name="AllReviewsScreen" component={AllReviewsScreen}
       options={{ 
         headerShown: true,
         title: 'All reviews',
-        //tabBarStyle: { display: 'none' } 
+        headerBackTitleVisible: false, // This hides the back title on iOS  
       }} />
       {/* Additional ViewListing Screen for navigating from SellerDetails */}
       <ViewListingStack.Screen name="ViewListingFromSeller" component={ViewListing} 
         options={{ 
           headerShown: true,
           title: 'Listing Details',
+          headerBackTitleVisible: false, // This hides the back title on iOS 
         }} 
       />
       <ViewListingStack.Screen name="ChatScreen" component={ChatScreen} 
        options={{ 
           headerShown: true,
           title: 'Message',
+          headerBackTitleVisible: false, // This hides the back title on iOS 
         }} />
     </ViewListingStack.Navigator>
   );

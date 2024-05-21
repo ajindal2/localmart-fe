@@ -14,6 +14,7 @@ function SavedListingStackNavigator() {
         options={{ 
           headerShown: true,
           title: 'Saved items',
+          headerBackTitleVisible: false, // This hides the back title on iOS 
         }} 
       />
        <SavedMyListingStack.Screen
