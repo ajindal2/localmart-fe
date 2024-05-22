@@ -27,7 +27,7 @@ const ChangeProfilePicture = ({ route, navigation }) => {
         // Request camera permissions
         const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
         if (permissionResult.granted === false) {
-            Alert.alert('Permission Required', 'Permission to access the camera is required to take a photo!');
+            Alert.alert('Permission Denied', 'Permission to access the camera is required to take a photo. Please enable it from app settings');
             return;
         }
 
@@ -65,8 +65,8 @@ const ChangeProfilePicture = ({ route, navigation }) => {
         // Request media library permissions
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (permissionResult.granted === false) {
-            Alert.alert('Permission Required', 'Permission to access the media library is required!');
-            return;
+          alert('Permission Denied', 'Permission to access media library is required. Please enable it from app settings.');
+          return;
         }
 
         // Launch the image library with additional options

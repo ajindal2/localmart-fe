@@ -32,7 +32,7 @@ export const LocationProvider = ({ children }) => {
 
         if (status !== 'granted') {
           Alert.alert('Permission Required', 'Setting your location helps you to buy or sell items near you.');
-          console.error('Permission to access location was denied');
+          console.error(`Permission to access location was denied for user ${user._id}`);
           return;
         }
 
@@ -52,7 +52,10 @@ export const LocationProvider = ({ children }) => {
             setLocation(updatedProfileData.location);
           } catch (error) {
             console.error('Failed to retrieve location details:', error);
-            Alert.alert('Error', error.message);
+            if (error.message.includes('RefreshTokenExpired')) {
+              logout();
+            }
+            Alert.alert('Error', 'Error occured when retrieving user location');
           }         
         } else {
           // Handle the case where location is undefined or null
@@ -61,32 +64,32 @@ export const LocationProvider = ({ children }) => {
         }
       } else {
           try {
-          // Fetch location from the backend
-          const fetchedLocation = await getUserLocation(user._id);
-          if (fetchedLocation) {
-            const location = {
-              city: fetchedLocation.city,
-              state: fetchedLocation.state,
-              postalCode: fetchedLocation.postalCode
-            };
+            // Fetch location from the backend
+            const fetchedLocation = await getUserLocation(user._id);
+            if (fetchedLocation) {
+              const location = {
+                city: fetchedLocation.city,
+                state: fetchedLocation.state,
+                postalCode: fetchedLocation.postalCode
+              };
 
-            if (fetchedLocation.coordinates && fetchedLocation.coordinates.coordinates) {
-              location.coordinates = [{
-                latitude: fetchedLocation.coordinates.coordinates[1],
-                longitude: fetchedLocation.coordinates.coordinates[0]
-              }];
+              if (fetchedLocation.coordinates && fetchedLocation.coordinates.coordinates) {
+                location.coordinates = [{
+                  latitude: fetchedLocation.coordinates.coordinates[1],
+                  longitude: fetchedLocation.coordinates.coordinates[0]
+                }];
+              }
+
+              setLocation(location);
+          }
+          } catch (error) {
+            if (error.message.includes('RefreshTokenExpired')) {
+              logout();
+            } else {
+              console.error(`Error occured when retrieving user location for user ${user._id}`);
             }
-
-            setLocation(location);
-        }
-        } catch (error) {
-          if (error.message.includes('RefreshTokenExpired')) {
-            logout();
-          } else {
-            Alert.alert('Error', 'Error occured when retrieving user location');
           }
         }
-      }
     };
 
     initializeLocation();
@@ -109,7 +112,7 @@ export const LocationProvider = ({ children }) => {
        // navigation.navigate('HomeScreen');
       } catch (error) {
         console.error('Failed to retrieve location details:', error);
-        Alert.alert('Error', error.message);
+        Alert.alert('Error', 'Error occured when retrieving location');
       }
     } else if (newLocation.city && newLocation.postalCode && newLocation.coordinates && newLocation.state) {
       const updatedProfileData = {

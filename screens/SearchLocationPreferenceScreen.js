@@ -19,7 +19,9 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
     const { user, logout } = useContext(AuthContext);
-    const [isCreating, setIsCreating] = useState(false); // to disable button after single press
+    const [isCreating, setIsCreating] = useState(false); // to disable 'update location' button after single press
+    const [isUpdating, setIsUpdating] = useState(false); // to disable 'Get my location' button after single press
+
 
     useHideBottomTab(navigation, true);
     
@@ -60,6 +62,7 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
     };
 
     const getCurrentLocation = async () => {
+      setIsUpdating(true); 
       const { status: existingStatus } = await Location.getForegroundPermissionsAsync();
 
       if (existingStatus !== 'granted') {
@@ -70,7 +73,7 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
           [
               { 
                   text: "Cancel", 
-                  onPress: () => console.log('Permission denied by user'), 
+                  onPress: () => console.log('Search location permission denied by user'), 
                   style: 'cancel'
               },
               { 
@@ -84,13 +87,16 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
         setLocation(location);
         navigation.goBack();
       }
+      setIsUpdating(false); 
     };
 
     const requestLocationPermission = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-            console.log('Permission to access location was denied');
-            return;
+          Alert.alert("Permission Denied",
+            "Location Permission was denied. Please enable it from app settings.");
+          console.log('Permission to access location was denied');
+          return;
         }
 
         const location = await Location.getCurrentPositionAsync({});
@@ -100,7 +106,7 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
 
   // Dynamically set the button title
   let buttonTitle = isCreating ? "Processing..." : "Update Location";
-
+  let getMyLocationButtonTitle = isUpdating ? "Processing..." : "Get My Location";
 
   if (!isConnected) {
     return (
@@ -114,7 +120,12 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
     <View style={styles.container}>
       <Text style={styles.heading}>Where is you searching?</Text>
 
-      <ButtonComponent title="Get My Location" type="secondary" iconName="location"
+      <ButtonComponent 
+        title={getMyLocationButtonTitle}
+        type="secondary" 
+        disabled={isUpdating}
+        loading={isUpdating} 
+        iconName="location"
         onPress={getCurrentLocation}
         style={[styles.button]}
       />
@@ -131,9 +142,9 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
 
       <View style={styles.bottomButtonContainer}>
         <ButtonComponent 
-        title={buttonTitle} 
-        disabled={isCreating}
-        loading={isCreating} 
+          title={buttonTitle} 
+          disabled={isCreating}
+          loading={isCreating} 
         type="primary" 
           onPress={updateLocationWithZipCode}
           style={{ width: '100%', flexDirection: 'row' }}

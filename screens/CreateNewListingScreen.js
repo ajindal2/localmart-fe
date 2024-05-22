@@ -49,7 +49,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
   const [isCreating, setIsCreating] = useState(false); // to disable button after single press
-  const [selectedCategory, setSelectedCategory] = useState(categories[0]?.value);
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSubCategory, setSelectedSubCategory] = useState([]);
 
   useHideBottomTab(navigation, fromAccount);
@@ -84,7 +84,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           logout();
         }
         console.error('Failed to retrieve location details:', error);
-        Alert.alert('Error', error.message);
+        Alert.alert('Error', 'Error occured when retrieving location');
       }
     } else if (newLocation.city && newLocation.postalCode && newLocation.coordinates) {
       updatedProfileData = {
@@ -234,7 +234,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
 
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      alert('Sorry, we need camera roll permissions to make this work!');
+      alert('Permission Denied', 'Permission to access media library is needed to make this work. Please enable it from app settings.');
       return;
     }
 
@@ -343,7 +343,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
         } else {
           Alert.alert('Error', 'An unknown error occured, please try again later.');
         }
-        console.error(error);
+        console.error('Error updating or creating listing', error);
         //setShouldCreateListing(false); // Reset the flag
       } finally {
         setIsCreating(false); 

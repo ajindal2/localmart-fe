@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Image, Dimensions, Platform } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, Image, Dimensions, Platform, Alert } from 'react-native';
 import MySearchBar from '../components/MySearchBar';
 import { getListings } from '../api/ListingsService';
 import LocationInfoDisplay from '../components/LocationInfoDisplay';
@@ -28,6 +28,7 @@ const HomeScreen = ({ navigation }) => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState(''); 
   const [currentPage, setCurrentPage] = useState(1);
+  const [hasRequestedPermission, setHasRequestedPermission] = useState(false);
   const currentPageRef = useRef(1);
   const [totalPages, setTotalPages] = useState(null);
   const { location } = useContext(LocationContext);
@@ -82,10 +83,11 @@ const HomeScreen = ({ navigation }) => {
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [hasRequestedPermission]);
 
   const handleAppStateChange = async (nextAppState) => {
-    if (nextAppState === 'active') {
+    if (nextAppState === 'active' && !hasRequestedPermission) {
+      setHasRequestedPermission(true); 
       registerForPushNotificationsAsync();
     }
   };
@@ -104,7 +106,9 @@ const HomeScreen = ({ navigation }) => {
     }
 
     if (finalStatus !== 'granted') {
-        console.error('Failed to get push token for push notification');
+        console.error(`Push notification access is denied for user ${user._id}`);
+        Alert.alert('Permission Denied', 'Notifications permission was denied. Please enable it from app settings.');
+        setHasRequestedPermission(true); // Set state to avoid re-requesting permission
         return;
     }
 
@@ -129,12 +133,14 @@ const HomeScreen = ({ navigation }) => {
         });
     }
 
-  // Save the token in AsyncStorage and send it to backend
-  // Check if the token is different from the one stored or if there's a new user
-  const previousToken = await AsyncStorage.getItem('pushToken');
-  const previousUser = await AsyncStorage.getItem('userId');
+    setHasRequestedPermission(true); // Set state to avoid re-requesting permission
 
-  if (token !== previousToken || user._id !== previousUser) {
+    // Save the token in AsyncStorage and send it to backend
+    // Check if the token is different from the one stored or if there's a new user
+    const previousToken = await AsyncStorage.getItem('pushToken');
+    const previousUser = await AsyncStorage.getItem('userId');
+
+    if (token !== previousToken || user._id !== previousUser) {
       await AsyncStorage.setItem('pushToken', token);
       await AsyncStorage.setItem('userId', user._id);
       // Send the token to backend server associated with the `currentUser`
@@ -143,7 +149,7 @@ const HomeScreen = ({ navigation }) => {
       } catch (error) {
           console.error(`Error sending push token to backend for user ${user._id}: `, error);
       }
-  }
+    }
 }
 
 const fetchListings = async (searchKey = '') => {
