@@ -29,13 +29,26 @@ export default ({ config }) => ({
   },
   ios: {
     infoPlist: {
-      NSLocationWhenInUseUsageDescription: "This app uses your location to show nearby listings."
+      NSLocationWhenInUseUsageDescription: "This app uses your location to show nearby listings.",
+      NSPhotoLibraryUsageDescription: "This app needs access to your photo library to select and upload photos.",
+      NSUserTrackingUsageDescription: "This identifier will be used to show notifications.",
+      NSLocationAlwaysUsageDescription: "This app needs access to your location to provide notifications.",
+      NSLocationAlwaysAndWhenInUseUsageDescription: "This app needs access to your location to provide notifications.",
+      NSCameraUsageDescription: "This app needs access to your camera to take photos and videos.",
     },
     supportsTablet: true,
-    bundleIdentifier: "com.farmvox.app"
+    bundleIdentifier: "com.farmvox.app",
+    associatedDomains: ["applinks:farmvox.com"]
   },
   android: {
-    permissions: ["ACCESS_FINE_LOCATION"],
+    permissions: [
+      "ACCESS_FINE_LOCATION",
+      "ACCESS_COARSE_LOCATION",
+      "READ_EXTERNAL_STORAGE",
+      "WRITE_EXTERNAL_STORAGE",
+      "NOTIFICATIONS",
+      "CAMERA"
+    ],
     package: "com.farmvox.app",
     googleServicesFile: "./google-services.json",
     adaptiveIcon: {

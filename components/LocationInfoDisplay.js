@@ -1,11 +1,11 @@
 import { TouchableOpacity, Text, StyleSheet} from 'react-native';
 import React, { useContext } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { LocationContext } from '../components/LocationProvider';
+import { useLocation } from './LocationProvider';
 import { useTheme } from '../components/ThemeContext';
 
 const LocationInfoDisplay = React.memo(({ onPress }) => {
-    const { location } = useContext(LocationContext); 
+    const { location } = useLocation();
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
   

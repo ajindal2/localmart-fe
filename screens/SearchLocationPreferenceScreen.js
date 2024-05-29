@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, Dimensions, StyleSheet, Alert } from 'react-native';
 import * as Location from 'expo-location';
-import { LocationContext } from '../components/LocationProvider';
+import { useLocation } from '../components/LocationProvider';
 import {validateAndGeocodePostalCode} from '../api/LocationService'
 import useHideBottomTab from '../utils/HideBottomTab'; 
 import InputComponent from '../components/InputComponent';
@@ -15,7 +15,7 @@ import useNetworkConnectivity from '../components/useNetworkConnectivity';
 const SearchLocationPreferenceScreen = ({ navigation, route }) => {
     const isConnected = useNetworkConnectivity();
     const [zipCode, setZipCode] = useState('');
-    const { setLocation } = useContext(LocationContext);
+    const { setLocation } = useLocation();
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
     const { user, logout } = useContext(AuthContext);

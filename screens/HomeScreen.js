@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, ActivityIndicator, Image, Dimensions,
 import MySearchBar from '../components/MySearchBar';
 import { getListings } from '../api/ListingsService';
 import LocationInfoDisplay from '../components/LocationInfoDisplay';
-import { LocationContext } from '../components/LocationProvider';
+import { useLocation } from '../components/LocationProvider';
 import ListingItem from '../components/ListingItem';
 import { useTheme } from '../components/ThemeContext';
 import { AppState } from 'react-native';
@@ -31,7 +31,7 @@ const HomeScreen = ({ navigation }) => {
   const [hasRequestedPermission, setHasRequestedPermission] = useState(false);
   const currentPageRef = useRef(1);
   const [totalPages, setTotalPages] = useState(null);
-  const { location } = useContext(LocationContext);
+  const { location } = useLocation();
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
   const errorMessageTitle = "No Listings Found";
@@ -79,15 +79,35 @@ const HomeScreen = ({ navigation }) => {
   }, [location]);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', handleAppStateChange);
-    return () => {
-      subscription.remove();
+    const getPermissionStatus = async () => {
+      try {
+        const value = await AsyncStorage.getItem('hasRequestedPermission');
+        if (value !== null) {
+          setHasRequestedPermission(JSON.parse(value));
+        } else {
+          setHasRequestedPermission(false);
+        }
+      } catch (e) {
+        console.error('Failed to fetch permission status from AsyncStorage', e);
+      }
     };
+
+    getPermissionStatus();
+  }, []);
+
+  useEffect(() => {
+    if (hasRequestedPermission !== null) {
+      const subscription = AppState.addEventListener('change', handleAppStateChange);
+      return () => {
+        subscription.remove();
+      };
+    }
   }, [hasRequestedPermission]);
 
   const handleAppStateChange = async (nextAppState) => {
     if (nextAppState === 'active' && !hasRequestedPermission) {
       setHasRequestedPermission(true); 
+      await AsyncStorage.setItem('hasRequestedPermission', JSON.stringify(true));
       registerForPushNotificationsAsync();
     }
   };
@@ -106,9 +126,10 @@ const HomeScreen = ({ navigation }) => {
     }
 
     if (finalStatus !== 'granted') {
-        console.error(`Push notification access is denied for user ${user._id}`);
+        console.log(`Push notification access is denied for user ${user._id}`);
         Alert.alert('Permission Denied', 'Notifications permission was denied. Please enable it from app settings.');
-        setHasRequestedPermission(true); // Set state to avoid re-requesting permission
+        await AsyncStorage.setItem('hasRequestedPermission', JSON.stringify(true));
+        setHasRequestedPermission(true); 
         return;
     }
 
@@ -133,7 +154,8 @@ const HomeScreen = ({ navigation }) => {
         });
     }
 
-    setHasRequestedPermission(true); // Set state to avoid re-requesting permission
+    await AsyncStorage.setItem('hasRequestedPermission', JSON.stringify(true));
+    setHasRequestedPermission(true);
 
     // Save the token in AsyncStorage and send it to backend
     // Check if the token is different from the one stored or if there's a new user
@@ -156,6 +178,7 @@ const fetchListings = async (searchKey = '') => {
     setError(null); // Reset the error state
     setLoading(true);
     setLoaded(false); // Reset loaded before fetching
+    console.log('Test chages are reflected');
 
     try {  
       let paginatedResult;

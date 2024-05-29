@@ -7,7 +7,7 @@ import * as Location from 'expo-location';
 import { AuthContext } from '../AuthContext';
 
 
-export const LocationContext = createContext();
+const LocationContext = createContext();
 
 export const LocationProvider = ({ children }) => {
   const [location, setLocation] = useState(null);
@@ -23,8 +23,6 @@ export const LocationProvider = ({ children }) => {
 
       // Think about the need to add a dialog similar to SearchLocationPreferenceScreen to educate user why we need location
       const locationPermissionAsked = await AsyncStorage.getItem('locationPermissionAsked');
-      //await AsyncStorage.removeItem('locationPermissionAsked');
-
       // Ask for permission only once.
       if (locationPermissionAsked !== 'true') {
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -139,4 +137,8 @@ return (
     {children}
   </LocationContext.Provider>
   );
+};
+
+export const useLocation = () => {
+  return useContext(LocationContext);
 };
