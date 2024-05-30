@@ -11,6 +11,7 @@ import { useTheme } from '../components/ThemeContext';
 import { AuthContext } from '../AuthContext'; 
 import { createRating } from '../api/RatingsService';
 import { getSeller } from '../api/SellerService';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
 const RatingForSellerScreen = ({ navigation, route }) => {
@@ -32,14 +33,22 @@ const RatingForSellerScreen = ({ navigation, route }) => {
   useHideBottomTab(navigation, true);
 
   const handleTagSelect = (tag) => {
-    if (selectedTags.includes(tag)) {
-      setSelectedTags(selectedTags.filter((t) => t !== tag));
-    } else {
-      setSelectedTags([...selectedTags, tag]);
-    }
+    setSelectedTags((prevTags) => {
+      if (prevTags.includes(tag)) {
+        return prevTags.filter((t) => t !== tag);
+      } else {
+        return [...prevTags, tag];
+      }
+    });
   };
 
+
   const handleCreateRating = async () => {
+    if (rating === 0) {
+      Alert.alert('Error', 'Please select a rating before submitting.');
+      return; // Exit the function if no rating is selected
+    }
+
     setIsCreating(true); 
 
     //The logged in user should be same as the buyer
@@ -94,7 +103,7 @@ const RatingForSellerScreen = ({ navigation, route }) => {
     }
   }, [listing]); // Dependency array to re-run the effect if listing changes
 
-  const ListingHeader = () => {  
+  const ListingHeader = React.memo(() => {  
     if (!listing) return null; // Return null if listing details aren't provided
 
     return (
@@ -110,7 +119,7 @@ const RatingForSellerScreen = ({ navigation, route }) => {
         </View>
       </View>
     );
-  };
+  });
 
   let buttonTitle = isCreating ? "Processing..." : "Submit Rating";
 
@@ -133,7 +142,7 @@ const RatingForSellerScreen = ({ navigation, route }) => {
         ) : (
         <>
           <ListingHeader/>
-          <ScrollView contentContainerStyle={styles.container}>
+          <KeyboardAwareScrollView contentContainerStyle={styles.container}>
             <Image source={sellerDetails.profilePicture ? { uri: sellerDetails.profilePicture } : DEFAULT_IMAGE_URI} style={styles.profileImage} />
             <View style={styles.titleContainer}>
               <Text style={styles.title}>How was your experience buying from {sellerDetails.displayName}?</Text>
@@ -162,6 +171,7 @@ const RatingForSellerScreen = ({ navigation, route }) => {
               value={review}
               onChangeText={setReview}          
               style={styles.textInput}
+              editable={true}
               textAlignVertical="top"
             />
             
@@ -174,7 +184,7 @@ const RatingForSellerScreen = ({ navigation, route }) => {
               onPress={handleCreateRating} 
               style={{ flexDirection: 'row' }} />
             </View>
-          </ScrollView>
+          </KeyboardAwareScrollView>
         </>
       )}
     </View>

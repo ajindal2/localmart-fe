@@ -10,6 +10,7 @@ import { BASE_URL } from '../constants/AppConstants';
 import {APP_NAME_IMAGE} from '../constants/AppConstants';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
 const RegisterScreen = ({ navigation }) => {
@@ -129,7 +130,7 @@ const RegisterScreen = ({ navigation }) => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.mainContainer}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.mainContainer}>
       <Image source={APP_NAME_IMAGE} style={styles.logo} />
       <Text style={styles.title}>Join FarmVox</Text>
 
@@ -138,6 +139,7 @@ const RegisterScreen = ({ navigation }) => {
         <InputComponent
           placeholder="Display Name"
           value={displayName}
+          editable={true}
           onChangeText={setDisplayName}
           style={styles.input}
         />
@@ -152,6 +154,7 @@ const RegisterScreen = ({ navigation }) => {
         <InputComponent
           placeholder="Email Address"
           value={emailAddress}
+          editable={true}
           onChangeText={setEmailAddress}
           keyboardType="email-address"
           style={styles.input}
@@ -166,6 +169,7 @@ const RegisterScreen = ({ navigation }) => {
           value={password}
           onChangeText={setPassword}
           secureTextEntry={!passwordVisible}
+          editable={true}
           style={styles.input}
         />
         <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
@@ -193,7 +197,7 @@ const RegisterScreen = ({ navigation }) => {
       <ButtonComponent title="Login" type="secondary" 
         onPress={handleLoginScreen} 
        style={{ width: '100%', flexDirection: 'row' }}/>
-    </ScrollView>
+    </KeyboardAwareScrollView>
     );
   };
 
@@ -202,7 +206,7 @@ const RegisterScreen = ({ navigation }) => {
 
   const getStyles = (colors, typography, spacing) => StyleSheet.create({
     mainContainer: {
-      flex: 1,
+      //flex: 1,
       padding: spacing.size20Horizontal,
       alignItems: 'center',
     },

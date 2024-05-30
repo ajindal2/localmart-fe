@@ -16,6 +16,7 @@ import ButtonComponent from '../components/ButtonComponent';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
 import * as Network from 'expo-network';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
 const CreatingNewListingScreen = ({ navigation, route }) => {
@@ -443,7 +444,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
       
       <View style={styles.section}>
         <Text style={styles.text}>Add upto 10 photos</Text>
@@ -599,7 +600,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
         style={{ marginTop: spacing.size20Vertical, width: '100%', flexDirection: 'row' }}
       />
   
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 

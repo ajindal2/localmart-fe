@@ -8,6 +8,7 @@ import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
 import TagsSummary from '../components/TagsSummary';
 import ExpandingTextComponent from '../components/ExpandingTextComponent';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
 const AllReviewsScreen = ({ route, navigation }) => {
@@ -38,7 +39,7 @@ const AllReviewsScreen = ({ route, navigation }) => {
     }
 
     return (
-      <ScrollView contentContainerStyle={styles.container}>
+      <KeyboardAwareScrollView contentContainerStyle={styles.container}>
           {(!ratingsWithProfile || ratingsWithProfile.length === 0) ? (
               <View style={styles.errorContainer}>
               <Text style={styles.errorTitle}>{errorMessageTitle}</Text>
@@ -87,7 +88,7 @@ const AllReviewsScreen = ({ route, navigation }) => {
             </View>
       </>
     )}
-  </ScrollView>
+  </KeyboardAwareScrollView>
     );
 };
 

@@ -14,6 +14,7 @@ import { DEFAULT_IMAGE_URI } from '../../constants/AppConstants'
 import NoInternetComponent from '../../components/NoInternetComponent';
 import useNetworkConnectivity from '../../components/useNetworkConnectivity';
 import { useFocusEffect } from '@react-navigation/native'; 
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
 const MyProfile = ({ navigation }) => {
@@ -173,7 +174,7 @@ const MyProfile = ({ navigation }) => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
       {isLoading ? (
          <ActivityIndicator size="large" color={colors.primary} />
     ) : error ? (
@@ -266,7 +267,7 @@ const MyProfile = ({ navigation }) => {
       </View>
       </>
     )}
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 

@@ -126,6 +126,7 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
       <InputComponent
           placeholder="Enter ZIP Code"
           keyboardType="numeric"
+          editable={true}
           value={zipCode}
           onChangeText={handleZipCodeChange}
           style={styles.input}

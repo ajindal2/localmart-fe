@@ -118,6 +118,7 @@ const UpdatePasswordScreen = ({navigation}) => {
       <InputComponent
           secureTextEntry={hideCurrentPassword}
           value={currentPassword}
+          editable={true}
           onChangeText={setCurrentPassword}
           style={styles.input}
         />
@@ -132,6 +133,7 @@ const UpdatePasswordScreen = ({navigation}) => {
       <InputComponent
           secureTextEntry={hideNewPassword}
           value={newPassword}
+          editable={true}
           onChangeText={setNewPassword}
           style={styles.input}
         />
@@ -146,6 +148,7 @@ const UpdatePasswordScreen = ({navigation}) => {
       <InputComponent
           secureTextEntry={hideConfirmNewPassword}
           value={confirmNewPassword}
+          editable={true}
           onChangeText={setConfirmNewPassword}
           style={styles.input}
         />

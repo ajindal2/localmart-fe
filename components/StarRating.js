@@ -10,12 +10,12 @@ const StarRating = React.memo(({ rating, onRatingChange, maxStars = 5, size = 20
     const isHalfStar = rating % 1 !== 0;
 
     for (let i = 1; i <= maxStars; i++) {
-      let starIconName = 'star-outline';
+      let starIconName = 'ios-star-outline';
 
       if (i <= floorRating) {
-        starIconName = 'ios-star'; // Full star
+        starIconName = 'star'; // Full star
       } else if (isHalfStar && i === floorRating + 1) {
-        starIconName = 'star-half'; // Half star
+        starIconName = 'ios-star-half'; // Half star
       } else {
         starIconName = 'star'; // Empty star
       }

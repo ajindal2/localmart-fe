@@ -136,6 +136,7 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
           placeholder="Enter ZIP Code"
           keyboardType="numeric"
           value={zipCode}
+          editable={true}
           onChangeText={handleZipCodeChange}
           style={styles.input}
         />

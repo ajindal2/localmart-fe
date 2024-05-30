@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useCallback, useMemo } from 'react';
 import { View, Text, Image, ScrollView, Dimensions, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import StarRating from '../components/StarRating'; 
 import { DEFAULT_IMAGE_URI } from '../constants/AppConstants'; 
@@ -11,6 +11,8 @@ import { useTheme } from '../components/ThemeContext';
 import { AuthContext } from '../AuthContext'; 
 import { createRating } from '../api/RatingsService';
 import { createSystemChat } from '../api/ChatRestService';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 const RatingForBuyerScreen = ({ navigation, route }) => {
   const isConnected = useNetworkConnectivity();
@@ -27,14 +29,22 @@ const RatingForBuyerScreen = ({ navigation, route }) => {
   useHideBottomTab(navigation, true);
 
   const handleTagSelect = (tag) => {
-    if (selectedTags.includes(tag)) {
-      setSelectedTags(selectedTags.filter((t) => t !== tag));
-    } else {
-      setSelectedTags([...selectedTags, tag]);
-    }
+    setSelectedTags((prevTags) => {
+      if (prevTags.includes(tag)) {
+        return prevTags.filter((t) => t !== tag);
+      } else {
+        return [...prevTags, tag];
+      }
+    });
   };
 
   const handleCreateListing = async () => {
+    // Check if a rating has been selected
+    if (rating === 0) {
+      Alert.alert('Error', 'Please select a rating before submitting.');
+      return; // Exit the function if no rating is selected
+    }
+
     setIsCreating(true); 
 
     if (user) {
@@ -81,7 +91,7 @@ const RatingForBuyerScreen = ({ navigation, route }) => {
     }
   };
 
-  const ListingHeader = ({ listing }) => {  
+  const ListingHeader = React.memo(({ listing }) => {  
     if (!listing) return null; // Return null if listing details aren't provided
     return (
       <View>
@@ -96,8 +106,9 @@ const RatingForBuyerScreen = ({ navigation, route }) => {
         </View>
       </View>
     );
-  };
+  });
 
+  const memoizedListing = useMemo(() => listing, [listing]);
   let buttonTitle = isCreating ? "Processing..." : "Submit Rating";
 
   if (!isConnected) {
@@ -110,8 +121,8 @@ const RatingForBuyerScreen = ({ navigation, route }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ListingHeader listing={listing} />
-      <ScrollView contentContainerStyle={styles.container}>
+      <ListingHeader listing={memoizedListing} />
+      <KeyboardAwareScrollView contentContainerStyle={styles.container}>
         <Image source={selectedBuyer.profilePicture ? { uri: selectedBuyer.profilePicture } : DEFAULT_IMAGE_URI} style={styles.profileImage} />
         <View style={styles.titleContainer}>
           <Text style={styles.title}>How was your experience selling to {selectedBuyer.displayName}?</Text>
@@ -140,6 +151,7 @@ const RatingForBuyerScreen = ({ navigation, route }) => {
           value={review}
           onChangeText={setReview}          
           style={styles.textInput}
+          editable={true}
           textAlignVertical="top"
         />
         
@@ -152,7 +164,7 @@ const RatingForBuyerScreen = ({ navigation, route }) => {
           onPress={handleCreateListing} 
           style={{ flexDirection: 'row' }} />
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </View>
   );
 };

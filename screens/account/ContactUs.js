@@ -9,6 +9,7 @@ import useHideBottomTab from '../../utils/HideBottomTab';
 import InputComponent from '../../components/InputComponent';
 import ButtonComponent from '../../components/ButtonComponent';
 import { useTheme } from '../../components/ThemeContext';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
 const ContactUs = ({ navigation }) => {
@@ -89,7 +90,7 @@ const ContactUs = ({ navigation }) => {
   let buttonTitle = isSubmitting ? "Processing..." : "Send Message";
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Contact Us</Text>
       <Text style={styles.description}>Feel free to ask us anything, feature requests or provide feedback!</Text>
 
@@ -101,6 +102,7 @@ const ContactUs = ({ navigation }) => {
           <InputComponent
             value={email}          
             style={styles.input}
+            editable={true}
             onChangeText={setEmail}  
           />
         </View>
@@ -114,7 +116,8 @@ const ContactUs = ({ navigation }) => {
           <InputComponent
             placeholder="Subject"
             value={subject}   
-            onChangeText={setSubject}     
+            onChangeText={setSubject} 
+            editable={true}    
             style={styles.input}
           />
         </View>
@@ -129,6 +132,7 @@ const ContactUs = ({ navigation }) => {
             style={styles.input}
             value={message}
             onChangeText={setMessage}
+            editable={true}
             placeholder="Your message"
             multiline
           />
@@ -166,7 +170,7 @@ const ContactUs = ({ navigation }) => {
           disabled={isSubmitting}
           style={{ width: '100%', flexDirection: 'row' }}/>
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 

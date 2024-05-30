@@ -11,6 +11,7 @@ import { BASE_URL } from '../constants/AppConstants';
 import {APP_NAME_IMAGE} from '../constants/AppConstants';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
 const LoginScreen = ({ navigation }) => {
@@ -76,7 +77,7 @@ const LoginScreen = ({ navigation }) => {
   }
 
   return (
-  <View style={styles.container}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
     <Image source={APP_NAME_IMAGE} style={styles.logo} />
     <Text style={styles.title}>Log in</Text>
 
@@ -85,6 +86,7 @@ const LoginScreen = ({ navigation }) => {
       <InputComponent
         placeholder="Email Address"
         value={email}
+        editable={true}
         onChangeText={setEmail}
         style={styles.input}
       />
@@ -95,6 +97,7 @@ const LoginScreen = ({ navigation }) => {
       <InputComponent
         placeholder="Password"
         value={password}
+        editable={true}
         onChangeText={setPassword}
         secureTextEntry={!passwordVisible}
         style={styles.input}
@@ -128,7 +131,7 @@ const LoginScreen = ({ navigation }) => {
       onPress={() => navigation.navigate('RegisterScreen')} 
      style={{ width: '100%', flexDirection: 'row' }}/>
 
-  </View>
+  </KeyboardAwareScrollView>
   );
 };
 
@@ -137,7 +140,7 @@ const logoSize = width * 0.5;
 
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
-    flex: 1,
+    //flex: 1,
     alignItems: 'center',
    // justifyContent: 'center',
     padding: spacing.size20Horizontal,
