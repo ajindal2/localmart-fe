@@ -502,6 +502,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
             label: 'Select a category',
             value: null,
           }}
+          value={selectedCategory} // Preset the selected category
           Icon={() => {
             return (
               <View style={styles.icon}>

@@ -23,6 +23,7 @@ const InputComponent = ({ placeholder, value, onChangeText, secureTextEntry, mul
   return (
     <TextInput
       style={[inputStyles.input, style]} 
+      color={editable ? colors.secondaryText : '#c3c3c3'}
       placeholder={placeholder}
       placeholderTextColor={editable ? colors.secondaryText : '#c3c3c3'} 
       cursorColor={colors.primary}

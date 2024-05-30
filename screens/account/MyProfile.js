@@ -299,6 +299,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         padding: spacing.size20Horizontal,
+        flex: 1, // This section will take available space within imageSection
     },
     profilePicture: {
       width: profilePictureSize,
@@ -323,8 +324,10 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     subText: {
       fontSize: typography.body,
       fontWeight: 'bold',
-      color: colors.secondaryText, 
+      color: colors.secondaryText,
       padding: spacing.xs,
+      flexWrap: 'wrap',
+      textAlign: 'center', 
     },
     inputRow: {
       flexDirection: 'row',

@@ -52,12 +52,12 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
       <View style={styles.optionsContainer}>
         <TouchableOpacity onPress={handleForgotPassword}>
-            <Text style={styles.optionText}>Resend Email</Text>
+        <Text style={styles.helpText}>
+          Havent received email? <Text style={styles.emailText}>Resend email</Text>
+        </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => {/* Logic to contact support */}}>
-            <Text style={styles.optionText}>Contact Support</Text>
-        </TouchableOpacity>
+        <Text style={styles.helpText}>Need help? Reach out to us at support@farmvox.com</Text>
       </View>
 
     </View>
@@ -97,6 +97,16 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     color: 'blue', 
     textDecorationLine: 'underline',
     marginTop: spacing.size10Vertical,
+  },
+  helpText: {
+    marginTop: spacing.size20Vertical,
+    fontSize: typography.subHeading,
+    color: 'blue',
+    textAlign: 'center',
+  },
+  emailText: {
+    color: 'blue', // Color for the email text
+    textDecorationLine: 'underline', // Underline the email text
   },
 });
 

@@ -178,7 +178,6 @@ const fetchListings = async (searchKey = '') => {
     setError(null); // Reset the error state
     setLoading(true);
     setLoaded(false); // Reset loaded before fetching
-    console.log('Test chages are reflected');
 
     try {  
       let paginatedResult;
