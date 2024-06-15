@@ -1,8 +1,7 @@
 const sections = [
     {
-      //title: 'Feature',
       data: [
-        { key: 'our_story', text: 'Our Story' },
+        { key: 'AboutScreen', text: 'About us' },
         { key: 'invite_people', text: 'Invite People' },
       ],
     },
@@ -22,8 +21,8 @@ const sections = [
     {
       data: [
         { key: 'ContactUs', text: 'Contact Us' },
-        { key: 'privacy_policy', text: 'Privacy Policy' },
-        { key: 'terms_of_service', text: 'Terms of Service' },
+        { key: 'PrivacyPolicyScreen', text: 'Privacy Policy' },
+        { key: 'TermsScreen', text: 'Terms of Service' },
         { key: 'logout', text: 'Logout' },
       ],
     },

@@ -1,5 +1,9 @@
 import 'dotenv/config'; 
 
+const environment = process.env.APP_ENV || 'development';
+const envFilePath = `.env.${environment}`;
+require('dotenv').config({ path: envFilePath });
+
 export default ({ config }) => ({
   ...config,
   name: "FarmVox",

@@ -36,7 +36,7 @@ const WelcomeScreen = ({ navigation }) => {
       <Image source={APP_NAME_IMAGE} style={styles.logo} />
       <Image source={BASKET_IMAGE} style={styles.basket} />
       
-        <Text style={styles.title}>Giving voice to local farms!</Text>
+        <Text style={styles.title}>Connecting Local Farms to Local Tables!</Text>
         <Text style={styles.description}>Your marketplace for everything local - backyard produce, eggs, honey, produce, plants and much more.</Text>
       
       <View style={styles.buttonContainer}>

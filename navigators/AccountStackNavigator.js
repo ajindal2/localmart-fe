@@ -1,6 +1,9 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import AccountScreen from '../screens/account/AccountScreen';
 import MyProfile from '../screens/account/MyProfile';
+import TermsScreen from '../screens/account/TermsScreen';
+import PrivacyPolicyScreen from '../screens/account/PrivacyPolicyScreen';
+import AboutScreen from '../screens/account/AboutScreen';
 import ContactUs from '../screens/account/ContactUs';
 import ChangeProfilePicture from '../screens/account/ChangeProfilePicture';
 import ViewMyListingStackNavigator from './ViewMyListingStackNavigator';
@@ -25,6 +28,24 @@ function AccountStackNavigator() {
         options={{ 
           headerShown: true,
           title: 'My Profile',
+          headerBackTitleVisible: false, // This hides the back title on iOS 
+        }}  /> 
+        <AccountStack.Screen name="TermsScreen" component={TermsScreen} 
+        options={{ 
+          headerShown: true,
+          title: 'Terms of Service',
+          headerBackTitleVisible: false, // This hides the back title on iOS 
+        }}  /> 
+        <AccountStack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} 
+        options={{ 
+          headerShown: true,
+          title: 'Privacy Policy',
+          headerBackTitleVisible: false, // This hides the back title on iOS 
+        }}  /> 
+        <AccountStack.Screen name="AboutScreen" component={AboutScreen} 
+        options={{ 
+          headerShown: true,
+          title: 'About Us',
           headerBackTitleVisible: false, // This hides the back title on iOS 
         }}  /> 
         <AccountStack.Screen name="ContactUs" component={ContactUs} 

@@ -117,7 +117,7 @@ const AppStack = () => {
   }, [user]);
 
   // Logic to handle a push notification click such that user lands on MyMessages page
-  useEffect(() => {
+  /*useEffect(() => {
     const handleNotificationResponse = (response) => {
       if (response) {
         console.log("Inside handleNotificationResponse");
@@ -136,7 +136,7 @@ const AppStack = () => {
     });
 
     return () => subscription.remove(); // Clean up the listener
-  }, []);
+  }, []);*/
 
   return (
     <NavigationContainer ref={navigationRef} linking={linking} fallback={<Text>Loading...</Text>}>
@@ -162,9 +162,7 @@ export default function AppNavigator() {
 }
 
 const navigate = (name, params) => {
-  console.log('Inside Navigate');
   if (navigationRef.current && navigationRef.current.isReady()) {
-    console.log('Inside navigationRef isReady');
     navigationRef.current.navigate(name, params);
   } else {
     console.log('Navigation reference is not ready');
