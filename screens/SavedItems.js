@@ -11,6 +11,7 @@ import ButtonComponent from '../components/ButtonComponent';
 import shareListing from '../utils/ShareListing';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
+import { DEFAULT_LISTING_IMAGE_URI } from '../constants/AppConstants'
 
 
 const SavedItems = ({navigation, route}) => {
@@ -111,7 +112,12 @@ const SavedItems = ({navigation, route}) => {
         }
       }}
     >
-    <Image source={{ uri: item.listing.imageUrls[0] }} style={styles.image} />
+    <Image
+      source={
+        item.listing && item.listing.imageUrls && item.listing.imageUrls.length > 0
+          ? { uri: item.listing.imageUrls[0] }
+          : DEFAULT_LISTING_IMAGE_URI // Fallback image if no URL is available
+      } style={styles.image} />
     <View style={styles.listingInfo}>
       <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
           {item.listing.title}
