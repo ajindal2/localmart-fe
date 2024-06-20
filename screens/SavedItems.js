@@ -97,7 +97,7 @@ const SavedItems = ({navigation, route}) => {
   };
 
   // Using callback t omemoize the component to prevent unnecessary re-renders of list items if their props haven't changed
-  const renderItem = React.useCallback(({ item }) => (
+  /* const renderItem = React.useCallback(({ item }) => (
     <TouchableOpacity 
       style={styles.listingItem}
       onPress={() => {
@@ -133,7 +133,52 @@ const SavedItems = ({navigation, route}) => {
     </TouchableOpacity>
 
     </TouchableOpacity>
- ), [navigation]);
+ ), [navigation]);*/
+
+ const renderItem = React.useCallback(({ item }) => {
+  if (!item.listing) {
+    return null; // Do not render anything if item.listing does not exist
+  }
+
+  return (
+    <TouchableOpacity 
+      style={styles.listingItem}
+      onPress={() => {
+        if (item.listing) {
+          navigation.navigate('ViewListingStack', { 
+            screen: 'ViewListing', 
+            params: { item: item.listing }
+          });
+        } else {
+          console.error('Listing is null, navigation in SavedListings is aborted');
+          Alert.alert('Error', 'An unknown error occurred, please try again later');
+        }
+      }}
+    >
+      <Image
+        source={
+          item.listing.imageUrls && item.listing.imageUrls.length > 0
+            ? { uri: item.listing.imageUrls[0] }
+            : DEFAULT_LISTING_IMAGE_URI // Fallback image if no URL is available
+        } 
+        style={styles.image} 
+      />
+      <View style={styles.listingInfo}>
+        <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+          {item.listing.title}
+        </Text>
+        <Text style={styles.price}>
+          {`$${item.listing.price.toFixed(2)}`}
+          <Text style={styles.dot}> · </Text>
+          {item.listing.state}
+        </Text>
+      </View>
+      <TouchableOpacity style={styles.optionsButton} onPress={() => handleOpenActionSheet(item)}>
+        <Ionicons name="ellipsis-vertical" size={20} color="grey" />
+      </TouchableOpacity>
+    </TouchableOpacity>
+  );
+}, [navigation]);
 
 
   const unsaveListing = async (item) => {

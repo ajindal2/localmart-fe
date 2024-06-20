@@ -9,7 +9,7 @@ export default ({ config }) => ({
   name: "FarmVox",
   slug: "farmvox",
   scheme: "farmvox",
-  version: "1.2.0",
+  version: "1.0.0",
   orientation: "portrait",
   icon: "./assets/icon.png",
   userInterfaceStyle: "light",
@@ -38,7 +38,7 @@ export default ({ config }) => ({
     barStyle: "dark-content"
   },
   ios: {
-    buildNumber: "1.2.0" ,
+    buildNumber: "1.0.0" ,
     infoPlist: {
       NSLocationWhenInUseUsageDescription: "This app uses your location to show nearby listings.",
       NSPhotoLibraryUsageDescription: "This app needs access to your photo library to select and upload photos.",
@@ -52,7 +52,7 @@ export default ({ config }) => ({
     associatedDomains: ["applinks:farmvox.com"]
   },
   android: {
-    versionCode: 3,
+    versionCode: 1,
     permissions: [
       "ACCESS_FINE_LOCATION",
       "ACCESS_COARSE_LOCATION",
