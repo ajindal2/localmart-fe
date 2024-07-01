@@ -2,15 +2,17 @@ import { TouchableOpacity, Text, StyleSheet} from 'react-native';
 import React, { useContext } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocation } from './LocationProvider';
+import { useSearchPreferences } from './SearchPreferencesContext';
 import { useTheme } from '../components/ThemeContext';
 
 const LocationInfoDisplay = React.memo(({ onPress }) => {
     const { location } = useLocation();
+    const { searchDistance } = useSearchPreferences();
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
   
     // Determine what text to display based on the available data
-    let locationText = 'Searching in: ';
+    let locationText = '';
     if (location) {
       if (location.city && location.state) {
         locationText += `${location.city}, ${location.state}`;
@@ -19,10 +21,13 @@ const LocationInfoDisplay = React.memo(({ onPress }) => {
       } else if (location.postalCode) {
         locationText += location.postalCode;
       }
+      if (searchDistance) {
+        locationText += ' - ' + searchDistance + ' mi';
+      }
     } 
   
     // Return null to render nothing if neither city nor postalCode is available
-    if (locationText === 'Searching in: ') {
+    if (locationText === '') {
        locationText = 'Set your search location';
     }
   

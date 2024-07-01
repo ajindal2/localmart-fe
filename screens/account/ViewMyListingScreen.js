@@ -156,9 +156,9 @@ const ViewMyListingScreen = ({navigation}) => {
   };
 
   // Handle share listing action
-  const handleShareListing = (listingId) => {
-    const listingTitle = 'Check this Item for Sale!';
-    const listingUrl = getListingUrl(listingId);
+  const handleShareListing = (item) => {
+    const listingTitle = `Check this Item for Sale!\n${item.title}`;
+    const listingUrl = getListingUrl(item._id);
     shareListing(listingTitle, listingUrl);
   };
 
@@ -168,7 +168,7 @@ const ViewMyListingScreen = ({navigation}) => {
         icon: 'share-social-outline',
         text: 'Share Listing',
         onPress: () => {
-          handleShareListing(item._id);
+          handleShareListing(item);
           setActiveItemId(null);
         },
       },
@@ -249,38 +249,45 @@ const ViewMyListingScreen = ({navigation}) => {
   };
 
   // Using callback to memoize the component to prevent unnecessary re-renders of list items if their props haven't changed
-  const renderItem = React.useCallback(({ item }) => (
-    <TouchableOpacity 
-      style={styles.listingItem} 
-      onPress={() =>  navigation.navigate('ViewListingStack', { 
-        screen: 'ViewListing', 
-        params: { item }
-      })}
-    >
-      <Image source={{ uri: item.imageUrls[0] }} style={styles.listingImage} />
-      <View style={styles.listingInfo}>
-        <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
-          {item.title}
-        </Text>
-        <Text style={styles.listingDetails}>
-          {`$${item.price.toFixed(2)}`}
-          <Text style={styles.dot}> · </Text>
-          {item.state}
-          <Text style={styles.dot}> · </Text>
-          Created on: {new Date(item.dateCreated).toLocaleDateString()}
-        </Text>
-        {item.state.toLowerCase() === 'sold' && (
-          <ButtonComponent title="Rate More Buyers" type="secondary" 
-            onPress={() => handleRateMoreBuyers(item)} 
-            style={styles.rateMoreBuyersButton}
-          />
-        )}
-      </View>
-      <TouchableOpacity style={styles.optionsButton} onPress={() => handleOpenActionSheet(item)}>
-        <Ionicons name="ellipsis-vertical" size={typography.iconSize} color={colors.darkGrey} />
+  const renderItem = React.useCallback(({ item }) => {
+    if (!item) {
+      return null; // Do not render anything if item does not exist
+    }
+  
+    return (
+      <TouchableOpacity 
+        style={styles.listingItem} 
+        onPress={() =>  navigation.navigate('ViewListingStack', { 
+          screen: 'ViewListing', 
+          params: { item }
+        })}
+      >
+        <Image source={{ uri: item.imageUrls[0] }} style={styles.listingImage} />
+        <View style={styles.listingInfo}>
+          <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+            {item.title}
+          </Text>
+          <Text style={styles.listingDetails}>
+            {`$${item.price.toFixed(2)}`}
+            <Text style={styles.dot}> · </Text>
+            {item.state}
+            <Text style={styles.dot}> · </Text>
+            Created on: {new Date(item.dateCreated).toLocaleDateString()}
+          </Text>
+          {item.state.toLowerCase() === 'sold' && (
+            <ButtonComponent title="Rate More Buyers" type="secondary" 
+              onPress={() => handleRateMoreBuyers(item)} 
+              style={styles.rateMoreBuyersButton}
+            />
+          )}
+        </View>
+        <TouchableOpacity style={styles.optionsButton} onPress={() => handleOpenActionSheet(item)}>
+          <Ionicons name="ellipsis-vertical" size={typography.iconSize} color={colors.darkGrey} />
+        </TouchableOpacity>
       </TouchableOpacity>
-    </TouchableOpacity>
-   ), [navigation]);
+    );
+  }, [navigation]);
+  
 
   const actionSheetOptions = listings
   .filter(item => item._id === activeItemId)

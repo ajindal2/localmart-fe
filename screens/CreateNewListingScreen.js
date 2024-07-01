@@ -17,6 +17,7 @@ import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
 import * as Network from 'expo-network';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Icon, Tooltip } from 'react-native-elements';
 
 
 const CreatingNewListingScreen = ({ navigation, route }) => {
@@ -52,6 +53,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
   const [isCreating, setIsCreating] = useState(false); // to disable button after single press
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSubCategory, setSelectedSubCategory] = useState([]);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
 
   useHideBottomTab(navigation, fromAccount);
 
@@ -78,6 +80,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
             state: result.state,
             postalCode: result.postalCode,
             coordinates: [{ latitude: result.coordinates[1], longitude: result.coordinates[0] }],
+            formatted_address: result.formatted_address
           }
         };       
       } catch (error) {
@@ -94,6 +97,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           state: newLocation.state,
           postalCode: newLocation.postalCode,
           coordinates: newLocation.coordinates,
+          formatted_address: newLocation.formatted_address,
         }
       };
     } else {
@@ -428,12 +432,15 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
     navigation.navigate('ListingLocationPreferenceScreen');
   }, [navigation]);
 
+  const toggleTooltip = () => {
+    setTooltipVisible(!tooltipVisible);
+  };
+
    // Dynamically set the button title
    let buttonTitle = isEditing ? "Update" : "Create";
    if (isCreating) {
      buttonTitle = "Processing...";
    }
-
 
    if (!isConnected) {
     return (
@@ -445,7 +452,6 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
 
   return (
     <KeyboardAwareScrollView contentContainerStyle={styles.container}>
-      
       <View style={styles.section}>
         <Text style={styles.text}>Add upto 10 photos</Text>
         <ScrollView style={styles.photoScrollView} horizontal showsHorizontalScrollIndicator={false}>
@@ -566,11 +572,26 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
       </View>
 
       <View style={styles.section}>
+      <View style={styles.headerRow}>
         <Text style={styles.text}>Pickup Location</Text>
+        <Tooltip
+          popover={<Text style={styles.tooltipText}>Your exact location is never shown to users,
+          only an approximate location will be displayed in the listing.</Text>}
+          width={250} // Adjust width to fit the text
+          height={100} // Adjust height to fit the text
+          backgroundColor="#fff" // Background color of tooltip
+          pointerColor={colors.darkGrey} // Color of the pointer arrow
+          containerStyle={{ elevation: 4 }} // Add elevation to ensure visibility
+          withOverlay={false} // Disable overlay to prevent the white hue
+        >
+          <Icon name="info" type="material" size={22} color={colors.darkGrey} containerStyle={styles.tooltipIcon} />
+        </Tooltip>
+      </View>
         <View style={styles.locationRow}>
           <Text style={styles.locationText}>
             {pickupLocation ? 
               (
+                pickupLocation.formatted_address ? `${pickupLocation.formatted_address}` :
                 pickupLocation.city && pickupLocation.state ? `${pickupLocation.city}, ${pickupLocation.state}` :
                 pickupLocation.city || pickupLocation.postalCode || 'Set a location (required)'
               ) : 
@@ -772,6 +793,19 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     borderLeftColor: 'transparent',
     width: 0,
     height: 0,
+  },
+  tooltipText: {
+    fontSize: 14,
+    color: '#000',
+    flexWrap: 'wrap', // Ensure text wraps
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tooltipIcon: {
+    marginLeft: 5, // Add space between text and icon
+    marginBottom: 5
   },
 });
 

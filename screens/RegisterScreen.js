@@ -1,8 +1,9 @@
 import React, { useState} from 'react';
-import { View, TouchableOpacity, Alert, StyleSheet, Image, Text, Dimensions, ScrollView } from 'react-native';
+import { View, TouchableOpacity, Alert, StyleSheet, Image, Text, Dimensions } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import ButtonComponent from '../components/ButtonComponent';
 import { useFonts } from 'expo-font';
+import { CheckBox } from 'react-native-elements';
 import InputComponent from '../components/InputComponent';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../components/ThemeContext';
@@ -26,6 +27,7 @@ const RegisterScreen = ({ navigation }) => {
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
   const [isCreating, setIsCreating] = useState(false); // to disable button after single press
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -41,6 +43,11 @@ const RegisterScreen = ({ navigation }) => {
   const validateInput = () => {
     let isValid = true;
     let newErrors = {};
+
+    if (!agreeToTerms) {
+      isValid = false;
+      newErrors.agreeToTerms = 'You must agree to the privacy policy and terms of service.';
+    }
   
     // Email validation (use a more robust regex in production)
     if (!emailAddress || !/\S+@\S+\.\S+/.test(emailAddress)) {
@@ -113,9 +120,16 @@ const RegisterScreen = ({ navigation }) => {
     navigation.navigate('LoginScreen');
   }, [navigation]);
 
+  const openPrivacyPolicy = () => {
+    navigation.navigate('PrivacyPolicyScreen');
+  };
+
+  const openTermsOfService = () => {
+    navigation.navigate('TermsScreen');
+  };
+
   // Dynamically set the button title
   let buttonTitle = isCreating ? "Processing..." : "Register";
-
 
   if (!isConnected) {
     return (
@@ -178,6 +192,22 @@ const RegisterScreen = ({ navigation }) => {
       </View>
       {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
+      <View style={styles.checkboxContainer}>
+        <CheckBox
+          title={
+            <Text>
+              I agree to the{' '}
+              <Text style={styles.linkText} onPress={openPrivacyPolicy}>Privacy Policy</Text>
+              {' '}and{' '}
+              <Text style={styles.linkText} onPress={openTermsOfService}>Terms of Service</Text>
+            </Text>
+          }
+          checked={agreeToTerms}
+          onPress={() => setAgreeToTerms(!agreeToTerms)}
+          containerStyle={styles.checkbox}
+        />
+      </View>
+      {errors.agreeToTerms && <Text style={styles.errorText}>{errors.agreeToTerms}</Text>}
   
       <ButtonComponent 
         title={buttonTitle} 
@@ -274,7 +304,20 @@ const RegisterScreen = ({ navigation }) => {
       width: '100%',
       textAlign: 'left',
       marginBottom: spacing.size20Vertical,
-    }
+    },
+    checkboxContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      //marginVertical: spacing.size5Vertical,
+    },
+    checkbox: {
+      backgroundColor: 'transparent',
+      borderWidth: 0,
+    },
+    linkText: {
+      color: colors.linkColor,
+      textDecorationLine: 'underline',
+    },
   });
   
   export default RegisterScreen;

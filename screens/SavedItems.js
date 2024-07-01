@@ -67,9 +67,9 @@ const SavedItems = ({navigation, route}) => {
   );
 
   // Handle share listing action
-  const handleShareListing = (listingId) => {
-    const listingTitle = 'Check this Item for Sale!';
-    const listingUrl = getListingUrl(listingId);
+  const handleShareListing = (listing) => {
+    const listingTitle = `Check this Item for Sale!\n${listing.title}`;
+    const listingUrl = getListingUrl(listing._id);
     shareListing(listingTitle, listingUrl);
   };
 
@@ -78,7 +78,7 @@ const SavedItems = ({navigation, route}) => {
       icon: 'share-social-outline',
       text: 'Share Listing',
       onPress: () => {
-        handleShareListing(item._id);
+        handleShareListing(item.listing);
         setActiveItemId(null);
       },
     },

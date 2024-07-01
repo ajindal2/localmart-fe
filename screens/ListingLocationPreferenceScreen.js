@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, Dimensions, StyleSheet, Alert } from 'react-native';
+import React, { useState, useContext, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, FlatList, Dimensions  } from 'react-native';
 import * as Location from 'expo-location';
 import useHideBottomTab from '../utils/HideBottomTab'; 
 import InputComponent from '../components/InputComponent';
@@ -9,6 +9,7 @@ import {validateAndGeocodePostalCode} from '../api/LocationService'
 import { AuthContext } from '../AuthContext';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 
 const ListingLocationPreferenceScreen = ({ route, navigation }) => {
@@ -18,6 +19,11 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
     const styles = getStyles(colors, typography, spacing);
     const { logout } = useContext(AuthContext);
     const [isCreating, setIsCreating] = useState(false); // to disable button after single press
+    const [selectedAddress, setSelectedAddress] = useState('');
+    const [errorMessage, setErrorMessage] = useState(null);
+    const [keyboardVisible, setKeyboardVisible] = useState(false);
+    const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+    const autocompleteRef = useRef(null);
 
     useHideBottomTab(navigation, true);
     
@@ -26,41 +32,55 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
       navigation.navigate('CreateNewListingScreen', { updatedLocation: newLocation });
     };
 
-    const handleZipCodeChange = (text) => {
-        if (/^\d{0,5}$/.test(text)) { // Regex for US ZIP code (0-5 digits)
-            setZipCode(text);
-        }
-    };
-
-    const updateLocationWithZipCode = async () => {
-      setIsCreating(true); 
-      if (/^\d{5}$/.test(zipCode)) {
-        try {
-          const result = await validateAndGeocodePostalCode(zipCode);
-          const updatedProfileData = {
-            location: { 
-              city: result.city,
-              state: result.state,
-              postalCode: result.postalCode,
-              coordinates: [{ latitude: result.coordinates[1], longitude: result.coordinates[0] }],
-            }
-          };
-          updateLocation(updatedProfileData.location);
-        } catch (error) {
-          if (error.message.includes('RefreshTokenExpired')) {
-            logout();
-          } 
-          console.error(`Failed to update location with zipcode ${zipCode}`, error);
-          Alert.alert('Error', error.message);
-        }
-        finally {
-          setIsCreating(false); 
-        }
+    const handleAddressPress = (data, details) => {
+  
+      if (details) {
+        const address = {
+          formatted_address: details.formatted_address,
+          coordinates: details.geometry.location, // {"lat": <>, "lng": <>}
+          city: getCity(details.address_components),
+          state: getState(details.address_components),
+          postalCode: getPostalCode(details.address_components),
+        };
+        setSelectedAddress(address);
       } else {
-        Alert.alert('Invalid ZIP Code', 'Please enter a valid 5-digit ZIP code.');
-        setIsCreating(false); 
+        setErrorMessage('Failed to fetch address details');
       }
     };
+  
+    const getCity = (addressComponents) => {
+      const city = addressComponents.find(component =>
+        component.types.includes('locality') || component.types.includes('sublocality') || component.types.includes('political')
+      );
+      return city ? city.long_name : '';
+    };
+  
+    const getState = (addressComponents) => {
+      const state = addressComponents.find(component =>
+        component.types.includes('administrative_area_level_1')
+      );
+      return state ? state.short_name : '';
+    };
+  
+    const getPostalCode = (addressComponents) => {
+      const postalCode = addressComponents.find(component =>
+        component.types.includes('postal_code')
+      );
+      return postalCode ? postalCode.long_name : '';
+    };
+
+    const updateLocationWithAddress = async() => {
+      const updatedProfileData = {
+        location: { 
+          city: selectedAddress.city,
+          state: selectedAddress.state,
+          postalCode: selectedAddress.postalCode,
+          coordinates: [{ latitude: selectedAddress.coordinates.lat, longitude: selectedAddress.coordinates.lng }],
+          formatted_address: selectedAddress.formatted_address
+        }
+      };
+      updateLocation(updatedProfileData.location);
+    }
 
     const getCurrentLocation = async () => {
       const { status: existingStatus } = await Location.getForegroundPermissionsAsync();
@@ -101,6 +121,20 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
       updateLocation(location);
     };
 
+    useEffect(() => {
+      const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+        setKeyboardVisible(true);
+      });
+      const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+        setKeyboardVisible(false);
+      });
+  
+      return () => {
+        keyboardDidShowListener.remove();
+        keyboardDidHideListener.remove();
+      };
+    }, []);
+
   // Dynamically set the button title
   let buttonTitle = isCreating ? "Processing..." : "Update Location";
 
@@ -113,45 +147,95 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Where is your item located?</Text>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}
+    >
 
-      <ButtonComponent title="Get My Location" type="secondary" iconName="location"
-        onPress={getCurrentLocation}
-        style={[styles.button]}
-      />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.topContainer}>
 
-      <Text style={styles.orText}>or</Text>
+        <Text style={styles.heading}>Where is your item located?</Text>
+        <Text style={styles.text}>
+          Enter your current location or enter an address which can be a public meetup point,
+          e.g., your nearby public park. Your exact location is never shown to users,
+          only an approximate location will be displayed in the listing.
+        </Text>
 
-      <InputComponent
-          placeholder="Enter ZIP Code"
-          keyboardType="numeric"
-          editable={true}
-          value={zipCode}
-          onChangeText={handleZipCodeChange}
-          style={styles.input}
+        <ButtonComponent title="Get My Location" type="secondary" iconName="location"
+          onPress={getCurrentLocation}
+          style={[styles.button]}
         />
 
-      <View style={styles.bottomButtonContainer}>
-        <ButtonComponent 
-          title={buttonTitle} 
-          disabled={isCreating}
-          loading={isCreating}
-          type="primary" 
-          onPress={updateLocationWithZipCode}
-          style={{ width: '100%', flexDirection: 'row' }}
+        <Text style={styles.orText}>or</Text>
+
+        <GooglePlacesAutocomplete
+          //ref={autocompleteRef}
+          placeholder="Enter an Address"
+          onPress={handleAddressPress}
+          query={{
+            key: GOOGLE_API_KEY,
+            language: 'en',
+          }}
+          fetchDetails={true}
+          styles={{
+            textInputContainer: {
+              width: '100%',
+              borderColor: colors.primary, // Set border color to orange
+              borderWidth: 1, // Set border width
+              backgroundColor: 'white', // Set background color to transparent
+              borderRadius: spacing.sm,
+            },
+            textInput: {
+              //height: 44,
+              color: '#5d5d5d', // Color of the input text
+              fontSize: 16,
+              backgroundColor: 'transparent', 
+              placeholderTextColor: colors.primary, 
+            },
+            listView: {
+              backgroundColor: 'white', // Ensure dropdown list has a white background for readability
+              zIndex: 1,
+              flexGrow: 0,
+            },
+          }}
+          onFail={(error) => {
+            console.error(error);
+            setErrorMessage(error.message);
+          }}
+          enablePoweredByContainer={false}
+          keepResultsAfterBlur={true}
+          //renderDescription={(row) => row.description || row.formatted_address || row.name}
         />
+        {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
       </View>
+
+    </TouchableWithoutFeedback>
+    <View style={styles.bottomButtonContainer}>
+      <ButtonComponent 
+        title={buttonTitle} 
+        disabled={isCreating}
+        loading={isCreating}
+        type="primary" 
+        onPress={updateLocationWithAddress}
+        style={{ width: '100%', flexDirection: 'row' }}
+      />
     </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const screenHeight = Dimensions.get('window').height; // Get the screen height
-const marginBottom = screenHeight * 0.04; // 5% of screen height for bottom margin
+const marginBottom = screenHeight * 0.03; // 5% of screen height for bottom margin
+const marginForUpdate = screenHeight * 0.01; 
 const marginTop = screenHeight * 0.05; 
 
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  topContainer: {
     flex: 1,
     padding: spacing.size10Horizontal,
     alignItems: 'center',
@@ -162,11 +246,21 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     color: colors.secondaryText, 
     padding: spacing.xs,
   },
+  text: {
+    fontSize: typography.body,
+    color: colors.secondaryText, 
+    padding: spacing.xs,
+  },
   button: {
-    width: '75%', 
+    width: '100%',
     flexDirection: 'row',
     marginTop: marginTop,
     marginBottom: marginBottom,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullWidthButton: {
+    width: '100%', // Ensure button takes up full width
   },
   input: {
     width: '75%', 
@@ -174,13 +268,19 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   },
   bottomButtonContainer: {
     position: 'absolute',
-    bottom: marginBottom,
+    bottom: marginForUpdate,
     width: '100%',
+    flex: 1,
+    padding: spacing.size10Horizontal,
   },
   orText: {
     marginBottom: marginBottom,
     color: colors.secondaryText,
     fontSize: typography.body,
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 10,
   },
 });
 

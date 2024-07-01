@@ -38,7 +38,7 @@ export default ({ config }) => ({
     barStyle: "dark-content"
   },
   ios: {
-    buildNumber: "1.0.0" ,
+    buildNumber: "3" ,
     infoPlist: {
       NSLocationWhenInUseUsageDescription: "This app uses your location to show nearby listings.",
       NSPhotoLibraryUsageDescription: "This app needs access to your photo library to select and upload photos.",
@@ -52,7 +52,7 @@ export default ({ config }) => ({
     associatedDomains: ["applinks:farmvox.com"]
   },
   android: {
-    versionCode: 1,
+    versionCode: 8,
     permissions: [
       "ACCESS_FINE_LOCATION",
       "ACCESS_COARSE_LOCATION",

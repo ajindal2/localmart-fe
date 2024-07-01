@@ -7,6 +7,7 @@ import { getChats } from '../api/ChatRestService';
 import { AuthContext } from '../AuthContext';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
+import { DEFAULT_LISTING_IMAGE_URI } from '../constants/AppConstants'
 
 
 const MyMessages = ({ navigation }) => {
@@ -144,13 +145,22 @@ const MyMessages = ({ navigation }) => {
         return (
           <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', { chat: item })}>
             <View style={styles.chatItem}>
-              <Image source={{ uri: item.listingId.imageUrls[0] }} style={styles.image} />
+              <Image source={
+                item.listingId && item.listingId.imageUrls && item.listingId.imageUrls.length > 0
+                  ? { uri: item.listingId.imageUrls[0] }
+                  : DEFAULT_LISTING_IMAGE_URI // Fallback image if no URL is available
+                }  
+                style={styles.image} 
+              />
               <View style={styles.contentContainer}>
               <Text style={[styles.title, isLastMessageUnread && styles.boldMessage]}>
-                {lastMessageSenderName} · {item.listingId.title.length > 30
-                    ? item.listingId.title.substring(0, 30) + '...'
-                    : item.listingId.title}
-                </Text>
+                {lastMessageSenderName} · 
+                {item.listingId && item.listingId.title
+                  ? (item.listingId.title.length > 30
+                      ? item.listingId.title.substring(0, 30) + '...'
+                      : item.listingId.title)
+                  : 'Listing does not exist'}
+              </Text>
                 <View style={styles.messageContainer}>
                 <Text style={[styles.message, isLastMessageUnread && styles.boldMessage]}>
                     {lastMessageContent.length > 50

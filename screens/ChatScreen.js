@@ -19,7 +19,8 @@ const ChatScreen = ({ route, navigation }) => {
 
   useHideBottomTab(navigation, true);
 
-  const transformMessages = (messages) => {
+  /*const transformMessages = (messages) => {
+    //console.log('messages inside transformMessages: ', messages);
     if (!user) {
       console.error('User is null, cannot transformMessages');
       return; // Exit the function if there's no user
@@ -30,6 +31,8 @@ const ChatScreen = ({ route, navigation }) => {
     const uniqueMessages = uniqueIds.map(id => {
       return messages.find(message => message._id === id);
     });
+
+    //console.log('uniqueMessages inside transformMessages: ', uniqueMessages);
   
     // Transform messages to fit GiftedChat and handle dates
     const transformedMessages = uniqueMessages.map(message => {
@@ -47,11 +50,44 @@ const ChatScreen = ({ route, navigation }) => {
     // Sort messages by createdAt in ascending order (oldest first)
     transformedMessages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     return transformedMessages;
-  };
+  };*/
+
+  const transformMessages = (messages) => {
+    if (!user) {
+      console.error('User is null, cannot transformMessages');
+      return [];
+    }
+  
+    // Deduplicate messages based on _id
+    const uniqueMessages = messages.reduce((acc, current) => {
+      if (!acc.find(item => item._id === current._id)) {
+        acc.push(current);
+      }
+      return acc;
+    }, []);
+  
+    // Transform messages to fit GiftedChat and handle dates
+    const transformedMessages = uniqueMessages.map(message => ({
+      _id: message._id,
+      text: message.content,
+      createdAt: message.sentAt ? new Date(message.sentAt) : new Date(),
+      user: {
+        _id: message.senderId ? (message.senderId._id || message.senderId) : 'unknown',
+        name: message.senderId ? (message.senderId.displayName || (message.senderId === user._id || message.senderId._id === user._id ? 'You' : 'Unknown')) : 'Unknown',
+      },
+    }));
+  
+    // Sort messages by createdAt in ascending order (oldest first)
+    transformedMessages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+    return transformedMessages;
+  };  
+  
 
   // Use the messages from the chat object to set the initial state
   // Transform them to fit GiftedChat's format
   const initialMessages = transformMessages(chat.messages || []);
+  console.log('initialMessages: ', initialMessages.map(msg => msg._id));
   const [messages, setMessages] = useState(initialMessages);
 
   const ChatHeader = ({ listing }) => {  
@@ -119,23 +155,16 @@ const ChatScreen = ({ route, navigation }) => {
   
     const handleNewMessages = (data) => {
       const { messages, senderId } = data;
-
+    
       if (senderId !== user._id) {
-        setMessages(previousMessages => {
-          // Immediately deduplicate new messages based on _id
-          const deduplicatedNewMessages = messages.filter(newMsg => 
-            !previousMessages.some(prevMsg => prevMsg._id === newMsg._id)
-          );
-      
-          // Transform deduplicated new messages
-          const transformedNewMessages = transformMessages(deduplicatedNewMessages);
-      
-          // Combine with previous messages and sort (if sorting is needed)
-          const combinedMessages = [...previousMessages, ...transformedNewMessages];
-          combinedMessages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      
-          return combinedMessages;
-        });
+        // Transform the entire set of messages received from the server
+        const transformedMessages = transformMessages(messages);
+    
+        // Sort messages by createdAt in ascending order (oldest first)
+        transformedMessages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+        // Update state directly with the transformed and sorted messages
+        setMessages(transformedMessages);
       }
     };
   
@@ -143,7 +172,7 @@ const ChatScreen = ({ route, navigation }) => {
     ChatService.socket.on('messageRcvd', handleNewMessages);
   
     // Cleanup function to leave the room and remove the event listener
-    return () => {      
+    return () => {
       // Emit an event to leave the room when the component unmounts or chat changes
       ChatService.socket.emit('leaveRoom', chat._id);
   
@@ -152,7 +181,7 @@ const ChatScreen = ({ route, navigation }) => {
       ChatService.turnOffSockets();
     };
   }, [chat]); // Depend on `chat` to re-run this effect if the chat changes
-  
+
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {

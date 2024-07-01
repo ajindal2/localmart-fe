@@ -2,6 +2,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/HomeScreen';
 import ViewListingStackNavigator from './ViewListingStackNavigator';
 import SearchLocationPreferenceScreen from '../screens/SearchLocationPreferenceScreen';
+import UserSearchPreferencesScreen from '../screens/UserSearchPreferenceScreen';
+
 
 const HomeStack = createStackNavigator();
 
@@ -21,6 +23,12 @@ function HomeStackNavigator() {
           title: 'Set search location',
           headerBackTitleVisible: false, // This hides the back title on iOS  
         }} /> 
+        <HomeStack.Screen name="UserSearchPreferencesScreen" component={UserSearchPreferencesScreen} 
+        options={{ 
+          headerShown: true,
+          title: 'Search filters',
+          headerBackTitleVisible: false, // This hides the back title on iOS  
+      }} /> 
       </HomeStack.Navigator>
     );
   }

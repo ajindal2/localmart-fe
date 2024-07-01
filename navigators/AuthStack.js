@@ -4,6 +4,8 @@ import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import TermsScreen from '../screens/account/TermsScreen';
+import PrivacyPolicyScreen from '../screens/account/PrivacyPolicyScreen';
 
 
 const Stack = createStackNavigator();
@@ -17,6 +19,16 @@ function AuthStack() {
       <Stack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} options={{ 
         headerShown: true,
         title: 'Reset Password',
+        headerBackTitleVisible: false, // This hides the back title on iOS 
+      }} />
+      <Stack.Screen name="TermsScreen" component={TermsScreen} options={{ 
+        headerShown: true,
+        title: 'Terms of Service',
+        headerBackTitleVisible: false, // This hides the back title on iOS 
+      }} />
+      <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} options={{ 
+        headerShown: true,
+        title: 'Privacy Policy',
         headerBackTitleVisible: false, // This hides the back title on iOS 
       }} />
     </Stack.Navigator>

@@ -13,6 +13,8 @@ import {fetchNotificationCount, updateNotificationCount} from '../api/ChatRestSe
 import * as Linking from 'expo-linking';
 import { createNavigationContainerRef } from '@react-navigation/native';
 import { Text } from 'react-native';
+import { SearchPreferencesProvider } from '../components/SearchPreferencesContext';
+
 
 const Stack = createStackNavigator();
 const navigationRef = createNavigationContainerRef();
@@ -154,9 +156,11 @@ const AppStack = () => {
 export default function AppNavigator() {
   return (
     <LocationProvider>
-      <ThemeProvider>
-        <AppStack />
-      </ThemeProvider>
+      <SearchPreferencesProvider>
+        <ThemeProvider>
+          <AppStack />
+        </ThemeProvider>
+      </SearchPreferencesProvider>
     </LocationProvider>
   );
 }

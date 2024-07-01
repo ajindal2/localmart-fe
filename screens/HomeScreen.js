@@ -4,6 +4,7 @@ import MySearchBar from '../components/MySearchBar';
 import { getListings } from '../api/ListingsService';
 import LocationInfoDisplay from '../components/LocationInfoDisplay';
 import { useLocation } from '../components/LocationProvider';
+import { useSearchPreferences } from '../components/SearchPreferencesContext';
 import ListingItem from '../components/ListingItem';
 import { useTheme } from '../components/ThemeContext';
 import { AppState } from 'react-native';
@@ -32,6 +33,7 @@ const HomeScreen = ({ navigation }) => {
   const currentPageRef = useRef(1);
   const [totalPages, setTotalPages] = useState(null);
   const { location } = useLocation();
+  const { searchDistance } = useSearchPreferences();
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
   const errorMessageTitle = "No Listings Found";
@@ -65,6 +67,18 @@ const HomeScreen = ({ navigation }) => {
 
     fetchListings(debouncedSearch);
   }, [debouncedSearch]);
+
+  useEffect(() => {
+    if (searchDistance) {
+       // Reset listings and current page when searchDistance changes
+      setListings([]);
+      //setCurrentPage(1); // Reset to first page
+      currentPageRef.current = 1;
+      setTotalPages(null); // Reset total pages
+
+      fetchListings(null); // fetchListings will pick up the searchDistance from the context
+    }
+  }, [searchDistance]);
 
   useEffect(() => {
     if (location) {
@@ -186,11 +200,11 @@ const fetchListings = async (searchKey = '') => {
           searchKey,{
             latitude: location.coordinates[0].latitude,
             longitude: location.coordinates[0].longitude,
-            maxDistance: 80467  // 50 miles in meters
+            maxDistance: searchDistance * 1609.34 // Convert miles to meters
             },  
-            currentPageRef.current,
-            50, // Set your desired limit or make it configurable
-          );
+          currentPageRef.current,
+          50, // Set your desired limit or make it configurable
+        );
       } else {
         paginatedResult = await getListings(searchKey, {}, currentPageRef.current, 50);
       }
@@ -227,7 +241,7 @@ const fetchListings = async (searchKey = '') => {
   }, [navigation]);
 
   const locationInfoPress = React.useCallback(() => {
-    navigation.navigate('SearchLocationPreferenceScreen')
+    navigation.navigate('UserSearchPreferencesScreen')
   }, [navigation]);
 
   const loadMoreListings = () => {

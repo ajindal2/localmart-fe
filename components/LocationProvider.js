@@ -44,6 +44,7 @@ export const LocationProvider = ({ children }) => {
                 state: result.state,
                 postalCode: result.postalCode,
                 coordinates: [{ latitude: result.coordinates[1], longitude: result.coordinates[0] }],
+                formatted_address: result.formatted_address,
               }
             };
             await updateUserProfile(user._id, updatedProfileData);
@@ -68,7 +69,8 @@ export const LocationProvider = ({ children }) => {
               const location = {
                 city: fetchedLocation.city,
                 state: fetchedLocation.state,
-                postalCode: fetchedLocation.postalCode
+                postalCode: fetchedLocation.postalCode,
+                formatted_address: fetchedLocation.formatted_address
               };
 
               if (fetchedLocation.coordinates && fetchedLocation.coordinates.coordinates) {
@@ -103,6 +105,7 @@ export const LocationProvider = ({ children }) => {
             state: result.state,
             postalCode: result.postalCode,
             coordinates: [{ latitude: result.coordinates[1], longitude: result.coordinates[0] }],
+            formatted_address: result.formatted_address,
           }
         };
         await updateUserProfile(user._id, updatedProfileData);
@@ -119,6 +122,7 @@ export const LocationProvider = ({ children }) => {
           state:  newLocation.state,
           postalCode: newLocation.postalCode,
           coordinates: newLocation.coordinates,
+          formatted_address: newLocation.formatted_address,
         }
       };
       await updateUserProfile(user._id, updatedProfileData);

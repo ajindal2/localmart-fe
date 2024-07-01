@@ -151,7 +151,7 @@ const ViewListing = ({ route, navigation }) => {
     // Handle share listing action
     const handleShareListing = () => {
         const listingId = item._id; 
-        const listingTitle = 'Check this Item for Sale!';
+        const listingTitle = `Check this Item for Sale!\n${item.title}`;
         const listingUrl = getListingUrl(listingId);
         shareListing(listingTitle, listingUrl);
     };
