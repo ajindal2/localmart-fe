@@ -34,6 +34,7 @@ const InputComponent = ({ placeholder, value, onChangeText, secureTextEntry, mul
       multiline={multiline}
       editable={editable}
       textAlignVertical={textAlignVertical}
+      selectionColor={colors.primary}
     />
   );
 };

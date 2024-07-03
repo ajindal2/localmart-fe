@@ -205,6 +205,8 @@ const RegisterScreen = ({ navigation }) => {
           checked={agreeToTerms}
           onPress={() => setAgreeToTerms(!agreeToTerms)}
           containerStyle={styles.checkbox}
+          checkedColor={colors.primary} 
+          uncheckedColor="#888888" 
         />
       </View>
       {errors.agreeToTerms && <Text style={styles.errorText}>{errors.agreeToTerms}</Text>}

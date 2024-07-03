@@ -6,6 +6,7 @@ import InputComponent from '../components/InputComponent';
 import { useTheme } from '../components/ThemeContext';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
 const ForgotPasswordScreen = ({ navigation }) => {
@@ -33,7 +34,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
   }
   
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
       <Text style={styles.instructions}>
         Please enter the email you used to sign up at FarmVox.
       </Text>
@@ -61,7 +62,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
         <Text style={styles.helpText}>Need help? Reach out to us at support@farmvox.com</Text>
       </View>
 
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 

@@ -7,7 +7,7 @@ const AboutScreen = () => {
       <Text style={styles.title}>About Us</Text>
 
       <Text style={styles.paragraph}>
-        Hello! My name is Aanchal – a mom, a software engineer, and a passionate locavore. One of my favorite activities is taking walks with my family around our neighborhood. During these walks, I often notice many fruit trees with ripe fruits that sadly go to waste, rotting on the ground.
+        Hello! My name is Aanchal - a mom, a software engineer, and a passionate locavore. One of my favorite activities is taking walks with my family around our neighborhood. During these walks, I often notice many fruit trees with ripe fruits that sadly go to waste, rotting on the ground.
       </Text>
 
       <Text style={styles.paragraph}>
@@ -19,7 +19,7 @@ const AboutScreen = () => {
       </Text>
 
       <Text style={styles.paragraph}>
-        You can contact me anytime at <Text style={styles.email}>support@farmvox.com</Text> and I'll get back to you within a day.
+        I would love to know your ideas and feedback. Please contact me anytime at <Text style={styles.email}>support@farmvox.com</Text>.
       </Text>
     </ScrollView>
   );

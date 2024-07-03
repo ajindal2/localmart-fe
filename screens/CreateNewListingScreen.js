@@ -138,6 +138,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
             state: locationData.state,
             postalCode: locationData.postalCode,
             coordinates: [{ latitude: locationData.coordinates.coordinates[1], longitude: locationData.coordinates.coordinates[0] }],
+            formatted_address: locationData.formatted_address
           }
           setPickupLocation(location); 
         }
@@ -152,14 +153,14 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
     if (route.params?.updatedLocation) {
       const newLocation = route.params.updatedLocation;
       updateLocation(newLocation);
-    } else {
+    } else if (!isEditing) {
       fetchAndSetSellerLocation();
     }
   
     return () => {
       // Cleanup or reset route params if needed
     };
-  }, [route.params?.updatedLocation, user]);
+  }, [route.params?.updatedLocation, user, isEditing]);
   
   const handleCancelListing = () => {
     // Check if user is null before proceeding

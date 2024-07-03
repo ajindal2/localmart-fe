@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions, ScrollView } from 'react-native';
 import ButtonComponent from '../components/ButtonComponent';
 import { useFonts } from 'expo-font';
 import { useTheme } from '../components/ThemeContext';
@@ -32,7 +32,7 @@ const WelcomeScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Image source={APP_NAME_IMAGE} style={styles.logo} />
       <Image source={BASKET_IMAGE} style={styles.basket} />
       
@@ -53,7 +53,7 @@ const WelcomeScreen = ({ navigation }) => {
           style={{ width: buttonWidth, marginLeft: spacing.size10Horizontal }}
         />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

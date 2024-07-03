@@ -10,6 +10,7 @@ import { useTheme } from '../components/ThemeContext';
 import { AuthContext } from '../AuthContext';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
 const SearchLocationPreferenceScreen = ({ navigation, route }) => {
@@ -117,7 +118,7 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
       <Text style={styles.heading}>Where is you searching?</Text>
 
       <ButtonComponent 
@@ -151,7 +152,7 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
           style={{ width: '100%', flexDirection: 'row' }}
         />
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 

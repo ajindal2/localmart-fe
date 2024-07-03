@@ -154,7 +154,7 @@ const MyMessages = ({ navigation }) => {
               />
               <View style={styles.contentContainer}>
               <Text style={[styles.title, isLastMessageUnread && styles.boldMessage]}>
-                {lastMessageSenderName} · 
+                {lastMessageSenderName} ·{' '}
                 {item.listingId && item.listingId.title
                   ? (item.listingId.title.length > 30
                       ? item.listingId.title.substring(0, 30) + '...'

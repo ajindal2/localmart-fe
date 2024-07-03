@@ -10,6 +10,7 @@ import InputComponent from '../../components/InputComponent';
 import { Ionicons } from '@expo/vector-icons';
 import NoInternetComponent from '../../components/NoInternetComponent';
 import useNetworkConnectivity from '../../components/useNetworkConnectivity';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
 const UpdatePasswordScreen = ({navigation}) => {
@@ -112,7 +113,7 @@ const UpdatePasswordScreen = ({navigation}) => {
   }
   
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
       <Text style={styles.label}>Current Password</Text>
       <View style={styles.inputContainer}>
       <InputComponent
@@ -167,7 +168,7 @@ const UpdatePasswordScreen = ({navigation}) => {
           onPress={handleUpdatePassword} 
           style={{ width: '100%', flexDirection: 'row' }} />
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 

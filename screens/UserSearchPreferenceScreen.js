@@ -10,6 +10,7 @@ import { AuthContext } from '../AuthContext';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
 import { useSearchPreferences } from '../components/SearchPreferencesContext';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
 const UserSearchPreferencesScreen = ({ navigation }) => {
@@ -46,7 +47,7 @@ const UserSearchPreferencesScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
       {/* Update Location Section */}
       <TouchableOpacity onPress={() => navigation.navigate('SearchLocationPreferenceScreen')}>
       <View style={styles.clickableSection}>
@@ -85,7 +86,7 @@ const UserSearchPreferencesScreen = ({ navigation }) => {
           style={{ width: '100%', flexDirection: 'row' }}
         />
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 
