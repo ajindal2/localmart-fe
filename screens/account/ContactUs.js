@@ -65,7 +65,7 @@ const ContactUs = ({ navigation }) => {
         email: email
       };
       await sendContactUsForm(contactData, attachment);
-      Alert.alert('Thank you for your message. Please allow us 24-48 hours to respond.');
+      Alert.alert('Thank you for your message! We will get back to you soon.');
     } catch (error) {
       console.error(`Error sending contact us email for email ${email}, message ${message}, subject ${subject}`, error);
       if (error.message.includes('RefreshTokenExpired')) {

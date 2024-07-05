@@ -87,7 +87,6 @@ const ChatScreen = ({ route, navigation }) => {
   // Use the messages from the chat object to set the initial state
   // Transform them to fit GiftedChat's format
   const initialMessages = transformMessages(chat.messages || []);
-  console.log('initialMessages: ', initialMessages.map(msg => msg._id));
   const [messages, setMessages] = useState(initialMessages);
 
   const ChatHeader = ({ listing }) => {  

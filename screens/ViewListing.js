@@ -290,7 +290,9 @@ const ViewListing = ({ route, navigation }) => {
         />
       
         <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.price}>{`$${item.price.toFixed(2)}`}</Text>
+        <Text style={styles.price}>
+          {item.price === 0 ? 'FREE' : `$${item.price.toFixed(2)}`}
+        </Text>
       </View>
 
         {/* Section 2: Seller Details */}

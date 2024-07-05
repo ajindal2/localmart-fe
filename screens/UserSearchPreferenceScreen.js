@@ -65,7 +65,7 @@ const UserSearchPreferencesScreen = ({ navigation }) => {
         <Text style={styles.preferenceSubtitle}>Current distance: {distance} miles</Text>
         <Slider
             style={{ width: '100%', height: 40 }}
-            minimumValue={5}
+            minimumValue={1}
             maximumValue={50}
             step={1} // The minimum change between values
             onValueChange={setDistance}

@@ -247,7 +247,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     padding: spacing.xs,
   },
   text: {
-    fontSize: typography.body,
+    fontSize: typography.subHeading,
     color: colors.secondaryText, 
     padding: spacing.xs,
   },
