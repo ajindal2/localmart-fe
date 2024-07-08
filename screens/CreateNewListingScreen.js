@@ -463,10 +463,10 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.text}>What are you selling?</Text>
+        <Text style={styles.text}>What are you sharing?</Text>
 
         <InputComponent
-           placeholder="What are you selling?"
+           placeholder="What are you sharing?"
            editable={true} 
            onChangeText={setTitle}
            value={title}
@@ -475,7 +475,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
         {titleError ? <Text style={styles.errorMessage}>{titleError}</Text> : null}
 
         <InputComponent
-          placeholder="Description"
+          placeholder="Add details for your listing, e.g., quantity, size etc"
           editable={true} 
           value={description}          
           onChangeText={setDescription}

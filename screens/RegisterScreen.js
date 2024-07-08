@@ -18,8 +18,10 @@ const RegisterScreen = ({ navigation }) => {
   const isConnected = useNetworkConnectivity();
   const [emailAddress, setEmailAddress] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [errors, setErrors] = useState({});
   const [fontsLoaded] = useFonts({
     Montserrat: require('../assets/fonts/Montserrat-Regular.ttf'), 
@@ -47,6 +49,11 @@ const RegisterScreen = ({ navigation }) => {
     if (!agreeToTerms) {
       isValid = false;
       newErrors.agreeToTerms = 'You must agree to the privacy policy and terms of service.';
+    }
+
+    if (password !== confirmPassword) {
+      isValid = false;
+      newErrors.confirmPassword = 'Passwords do not match';
     }
   
     // Email validation (use a more robust regex in production)
@@ -192,6 +199,25 @@ const RegisterScreen = ({ navigation }) => {
       </View>
       {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
+      <View style={styles.inputContainer}>
+        <Ionicons name="lock-closed-outline" size={typography.iconSize} color={colors.iconColor} />
+        <InputComponent
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChangeText={(text) => {
+            setConfirmPassword(text);
+            validatePasswords();
+          }}
+          secureTextEntry={!confirmPasswordVisible}
+          editable={true}
+          style={styles.input}
+        />
+        <TouchableOpacity onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}>
+          <Ionicons name={confirmPasswordVisible ? 'eye' : 'eye-off'} size={typography.iconSize} color={colors.iconColor} />
+        </TouchableOpacity>
+      </View>
+      {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
+    
       <View style={styles.checkboxContainer}>
         <CheckBox
           title={
