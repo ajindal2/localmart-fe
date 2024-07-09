@@ -190,6 +190,7 @@ const HomeScreen = ({ navigation }) => {
 }
 
 const fetchListings = async (searchKey = '') => {
+
     setError(null); // Reset the error state
     setLoading(true);
     setLoaded(false); // Reset loaded before fetching
@@ -254,7 +255,7 @@ const fetchListings = async (searchKey = '') => {
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     fetchListings(null).then(() => setRefreshing(false));
-  }, []);
+  }, [searchDistance, location]);
 
   if (!isConnected) {
     return (

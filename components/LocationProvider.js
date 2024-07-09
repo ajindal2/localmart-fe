@@ -127,7 +127,6 @@ export const LocationProvider = ({ children }) => {
       };
       await updateUserProfile(user._id, updatedProfileData);
       setLocation(updatedProfileData.location);
-      Alert.alert('Location Updated Successfully');
       //navigation.navigate('HomeScreen');
     } else {
       // Handle the case where location is undefined or null
