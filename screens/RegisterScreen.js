@@ -206,7 +206,6 @@ const RegisterScreen = ({ navigation }) => {
           value={confirmPassword}
           onChangeText={(text) => {
             setConfirmPassword(text);
-            validatePasswords();
           }}
           secureTextEntry={!confirmPasswordVisible}
           editable={true}

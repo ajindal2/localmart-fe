@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState, useRef } from 'react';
+import React, { useEffect, useContext, useState, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, Image, Dimensions, Platform, Alert } from 'react-native';
 import MySearchBar from '../components/MySearchBar';
 import { getListings } from '../api/ListingsService';
@@ -28,6 +28,7 @@ const HomeScreen = ({ navigation }) => {
   const [loaded, setLoaded] = useState(false); // Track whether listings have been loaded
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState(''); 
+  const [refreshing, setRefreshing] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasRequestedPermission, setHasRequestedPermission] = useState(false);
   const currentPageRef = useRef(1);
@@ -250,6 +251,11 @@ const fetchListings = async (searchKey = '') => {
     }
   };
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchListings(null).then(() => setRefreshing(false));
+  }, []);
+
   if (!isConnected) {
     return (
       <View style={styles.container}>
@@ -295,6 +301,8 @@ const fetchListings = async (searchKey = '') => {
         initialNumToRender={10} 
         maxToRenderPerBatch={6} // Number of items to render per batch
         windowSize={9} // Determines the number of items rendered outside of the viewport
+        refreshing={refreshing}
+        onRefresh={onRefresh}
       />
       )}
     </View>

@@ -230,6 +230,22 @@ const ViewListing = ({ route, navigation }) => {
       
     }, [item, user, route.params]);
 
+    const convertMetersToMiles = (meters) => {
+      return meters * 0.000621371;
+    };
+
+    const renderDistance = () => {
+      if (item.distance) {
+        return (
+          <>
+            <Text style={styles.dotSep}> · </Text>
+            <Text style={styles.distance}>{convertMetersToMiles(item.distance).toFixed(2)} mi</Text>
+          </>
+        );
+      }
+      return null;
+    };
+
   if (!isConnected) {
     return (
       <View style={styles.container}>
@@ -290,9 +306,16 @@ const ViewListing = ({ route, navigation }) => {
         />
       
         <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.price}>
-          {item.price === 0 ? 'FREE' : `$${item.price.toFixed(2)}`}
-        </Text>
+
+        <View style={styles.priceDistanceContainer}>
+            {typeof item?.price === 'number' && (
+              <Text style={styles.price}>
+                {item.price === 0 ? 'FREE' : `$${item.price.toFixed(2)}`}
+              </Text>
+            )}
+            {/* Conditional rendering for distance */}
+            {renderDistance()}    
+          </View>   
       </View>
 
         {/* Section 2: Seller Details */}
@@ -531,6 +554,22 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
   locationText: {
     paddingBottom: spacing.size10Vertical,
     color: colors.secondaryText, 
+  },
+  priceDistanceContainer: {
+    flexDirection: 'row', // Align items in a row
+    alignItems: 'center', // Center items vertically
+  },
+  dotSep: {
+    fontSize: typography.heading,
+    color: colors.secondaryText,
+    fontWeight: 'bold',
+    paddingBottom: spacing.size5Vertical,
+  },
+  distance: {
+    fontSize: typography.heading,
+    color: colors.secondaryText,
+    //paddingLeft: spacing.size10Horizontal,
+    paddingBottom: spacing.size5Vertical,
   },
 });
 
