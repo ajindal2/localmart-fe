@@ -103,23 +103,27 @@ const RatingForSellerScreen = ({ navigation, route }) => {
     }
   }, [listing]); // Dependency array to re-run the effect if listing changes
 
-  const ListingHeader = React.memo(() => {  
+  const ListingHeader = React.memo(({ listing }) => {
     if (!listing) return null; // Return null if listing details aren't provided
-
+  
     return (
       <View>
         <View style={styles.headerContainer}>
           <Image source={{ uri: listing.imageUrls[0] }} style={styles.listingImage} />
           <View style={styles.listingDetails}>
-          <Text style={styles.listingTitle} numberOfLines={1} ellipsizeMode="tail">
-            {listing.title}
-          </Text>
-          <Text style={styles.listingPrice}>{`$${listing.price.toFixed(2)}`}</Text>
+            <Text style={styles.listingTitle} numberOfLines={1} ellipsizeMode="tail">
+              {listing.title}
+              {listing.state && listing.state.toLowerCase() === 'sold' ? ' (Sold)' : ''}
+            </Text>
+            <Text style={styles.listingPrice}>
+              {listing.price === 0 ? 'FREE' : `$${listing.price.toFixed(2)}`}
+            </Text>
           </View>
         </View>
       </View>
     );
   });
+  
 
   let buttonTitle = isCreating ? "Processing..." : "Submit Rating";
 

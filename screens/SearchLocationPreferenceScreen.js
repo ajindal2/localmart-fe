@@ -119,7 +119,7 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
 
   return (
     <KeyboardAwareScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>Where is you searching?</Text>
+      <Text style={styles.heading}>Where are you searching?</Text>
 
       <ButtonComponent 
         title={getMyLocationButtonTitle}

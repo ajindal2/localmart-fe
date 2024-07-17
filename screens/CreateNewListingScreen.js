@@ -475,7 +475,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
         {titleError ? <Text style={styles.errorMessage}>{titleError}</Text> : null}
 
         <InputComponent
-          placeholder="Add details, e.g.,quantity ($2 for 2 lbs) or details if you want to barter etc"
+          placeholder="Add details like if you want to barter or price per quantity ($2 for 2 lbs), etc"
           editable={true} 
           value={description}          
           onChangeText={setDescription}

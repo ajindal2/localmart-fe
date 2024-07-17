@@ -100,8 +100,11 @@ const RatingForBuyerScreen = ({ navigation, route }) => {
           <View style={styles.listingDetails}>
           <Text style={styles.listingTitle} numberOfLines={1} ellipsizeMode="tail">
             {listing.title}
+            {listing.state && listing.state.toLowerCase() === 'sold' ? ' (Sold)' : ''}
           </Text>
-          <Text style={styles.listingPrice}>{`$${listing.price.toFixed(2)}`}</Text>
+          <Text style={styles.listingPrice}>
+            {listing.price === 0 ? 'FREE' : `$${listing.price.toFixed(2)}`}
+          </Text>
           </View>
         </View>
       </View>

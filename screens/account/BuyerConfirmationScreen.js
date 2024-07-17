@@ -43,21 +43,27 @@ const BuyerConfirmationScreen = ({ navigation, route }) => {
     }
   }
 
-  const ListingHeader = ({ listing }) => {  
+  const ListingHeader = ({ listing }) => {
     if (!listing) return null; // Return null if listing details aren't provided
-
+  
     return (
       <View>
         <View style={styles.headerContainer}>
           <Image source={{ uri: listing.imageUrls[0] }} style={styles.listingImage} />
           <View style={styles.listingDetails}>
-            <Text style={styles.listingTitle}>{listing.title}</Text>
-            <Text style={styles.listingPrice}>${listing.price.toString()}</Text>
+            <Text style={styles.listingTitle}>
+              {listing.title}
+              {listing.state && listing.state.toLowerCase() === 'sold' ? ' (Sold)' : ''}
+            </Text>
+            <Text style={styles.listingPrice}> 
+              {listing.price === 0 ? 'FREE' : `$${listing.price.toFixed(2)}`}
+            </Text>
           </View>
         </View>
       </View>
     );
   };
+  
 
   if (!isConnected) {
     return (

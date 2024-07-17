@@ -105,7 +105,9 @@ const ViewMyListingScreen = ({navigation}) => {
         if (buyers && buyers.length > 0) {
           // Buyers found, navigate to BuyerConfirmationScreen
           navigation.navigate('BuyerConfirmationScreen', { buyers, listing });
-        } 
+        } else {
+          Alert.alert('Listing successfully marked sold');
+        }
       }
     } catch (error) {
       if (error.message.includes('RefreshTokenExpired')) {
@@ -268,7 +270,7 @@ const ViewMyListingScreen = ({navigation}) => {
             {item.title}
           </Text>
           <Text style={styles.listingDetails}>
-            {`$${item.price.toFixed(2)}`}
+            {item.price === 0 ? 'FREE' : `$${item.price.toFixed(2)}`}
             <Text style={styles.dot}> · </Text>
             {item.state}
             <Text style={styles.dot}> · </Text>

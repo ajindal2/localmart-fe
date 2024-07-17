@@ -101,16 +101,19 @@ const ChatScreen = ({ route, navigation }) => {
   
     return (
       <TouchableOpacity onPress={navigateToListing}>
-        <View style={styles.headerContainer}>
-          <Image source={{ uri: listing.imageUrls[0] }} style={styles.listingImage} />
-          <View style={styles.listingDetails}>
+      <View style={styles.headerContainer}>
+        <Image source={{ uri: listing.imageUrls[0] }} style={styles.listingImage} />
+        <View style={styles.listingDetails}>
           <Text style={styles.listingTitle} numberOfLines={1} ellipsizeMode="tail">
             {listing.title}
+            {listing.state && listing.state.toLowerCase() === 'sold' ? ' (Sold)' : ''}
           </Text>
-          <Text style={styles.listingPrice}>{`$${listing.price.toFixed(2)}`}</Text>
-          </View>
+          <Text style={styles.listingPrice}> 
+            {listing.price === 0 ? 'FREE' : `$${listing.price.toFixed(2)}`}
+          </Text>
         </View>
-      </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
     );
   };
 

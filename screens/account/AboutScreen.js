@@ -11,7 +11,7 @@ const AboutScreen = () => {
       </Text>
 
       <Text style={styles.paragraph}>
-        This repeated sight sparked an idea in me. I believe we can create a solution together that not only prevents this waste but also strengthens our community bonds.
+        This repeated sight sparked an idea in me. I believe we can create a solution together that not only prevents this waste but also strengthens our community bonds and and promotes healthy eating.
       </Text>
 
       <Text style={styles.paragraph}>

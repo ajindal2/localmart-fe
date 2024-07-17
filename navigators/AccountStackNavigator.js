@@ -22,43 +22,43 @@ function AccountStackNavigator() {
         options={{ 
           headerShown: true,
           title: 'My Account',
-          headerBackTitleVisible: false, // This hides the back title on iOS 
+          headerBackTitle: '', 
         }}  /> 
         <AccountStack.Screen name="MyProfile" component={MyProfile} 
         options={{ 
           headerShown: true,
           title: 'My Profile',
-          headerBackTitleVisible: false, // This hides the back title on iOS 
+          headerBackTitle: '', 
         }}  /> 
         <AccountStack.Screen name="TermsScreen" component={TermsScreen} 
         options={{ 
           headerShown: true,
           title: 'Terms of Service',
-          headerBackTitleVisible: false, // This hides the back title on iOS 
+          headerBackTitle: '', 
         }}  /> 
         <AccountStack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} 
         options={{ 
           headerShown: true,
           title: 'Privacy Policy',
-          headerBackTitleVisible: false, // This hides the back title on iOS 
+          headerBackTitle: '', 
         }}  /> 
         <AccountStack.Screen name="AboutScreen" component={AboutScreen} 
         options={{ 
           headerShown: true,
           title: 'About Us',
-          headerBackTitleVisible: false, // This hides the back title on iOS 
+          headerBackTitle: '', 
         }}  /> 
         <AccountStack.Screen name="ContactUs" component={ContactUs} 
         options={{ 
           headerShown: true,
           title: 'Contact Us',
-          headerBackTitleVisible: false, // This hides the back title on iOS 
+          headerBackTitle: '', 
         }}  /> 
         <AccountStack.Screen name="ChangeProfilePicture" component={ChangeProfilePicture}
         options={{ 
           headerShown: true,
           title: 'Change photo',
-          headerBackTitleVisible: false, // This hides the back title on iOS 
+          headerBackTitle: '', 
         }}  /> 
         <AccountStack.Screen name="ViewMyListingStackNavigator" component={ViewMyListingStackNavigator} options={{ headerShown: false }} /> 
         <AccountStack.Screen name="SavedListingStackNavigator" component={SavedListingStackNavigator} options={{ headerShown: false }} />  
@@ -66,14 +66,14 @@ function AccountStackNavigator() {
           options={{ 
             headerShown: true,
             title: 'All reviews',
-            headerBackTitleVisible: false, // This hides the back title on iOS
+            headerBackTitle: '', 
             //tabBarStyle: { display: 'none' } 
         }} />
         <AccountStack.Screen name="UpdatePasswordScreen" component={UpdatePasswordScreen} 
           options={{ 
             headerShown: true,
             title: 'Update Password',
-            headerBackTitleVisible: false, // This hides the back title on iOS 
+            headerBackTitle: '', 
         }}  /> 
       </AccountStack.Navigator>
     );

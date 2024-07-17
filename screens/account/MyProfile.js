@@ -197,7 +197,7 @@ const MyProfile = ({ navigation }) => {
         <Text style={styles.text}>About Me</Text>
         <View style={styles.inputRow}>
           <InputComponent
-            placeholder="Telling about yourself lets the buyers know more about why you are here."
+            placeholder="Telling about yourself lets the other users know more a bit more about who you are and why you are here."
             multiline
             value={userProfileDetails.aboutMe}
             editable={isAboutMeEditable}

@@ -14,7 +14,7 @@ function CreateListingStackNavigator() {
         options={{ 
           headerShown: true,
           title: 'Create listing',
-          headerBackTitleVisible: false, // This hides the back title on iOS  
+          headerBackTitle: '',  
         }} 
       />
       <ListingStack.Screen
@@ -23,7 +23,7 @@ function CreateListingStackNavigator() {
         options={{ 
           headerShown: true,
           title: 'Set a location',
-          headerBackTitleVisible: false, // This hides the back title on iOS 
+          headerBackTitle: '', 
         }} 
       />
     </ListingStack.Navigator>

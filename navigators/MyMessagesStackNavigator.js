@@ -14,13 +14,13 @@ function MyMessagesStackNavigator() {
         options={{ 
             headerShown: true,
             title: 'My Messages',
-            headerBackTitleVisible: false, // This hides the back title on iOS  
+            headerBackTitle: '', 
           }} /> 
         <MyMessagesStack.Screen name="ChatScreen" component={ChatScreen} 
         options={{ 
           headerShown: true,
           title: 'Message',
-          headerBackTitleVisible: false, // This hides the back title on iOS  
+          headerBackTitle: '', 
         }} /> 
         <MyMessagesStack.Screen name="ViewListingStack" component={ViewListingStackNavigator}
         options={{ 
@@ -30,7 +30,7 @@ function MyMessagesStackNavigator() {
         options={{ 
           headerShown: true,
           title: 'Rate Seller',
-          headerBackTitleVisible: false, // This hides the back title on iOS 
+          headerBackTitle: '', 
         }}  />
       </MyMessagesStack.Navigator>
     );

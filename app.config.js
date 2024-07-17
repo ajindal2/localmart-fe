@@ -38,7 +38,7 @@ export default ({ config }) => ({
     barStyle: "dark-content"
   },
   ios: {
-    buildNumber: "5" ,
+    buildNumber: "6" ,
     infoPlist: {
       NSLocationWhenInUseUsageDescription: "This app uses your location to show nearby listings.",
       NSPhotoLibraryUsageDescription: "This app needs access to your photo library to select and upload photos.",

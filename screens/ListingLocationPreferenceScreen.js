@@ -157,11 +157,16 @@ const ListingLocationPreferenceScreen = ({ route, navigation }) => {
       <View style={styles.topContainer}>
 
         <Text style={styles.heading}>Where is your item located?</Text>
+        <Text style={styles.subHeading}>Your exact location is never shown to users,
+          only an approximate location will be displayed in the listing.</Text>
         <Text style={styles.text}>
-          Enter your current location or enter an address which can be a public meetup point,
-          e.g., your nearby public park. Your exact location is never shown to users,
-          only an approximate location will be displayed in the listing.
+          Get your device's your current location.
         </Text>
+        <Text style={styles.text}> or </Text>  
+        <Text style={styles.text}>
+          Enter an address which can be a public meetup point,
+          e.g., your nearby public park. 
+        </Text> 
 
         <ButtonComponent title="Get My Location" type="secondary" iconName="location"
           onPress={getCurrentLocation}
@@ -245,6 +250,12 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     fontWeight: 'bold',
     color: colors.secondaryText, 
     padding: spacing.xs,
+  },
+  subHeading: {
+    fontSize: typography.subHeading,
+    color: colors.secondaryText, 
+    padding: spacing.xs,
+    marginBottom: spacing.xs,
   },
   text: {
     fontSize: typography.subHeading,

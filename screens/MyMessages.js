@@ -156,9 +156,9 @@ const MyMessages = ({ navigation }) => {
               <Text style={[styles.title, isLastMessageUnread && styles.boldMessage]}>
                 {lastMessageSenderName} ·{' '}
                 {item.listingId && item.listingId.title
-                  ? (item.listingId.title.length > 30
+                  ? `${item.listingId.title.length > 30
                       ? item.listingId.title.substring(0, 30) + '...'
-                      : item.listingId.title)
+                      : item.listingId.title}${item.listingId.state.toLowerCase() === 'sold' ? ' (Sold)' : ''}`
                   : 'Listing does not exist'}
               </Text>
                 <View style={styles.messageContainer}>

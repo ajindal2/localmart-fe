@@ -19,17 +19,17 @@ function AuthStack() {
       <Stack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} options={{ 
         headerShown: true,
         title: 'Reset Password',
-        headerBackTitleVisible: false, // This hides the back title on iOS 
+        headerBackTitle: '', 
       }} />
       <Stack.Screen name="TermsScreen" component={TermsScreen} options={{ 
         headerShown: true,
         title: 'Terms of Service',
-        headerBackTitleVisible: false, // This hides the back title on iOS 
+        headerBackTitle: '', 
       }} />
       <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} options={{ 
         headerShown: true,
         title: 'Privacy Policy',
-        headerBackTitleVisible: false, // This hides the back title on iOS 
+        headerBackTitle: '', 
       }} />
     </Stack.Navigator>
   );

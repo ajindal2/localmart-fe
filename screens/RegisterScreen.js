@@ -164,7 +164,7 @@ const RegisterScreen = ({ navigation }) => {
           onChangeText={setDisplayName}
           style={styles.input}
         />
-        <TouchableOpacity onPress={() => Alert.alert("Display Name Info", "Your display name is how others will see you in the app. It can be a nickname or the name of your business.")}>
+        <TouchableOpacity onPress={() => Alert.alert("Display Name Info", "Your display name is how others will see you in the app. It can be a nickname or your actual name.")}>
           <Ionicons name="help-outline" size={typography.iconSize} color={colors.iconColor} style={{ marginLeft: 10 }} />
         </TouchableOpacity>
       </View>

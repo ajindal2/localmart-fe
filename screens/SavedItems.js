@@ -168,7 +168,7 @@ const SavedItems = ({navigation, route}) => {
           {item.listing.title}
         </Text>
         <Text style={styles.price}>
-          {`$${item.listing.price.toFixed(2)}`}
+          {item.listing.price === 0 ? 'FREE' : `$${item.listing.price.toFixed(2)}`}
           <Text style={styles.dot}> · </Text>
           {item.listing.state}
         </Text>
