@@ -52,7 +52,7 @@ export const LocationProvider = ({ children }) => {
           } catch (error) {
             console.error('Failed to retrieve location details:', error);
             if (error.message.includes('RefreshTokenExpired')) {
-              logout();
+              await logout();
             }
             Alert.alert('Error', 'Error occured when retrieving user location');
           }         
@@ -84,7 +84,7 @@ export const LocationProvider = ({ children }) => {
           }
           } catch (error) {
             if (error.message.includes('RefreshTokenExpired')) {
-              logout();
+              await logout();
             } else {
               console.error(`Error occured when retrieving user location for user ${user._id}`);
             }

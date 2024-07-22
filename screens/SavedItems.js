@@ -49,7 +49,7 @@ const SavedItems = ({navigation, route}) => {
         } else if (error.message.includes('Internal server error')) {
           errorMessage = errorMessageDetails;
         } else if (error.message.includes('RefreshTokenExpired')) {
-          logout();
+          await logout();
         }
         setError(errorMessage);
         setLoading(false);
@@ -190,18 +190,12 @@ const SavedItems = ({navigation, route}) => {
       );
     } catch (error) {
       if (error.message.includes('RefreshTokenExpired')) {
-        logout();
+        await logout();
       } else {
         console.error('Error unsaving listing:', error);
         Alert.alert('Error', 'Error unsaving listing, please try again later.');
       }
     }
-  };
-
-  const formatDate = (dateString) => {
-    // Format the date string into a more readable format
-    const date = new Date(dateString);
-    return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
   };
 
   const actionSheetOptions = savedListings

@@ -28,9 +28,9 @@ const AccountScreen = ({ navigation }) => {
     });
   };
   
-  const handleLogout = () => {
+  const handleLogout = async () => {
     //resetToWelcomeScreen();
-    logout();
+    await logout();
   };
 
   const handleAllReviews = async () => {
@@ -67,20 +67,25 @@ const AccountScreen = ({ navigation }) => {
   // renderItem expects an object with { item, index, separators, section }
   const renderItem = ({ item, index, separators, section }) => {
     const { width, height } = Dimensions.get('window');
-    const onItemPress = () => {
-      if (item.key === 'logout') {
-        handleLogout();
-      } else if (item.key === 'SavedListingStackNavigator') {
-        navigation.navigate('SavedListingStackNavigator', { screen: 'SavedItem', params: { fromAccount: true } });
-      } else if (item.key === 'user_reviews') {
-        handleAllReviews();
-      } else if (item.key === 'invite_people') {
-        handleShareApp();
-      } else {
-        navigation.navigate(item.key);
+  
+    const onItemPress = async () => {
+      try {
+        if (item.key === 'logout') {
+          await handleLogout();
+        } else if (item.key === 'SavedListingStackNavigator') {
+          navigation.navigate('SavedListingStackNavigator', { screen: 'SavedItem', params: { fromAccount: true } });
+        } else if (item.key === 'user_reviews') {
+          await handleAllReviews();
+        } else if (item.key === 'invite_people') {
+          await handleShareApp();
+        } else {
+          navigation.navigate(item.key);
+        }
+      } catch (error) {
+        console.error('Error handling item press:', error);
       }
     };
-
+  
     return (
       <View>
         <TouchableOpacity
@@ -94,6 +99,7 @@ const AccountScreen = ({ navigation }) => {
       </View>
     );
   };
+  
 
   // renderSection expects an object with { section }
   const renderSection = ({ section }) => {

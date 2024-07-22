@@ -61,7 +61,7 @@ const MyMessages = ({ navigation }) => {
       setChats(fetchedChats);
     } catch (error) {
       if (error.message.includes('RefreshTokenExpired')) {
-        logout();
+        await logout();
       } 
       setError(errorMessageDetails);
       console.error(`Error fetching chats for ${userId}`, error);

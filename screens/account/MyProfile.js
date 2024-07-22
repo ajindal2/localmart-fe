@@ -88,7 +88,7 @@ const MyProfile = ({ navigation }) => {
       } catch (error) {
         console.error(`Error fetching profile for user ${user._id}`, error);
         if (error.message.includes('RefreshTokenExpired')) {
-          logout();
+          await logout();
         } else {
           Alert.alert('Error', 'Error fetching profile, please try again later');
         }
@@ -132,7 +132,7 @@ const MyProfile = ({ navigation }) => {
     } catch (error) {
       console.error(`Error updating profile for user ${user._id}`, error);
       if (error.message.includes('RefreshTokenExpired')) {
-        logout();
+        await logout();
       } 
       setIsLoading(false);
       setError(error.message);

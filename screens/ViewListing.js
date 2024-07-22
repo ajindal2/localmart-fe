@@ -134,7 +134,7 @@ const ViewListing = ({ route, navigation }) => {
           }
         } catch (error) {
           if (error.message.includes('RefreshTokenExpired')) {
-            logout();
+            await logout();
           } 
           Toast.show({
             type: 'error',
@@ -168,7 +168,7 @@ const ViewListing = ({ route, navigation }) => {
         navigation.navigate('ChatScreen', { chat : item });
       } catch (error) {
         if (error.message.includes('RefreshTokenExpired')) {
-          logout();
+          await logout();
         } 
         Alert.alert('Error', 'An error aoccured when sending the message. Please try again later.');
         console.error('Error creating chat', error);

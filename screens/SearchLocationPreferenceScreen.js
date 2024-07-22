@@ -49,7 +49,7 @@ const SearchLocationPreferenceScreen = ({ navigation, route }) => {
           navigation.goBack();
         } catch (error) {
           if (error.message.includes('RefreshTokenExpired')) {
-            logout();
+            await logout();
           } 
           console.error('Failed to retrieve location details:', error);
           Alert.alert('Error', error.message);

@@ -186,24 +186,21 @@ const ChatScreen = ({ route, navigation }) => {
 
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener('focus', async () => {
       try {
-        if(user) {
+        if (user) {
           // Call the function to mark messages as read
-          markMessagesAsRead(chat._id, user._id);
+          await markMessagesAsRead(chat._id, user._id);
           // Fetch the latest messages from the server
-          fetchLatestMessages(chat._id).then(latestMessages => {
-            const transformedMessages = transformMessages(latestMessages);
-            setMessages(transformedMessages);
-          }).catch(error => {
-            console.error(`Error fetching latest messages for chat ${chat._id}`, error);
-          });
+          const latestMessages = await fetchLatestMessages(chat._id);
+          const transformedMessages = transformMessages(latestMessages);
+          setMessages(transformedMessages);
         }
       } catch (error) {
         if (error.message.includes('RefreshTokenExpired')) {
-          logout();
+          await logout();
         } else {
-          console.error('Error marking messages as read:', error);
+          console.error(`Error marking messages as read for chat ${chat._id}`, error);
         }
       }
     });
@@ -211,6 +208,7 @@ const ChatScreen = ({ route, navigation }) => {
     return unsubscribe;
   }, [navigation, user, chat]);
 
+  
   const onSend = (newMessages = []) => {
     if(chat.isSystemMessage) {
       Alert.alert('Error', 'Cannot reply to system generated message');

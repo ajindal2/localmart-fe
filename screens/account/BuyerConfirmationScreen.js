@@ -36,7 +36,7 @@ const BuyerConfirmationScreen = ({ navigation, route }) => {
     } catch (error) {
         console.error('Failed to submit rating', error);
         if (error.message.includes('RefreshTokenExpired')) {
-          logout();
+          await logout();
         } else {
           Alert.alert('Error', 'An unknown error occured, please try again later.');
         }

@@ -70,7 +70,7 @@ const RatingForSellerScreen = ({ navigation, route }) => {
       } catch (error) {
         console.error('Failed to submit rating:', error);
         if (error.message.includes('RefreshTokenExpired')) {
-          logout();
+          await logout();
         } else if (error.message.includes('Rating already exists')) {
           Alert.alert('Error', 'The rating for this seller is already recorded');
         }  else {

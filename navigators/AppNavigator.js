@@ -68,31 +68,29 @@ const AppStack = () => {
 
   // For setting badge count when app loads/comes to active state
   useEffect(() => {
-    try {
-      if (user) {
-        const updateBadgeCount = async () => {
+    const updateBadgeCount = async () => {
+      try {
+        if (user) {
           const count = await fetchNotificationCount(user._id);
           setMessagesBadgeCount(count);
-        };
-    
-        updateBadgeCount();
-    
-        const appStateSubscription = AppState.addEventListener('change', nextAppState => {
-          if (nextAppState === 'active') {
-            updateBadgeCount();
-          }
-        });
-    
-        return () => {
-          appStateSubscription.remove();
-        };
+        }
+      } catch (error) {
+        console.error('Error fetching notification count:', error);
+        setMessagesBadgeCount(0);
       }
-    } catch (error) {
-      if (error.message.includes('RefreshTokenExpired')) {
-        logout();
-      } 
-      setMessagesBadgeCount(0);
-    }
+    };
+  
+    updateBadgeCount();
+  
+    const appStateSubscription = AppState.addEventListener('change', async (nextAppState) => {
+      if (nextAppState === 'active') {
+        await updateBadgeCount();
+      }
+    });
+  
+    return () => {
+      appStateSubscription.remove();
+    };
   }, [user, setMessagesBadgeCount]);
 
   const messagesBadgeCountRef = useRef(messagesBadgeCount);
@@ -105,13 +103,19 @@ const AppStack = () => {
   useEffect(() => {
     let lastAppState = AppState.currentState;
 
-    const appStateSubscription = AppState.addEventListener('change', nextAppState => {
-      if (user && lastAppState === 'active' && (nextAppState === 'background' || nextAppState === 'inactive')) {
-        const currentBadgeCount = messagesBadgeCountRef.current; // Use the ref's current value
-        updateNotificationCount(user._id, currentBadgeCount);
+    const handleAppStateChange = async (nextAppState) => {
+      try {
+        if (user && lastAppState === 'active' && (nextAppState === 'background' || nextAppState === 'inactive')) {
+          const currentBadgeCount = messagesBadgeCountRef.current; // Use the ref's current value
+          await updateNotificationCount(user._id, currentBadgeCount);
+        }
+        lastAppState = nextAppState;
+      } catch (error) {
+        console.error('Error updating notification count:', error);
       }
-      lastAppState = nextAppState;
-    });
+    };
+
+    const appStateSubscription = AppState.addEventListener('change', handleAppStateChange);
 
     return () => {
       appStateSubscription.remove();

@@ -139,13 +139,12 @@ export const getChats = async (userId) => {
   };
 
   export const fetchNotificationCount = async (userId) => {
-    const token = await SecureStore.getItemAsync('token');
+    //const token = await SecureStore.getItemAsync('token');
 
     try {
-      const response = await fetchWithTokenRefresh(`${BASE_URL}/chat/${userId}/notificationCount`, {
+      const response = await fetch(`${BASE_URL}/chat/${userId}/notificationCountV2`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`
         },
       });
       if (!response.ok) {

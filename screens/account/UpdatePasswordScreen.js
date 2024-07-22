@@ -94,7 +94,7 @@ const UpdatePasswordScreen = ({navigation}) => {
     } catch (error) {
       console.error(`Error handling update password for user ${user._id}`, error);
       if (error.message.includes('RefreshTokenExpired')) {
-        logout();
+        await logout();
       } 
       Alert.alert('Error', error.message || 'Update failed, please try again later');
     } finally {

@@ -69,7 +69,7 @@ const ContactUs = ({ navigation }) => {
     } catch (error) {
       console.error(`Error sending contact us email for email ${email}, message ${message}, subject ${subject}`, error);
       if (error.message.includes('RefreshTokenExpired')) {
-        logout();
+        await logout();
       } else {
         Alert.alert('Error', 'Error sending email, please try again later');
       }

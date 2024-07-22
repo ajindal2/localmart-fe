@@ -85,7 +85,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
         };       
       } catch (error) {
         if (error.message.includes('RefreshTokenExpired')) {
-          logout();
+          await logout();
         }
         console.error('Failed to retrieve location details:', error);
         Alert.alert('Error', 'Error occured when retrieving location');
@@ -144,7 +144,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
         }
       } catch (error) {
         if (error.message.includes('RefreshTokenExpired')) {
-          logout();
+          await logout();
         }
         console.error('Error fetching seller location:', error);
       }
@@ -345,7 +345,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
           setSelectedCategory('');
       } catch (error) {
         if (error.message.includes('RefreshTokenExpired')) {
-          logout();
+          await logout();
         } else {
           Alert.alert('Error', 'An unknown error occured, please try again later.');
         }
@@ -475,7 +475,7 @@ const CreatingNewListingScreen = ({ navigation, route }) => {
         {titleError ? <Text style={styles.errorMessage}>{titleError}</Text> : null}
 
         <InputComponent
-          placeholder="Add details like if you want to barter or price per quantity ($2 for 2 lbs), etc"
+          placeholder="(Optional) Add details like if you want to barter or price per quantity ($2 for 2 lbs), etc"
           editable={true} 
           value={description}          
           onChangeText={setDescription}

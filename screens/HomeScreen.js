@@ -225,7 +225,7 @@ const fetchListings = async (searchKey = '') => {
       } else if (error.message.includes('Internal server error')) {
         errorMessage = errorMessageDetails;
       } else if (error.message.includes('RefreshTokenExpired')) {
-        logout();
+        await logout();
       } 
 
       setError(errorMessage);

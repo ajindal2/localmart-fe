@@ -47,7 +47,7 @@ const ViewMyListingScreen = ({navigation}) => {
           setLoading(false);
         } catch (error) {
           if (error.message.includes('RefreshTokenExpired')) {
-            logout();
+            await logout();
           } else {
             let errorMessage = error.message; // Default to the error message thrown
             if (error.message.includes('No listings found')) {
@@ -92,7 +92,7 @@ const ViewMyListingScreen = ({navigation}) => {
       setListings(updatedListings);
     } catch (error) {
       if (error.message.includes('RefreshTokenExpired')) {
-        logout();
+        await logout();
       } else {
         console.error(`Error marking listing ${listing} as sold:`, error);
         Alert.alert('Error', 'Error updating status, please try again later.');
@@ -111,7 +111,7 @@ const ViewMyListingScreen = ({navigation}) => {
       }
     } catch (error) {
       if (error.message.includes('RefreshTokenExpired')) {
-        logout();
+        await logout();
       } else {
         // Just log and do nothing. User can start rating flow from this page later.
         console.error(`Error getting buyer details after marking as sold for user ${user._id} and listing ${listing._id}`, error);
@@ -127,7 +127,7 @@ const ViewMyListingScreen = ({navigation}) => {
       Alert.alert('Listing deleted successfully');
     } catch (error) {
       if (error.message.includes('RefreshTokenExpired')) {
-        logout();
+        await logout();
       } else {
         console.error(`Error deleting listing ${listingId}`, error);
         Alert.alert('Error', 'Error deleting listing, please try again later.');
@@ -149,7 +149,7 @@ const ViewMyListingScreen = ({navigation}) => {
       }
     } catch (error) {
       if (error.message.includes('RefreshTokenExpired')) {
-        logout();
+        await logout();
       } else {
         console.error(`Error handling RateMoreBuyers for user ${user._id} and listing ${listing._id}`, error);
         Alert.alert('Error', 'An unknown error occured, please try again later.');
