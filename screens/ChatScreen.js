@@ -72,7 +72,7 @@ const ChatScreen = ({ route, navigation }) => {
       text: message.content,
       createdAt: message.sentAt ? new Date(message.sentAt) : new Date(),
       user: {
-        _id: message.senderId ? (message.senderId._id || message.senderId) : 'unknown',
+        _id: message.senderId ? (message.senderId._id || message.senderId) : 'Unknown',
         name: message.senderId ? (message.senderId.displayName || (message.senderId === user._id || message.senderId._id === user._id ? 'You' : 'Unknown')) : 'Unknown',
       },
     }));
@@ -208,7 +208,7 @@ const ChatScreen = ({ route, navigation }) => {
     return unsubscribe;
   }, [navigation, user, chat]);
 
-  
+
   const onSend = (newMessages = []) => {
     if(chat.isSystemMessage) {
       Alert.alert('Error', 'Cannot reply to system generated message');

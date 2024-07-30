@@ -23,8 +23,8 @@ const BuyerConfirmationScreen = ({ navigation, route }) => {
 
   const handleConfirm = async () => {
     try {
-      const selectedBuyer = buyers.find(buyer => buyer.buyerId === selectedBuyerId);
-      if(user) {
+      const selectedBuyer = buyers.find(buyer => buyer && buyer.buyerId && buyer.buyerId === selectedBuyerId);
+      if (user) {
         const ratingsExists = await checkRatingExists(listing._id, user._id, selectedBuyerId);
         if (!ratingsExists) {
         // Rating does not exist, navigate to RatingForBuyerScreen
@@ -78,7 +78,9 @@ const BuyerConfirmationScreen = ({ navigation, route }) => {
         <ListingHeader listing={listing} />
         <View style={styles.container}>
         <Text style={styles.title}>Who bought this item?</Text>
-        {buyers.map(buyer => (
+        {buyers
+        .filter(buyer => buyer && buyer.buyerId && buyer.displayName) 
+        .map(buyer => (
             <TouchableOpacity key={buyer.buyerId} style={styles.buyerContainer} onPress={() => setSelectedBuyerId(buyer.buyerId)}>
             <Image source={buyer.profilePicture ? { uri: buyer.profilePicture } : DEFAULT_IMAGE_URI} style={styles.profileImage} />
             <View style={styles.buyerInfo}>

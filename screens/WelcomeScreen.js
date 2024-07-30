@@ -1,11 +1,12 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, ScrollView } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, Image, Dimensions, ScrollView, Alert } from 'react-native';
 import ButtonComponent from '../components/ButtonComponent';
 import { useFonts } from 'expo-font';
 import { useTheme } from '../components/ThemeContext';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
 import {APP_NAME_IMAGE, BASKET_IMAGE} from '../constants/AppConstants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const WelcomeScreen = ({ navigation }) => {
@@ -16,6 +17,29 @@ const WelcomeScreen = ({ navigation }) => {
   });
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
+
+  useEffect(() => {
+    const checkAndShowAlert = async () => {
+      try {
+        const hasShownAlert = await AsyncStorage.getItem('hasShownAlert');
+        if (hasShownAlert === null) {
+          // Show the alert
+          Alert.alert(
+            "Welcome",
+            "This app is currently limited to the Bay Area, California. If you're outside this area, please sign up for our waitlist at https://farmvox.com, and we'll notify you when we expand to your location.",
+            [{ text: "OK", onPress: () => console.log("OK Pressed") }]
+          );
+
+          // Set the flag so the alert won't be shown again
+          await AsyncStorage.setItem('hasShownAlert', 'true');
+        }
+      } catch (error) {
+        console.error("Error checking or setting AsyncStorage", error);
+      }
+    };
+
+    checkAndShowAlert();
+  }, []);
 
   if (!fontsLoaded) {
     return null; // Or a loading indicator if you prefer

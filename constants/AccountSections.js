@@ -26,6 +26,11 @@ const sections = [
         { key: 'logout', text: 'Logout' },
       ],
     },
+    {
+      data: [
+        { key: 'delete_account', text: 'Delete account' },
+      ],
+    },
   ];
 
   export default sections;

@@ -136,9 +136,10 @@ const MyMessages = ({ navigation }) => {
           lastMessageSenderName = lastMessage?.senderId?.displayName ?? 'Unknown';
         } else {
           // Determine the other party in the chat
-          const otherParty = item.sellerId._id === user._id ? item.buyerId : item.sellerId;
-          lastMessageSenderName = otherParty.displayName ?? 'Unknown'; 
+          const otherParty = item.sellerId?._id === user._id ? item.buyerId : item.sellerId;
+          lastMessageSenderName = otherParty?.displayName ?? 'Unknown'; 
         }
+
         const lastMessageTimestamp = lastMessage ? lastMessage.sentAt : new Date();
         const isLastMessageUnread = item.unreadCount > 0 && !item.lastMessageRead;
       

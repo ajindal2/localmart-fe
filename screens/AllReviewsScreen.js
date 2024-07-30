@@ -73,7 +73,9 @@ const AllReviewsScreen = ({ route, navigation }) => {
                         /> 
                         <View style={styles.ratingDetails}>
                             <View style={styles.ratingInfo}>
-                                <Text style={styles.raterName}>{ratingWithProfile.ratedBy.displayName}</Text>
+                            <Text style={styles.raterName}>
+                              {ratingWithProfile.ratedBy?.displayName || 'FarmVox User'}
+                            </Text>
                                 <StarRating rating={ratingWithProfile.stars} size={typography.iconSmall} />
                             </View>
                         <Text style={styles.ratingDate}>{formatDate(ratingWithProfile.dateGiven)}</Text>

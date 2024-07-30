@@ -2,6 +2,7 @@ import React, { useContext, useCallback } from 'react';
 import { FlatList, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import sections from '../../constants/AccountSections';
 import { getUserRatings } from '../../api/RatingsService';
+import { deleteUserAccount } from '../../api/AccountService';
 import { AuthContext } from '../../AuthContext';
 import { useTheme } from '../../components/ThemeContext';
 import { Dimensions } from 'react-native';
@@ -64,6 +65,43 @@ const AccountScreen = ({ navigation }) => {
     }
   }
 
+  const handleDeleteAccount = async () => {
+    if (!user) {
+      console.error('User is null, cannot delete account');
+      return; // Exit the function if there's no user
+    }
+  
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete your account? This action cannot be undone.',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Account deletion canceled'),
+          style: 'cancel'
+        },
+        {
+          text: 'OK',
+          onPress: async () => {
+            try {
+              await deleteUserAccount(user._id);
+              Alert.alert('Account deleted successfully');
+              await logout();
+            } catch (error) {
+              if (error.message.includes('RefreshTokenExpired')) {
+                logout();
+              } else {
+                Alert.alert('Error', 'Error occurred when deleting account. Please try again later.');
+                console.error(`Error deleting account for userId ${user._id}`, error);
+              }
+            }
+          }
+        }
+      ],
+      { cancelable: false }
+    );
+  };  
+
   // renderItem expects an object with { item, index, separators, section }
   const renderItem = ({ item, index, separators, section }) => {
     const { width, height } = Dimensions.get('window');
@@ -78,7 +116,10 @@ const AccountScreen = ({ navigation }) => {
           await handleAllReviews();
         } else if (item.key === 'invite_people') {
           await handleShareApp();
-        } else {
+        } else if (item.key === 'delete_account') {
+          await handleDeleteAccount();
+        }
+        else {
           navigation.navigate(item.key);
         }
       } catch (error) {

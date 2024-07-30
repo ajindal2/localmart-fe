@@ -138,12 +138,17 @@ const ViewMyListingScreen = ({navigation}) => {
   const handleRateMoreBuyers = async (listing) => {
     try{
       if (user) {
-        const buyers = await getBuyerInfoByListingId(listing._id, user._id)
+        const buyers = await getBuyerInfoByListingId(listing._id, user._id);
         if (buyers && buyers.length > 0) {
-          // Buyers found, navigate to BuyerConfirmationScreen
-          navigation.navigate('BuyerConfirmationScreen', { buyers, listing });
-        }
-        else {
+          // Filter out any null or undefined buyers
+          const validBuyers = buyers.filter(buyer => buyer !== null && buyer !== undefined);
+          if (validBuyers.length > 0) {
+            // Valid buyers found, navigate to BuyerConfirmationScreen
+            navigation.navigate('BuyerConfirmationScreen', { buyers: validBuyers, listing });
+          } else {
+            Alert.alert('Error', 'No valid buyers found for this listing');
+          }
+        } else {
           Alert.alert('Error', 'No buyers found for this listing');
         }
       }

@@ -162,7 +162,7 @@ const SellerDetails = ({ route, navigation }) => {
                     />                 
                     <View style={styles.ratingDetails}>
                       <View style={styles.ratingInfo}>
-                          <Text style={styles.raterName}>{ratingWithProfile.ratedBy.displayName}</Text>
+                          <Text style={styles.raterName}>{ratingWithProfile.ratedBy?.displayName || 'FarmVox User'}</Text>
                           <StarRating rating={ratingWithProfile.stars} size={16} />
                       </View>
                       <Text style={styles.ratingDate}>{formatDate(ratingWithProfile.dateGiven)}</Text>

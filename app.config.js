@@ -38,21 +38,20 @@ export default ({ config }) => ({
     barStyle: "dark-content"
   },
   ios: {
-    buildNumber: "6" ,
+    buildNumber: "8" ,
     infoPlist: {
       NSLocationWhenInUseUsageDescription: "This app uses your location to show nearby listings.",
-      NSPhotoLibraryUsageDescription: "This app needs access to your photo library to select and upload photos.",
-      NSUserTrackingUsageDescription: "This identifier will be used to show notifications.",
+      NSPhotoLibraryUsageDescription: "We need access to your photo library to select photos for your profile picture or listings.",
       NSLocationAlwaysUsageDescription: "This app needs access to your location to provide notifications.",
       NSLocationAlwaysAndWhenInUseUsageDescription: "This app needs access to your location to provide notifications.",
-      NSCameraUsageDescription: "This app needs access to your camera to take photos and videos.",
+      NSCameraUsageDescription: "We need access to your camera to take photos for your profile picture or listings.",
     },
     supportsTablet: true,
     bundleIdentifier: "com.farmvox.app",
     associatedDomains: ["applinks:farmvox.com"]
   },
   android: {
-    versionCode: 10,
+    versionCode: 11,
     permissions: [
       "ACCESS_FINE_LOCATION",
       "ACCESS_COARSE_LOCATION",
