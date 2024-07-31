@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SavedListingStackNavigator from './SavedListingStackNavigator';
 import MyMessagesStackNavigator from './MyMessagesStackNavigator';
@@ -9,11 +9,25 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import colors from '../constants/colors';
 import CameraButton from '../components/CameraButton'
 import { useMessagesBadgeCount } from '../MessagesBadgeCountContext';
+import ProtectedRoute from './ProtectedRoute';
+import { AuthContext } from '../AuthContext';
+import { useNavigation } from '@react-navigation/native';
+
 
 const Tab = createBottomTabNavigator();
 
 function HomeAppStack() {
   const { messagesBadgeCount } = useMessagesBadgeCount(); // Use the unread message count from context
+  const { user } = useContext(AuthContext);
+  const navigation = useNavigation();
+
+  const handleTabPress = (event, route) => {
+    if (!user) {
+      event.preventDefault();
+      navigation.navigate('Auth', { screen: 'WelcomeScreen' });
+    }
+  };
+
 
   return (
   <Tab.Navigator
@@ -50,10 +64,14 @@ function HomeAppStack() {
         })}
       >
         <Tab.Screen name="Home" component={HomeStackNavigator} options={{ headerShown: false }}/>
-        <Tab.Screen name="SavedListingStackNavigator" component={SavedListingStackNavigator} options={{ headerShown: false, tabBarLabel: 'Saved' }}/>
+        <Tab.Screen name="SavedListingStackNavigator" options={{ headerShown: false, tabBarLabel: 'Saved' }}
+         listeners={{
+          tabPress: event => handleTabPress(event, 'SavedListingStackNavigator'),
+        }}>
+          {props => <ProtectedRoute component={SavedListingStackNavigator} {...props} />}
+        </Tab.Screen>
         <Tab.Screen
-          name="Create New Listing"
-          component={CreateListingStackNavigator} // Component to be rendered when the Camera tab is pressed
+          name="CreateListingStackNavigator"
           options={{
             tabBarIcon: ({ focused, color, size }) => (
               <Ionicons name={focused ? 'camera' : 'camera-outline'} size={size} color={color} />
@@ -61,17 +79,32 @@ function HomeAppStack() {
             tabBarButton: (props) => <CameraButton {...props} />, // Custom component for the tab bar button
             headerShown: false,
           }}
-        />
+          listeners={{
+            tabPress: event => handleTabPress(event, 'CreateListingStackNavigator'),
+          }}
+        >
+          {props => <ProtectedRoute component={CreateListingStackNavigator} {...props} />}
+        </Tab.Screen>
         <Tab.Screen
           name="MyMessagesStackNavigator"
-          component={MyMessagesStackNavigator}
           options={{
             headerShown: false,
             tabBarLabel: 'Messages',
             tabBarBadge: messagesBadgeCount > 0 ? messagesBadgeCount : null, // Show badge with unread count
           }}
-        />
-       <Tab.Screen name="Account" component={AccountStackNavigator} options={{ headerShown: false, tabBarLabel: 'Account' }} /> 
+          listeners={{
+            tabPress: event => handleTabPress(event, 'MyMessagesStackNavigator'),
+          }}
+        >
+          {props => <ProtectedRoute component={MyMessagesStackNavigator} {...props} />}
+        </Tab.Screen>
+      <Tab.Screen name="Account" options={{ headerShown: false, tabBarLabel: 'Account' }}
+        listeners={{
+          tabPress: event => handleTabPress(event, 'Account'),
+        }}
+      >
+        {props => <ProtectedRoute component={AccountStackNavigator} {...props} />}
+      </Tab.Screen>
       </Tab.Navigator>
   );
 }

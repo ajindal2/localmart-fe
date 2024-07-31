@@ -5,7 +5,7 @@ import { fetchWithTokenRefresh } from '../api/FetchService';
 export const getSellerRatings = async (sellerId) => {
   // Not adding auth to display listing without login
   try {
-    const response = await fetchWithTokenRefresh(`${BASE_URL}/ratings/seller/${sellerId}`);
+    const response = await fetch(`${BASE_URL}/ratings/seller/${sellerId}`);
     if (response.ok) {
         const sellerRatings = await response.json();
         return sellerRatings;

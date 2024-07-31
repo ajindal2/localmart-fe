@@ -60,10 +60,10 @@ export const getListingsByUser = async (userId) => {
   const token = await SecureStore.getItemAsync('token');
 
   try {
-    const response = await fetchWithTokenRefresh(`${BASE_URL}/listings/user/${userId}`, {
+    const response = await fetch(`${BASE_URL}/listings/user/${userId}`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`
+        //'Authorization': `Bearer ${token}`
       },
     });
     //return await handleResponse(response); 

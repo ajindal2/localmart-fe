@@ -99,9 +99,11 @@ const ViewListing = ({ route, navigation }) => {
     // Handle save listing action
     const handleSaveListing = async () => {
         if (!user) {
-          console.error('User is null, cannot handleSaveListing');
+          // Redirect to WelcomeScreen
+          navigation.navigate('Auth', { screen: 'WelcomeScreen' });
           return; // Exit the function if there's no user
         }
+  
 
         const newSavedState = !isSaved;
         setIsSaved(newSavedState);
@@ -385,11 +387,17 @@ const ViewListing = ({ route, navigation }) => {
       </ScrollView>
 
       <View style={styles.buttonContainer}>
-        {user && sellerProfile && sellerProfile.userId._id !== user._id && (
+        {((user && sellerProfile && sellerProfile.userId._id !== user._id) || !user) && (
           <ButtonComponent 
             title="Message Seller"
             type="primary"
-            onPress={() => handleSend(sellerProfile.userId._id, user._id, item._id)}
+            onPress={() => {
+              if (user) {
+                handleSend(sellerProfile.userId._id, user._id, item._id);
+              } else {
+                navigation.navigate('Auth', { screen: 'WelcomeScreen' });
+              }
+            }}
             style={{ width: '100%', flexDirection: 'row' }}
           />
         )}

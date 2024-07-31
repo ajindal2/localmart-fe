@@ -110,6 +110,7 @@ const HomeScreen = ({ navigation }) => {
     getPermissionStatus();
   }, []);
 
+
   useEffect(() => {
     if (hasRequestedPermission !== null) {
       const subscription = AppState.addEventListener('change', handleAppStateChange);
@@ -118,6 +119,30 @@ const HomeScreen = ({ navigation }) => {
       };
     }
   }, [hasRequestedPermission]);
+
+
+  useEffect(() => {
+    const checkAndShowAlert = async () => {
+      try {
+        const hasShownAlert = await AsyncStorage.getItem('hasShownAlert');
+        if (hasShownAlert === null) {
+          // Show the alert
+          Alert.alert(
+            "Welcome",
+            "This app is currently limited to the Bay Area, California. If you're outside this area, please sign up for our waitlist at https://farmvox.com, and we'll notify you when we expand to your location.",
+            [{ text: "OK", onPress: () => console.log("OK Pressed") }]
+          );
+
+          // Set the flag so the alert won't be shown again
+          await AsyncStorage.setItem('hasShownAlert', 'true');
+        }
+      } catch (error) {
+        console.error("Error checking or setting AsyncStorage", error);
+      }
+    };
+
+    checkAndShowAlert();
+  }, []);
 
   const handleAppStateChange = async (nextAppState) => {
     if (nextAppState === 'active' && !hasRequestedPermission) {
@@ -128,6 +153,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const registerForPushNotificationsAsync = async () => {
+    console.log("registerForPushNotificationsAsync");
     if (!Device.isDevice) {
         console.error('Must use physical device for Push Notifications');
         return;
@@ -135,11 +161,13 @@ const HomeScreen = ({ navigation }) => {
 
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
+    console.log('existingStatus for notification ', existingStatus);
     if (existingStatus !== 'granted') {
         const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
     }
 
+    console.log('finalStatus for notification ', finalStatus);
     if (finalStatus !== 'granted') {
         console.log(`Push notification access is denied for user ${user._id}`);
         Alert.alert('Permission Denied', 'Notifications permission was denied. Please enable it from app settings.');
@@ -153,6 +181,7 @@ const HomeScreen = ({ navigation }) => {
       Constants?.easConfig?.projectId;
 
     if (!projectId) {
+      // TODO how to handle this
       handleRegistrationError('Project ID not found');
     }
 

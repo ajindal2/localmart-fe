@@ -30,8 +30,24 @@ const AccountScreen = ({ navigation }) => {
   };
   
   const handleLogout = async () => {
-    //resetToWelcomeScreen();
-    await logout();
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Logout canceled'),
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: async () => {
+            await logout();
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   const handleAllReviews = async () => {

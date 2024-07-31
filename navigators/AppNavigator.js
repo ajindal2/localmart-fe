@@ -147,9 +147,8 @@ const AppStack = () => {
   return (
     <NavigationContainer ref={navigationRef} linking={linking} fallback={<Text>Loading...</Text>}>
       <Stack.Navigator>
-        {user ? (
-          <Stack.Screen name="HomeApp" component={HomeAppStack} options={{ headerShown: false }} />
-        ) : (
+      <Stack.Screen name="HomeApp" component={HomeAppStack} options={{ headerShown: false }} />
+        {!user && (
           <Stack.Screen name="Auth" component={AuthStack} options={{ headerShown: false }} />
         )}
       </Stack.Navigator>
