@@ -7,15 +7,9 @@ import { useLocation } from '../components/LocationProvider';
 import { useSearchPreferences } from '../components/SearchPreferencesContext';
 import ListingItem from '../components/ListingItem';
 import { useTheme } from '../components/ThemeContext';
-import { AppState } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
-import {sendPushToken} from '../api/AppService';
 import { AuthContext } from '../AuthContext';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
-import * as Device from 'expo-device';
 import {APP_NAME_IMAGE} from '../constants/AppConstants';
 
 
@@ -93,10 +87,13 @@ const HomeScreen = ({ navigation }) => {
     }
   }, [location]);
 
+  /*
   useEffect(() => {
+    console.log('inside getPermissionStatus useeffect');
     const getPermissionStatus = async () => {
       try {
         const value = await AsyncStorage.getItem('hasRequestedPermission');
+        console.log('value : ', value);
         if (value !== null) {
           setHasRequestedPermission(JSON.parse(value));
         } else {
@@ -112,6 +109,8 @@ const HomeScreen = ({ navigation }) => {
 
 
   useEffect(() => {
+    console.log('inside hasRequestedPermission useeffect');
+    console.log('hasRequestedPermission ', hasRequestedPermission);
     if (hasRequestedPermission !== null) {
       const subscription = AppState.addEventListener('change', handleAppStateChange);
       return () => {
@@ -120,31 +119,8 @@ const HomeScreen = ({ navigation }) => {
     }
   }, [hasRequestedPermission]);
 
-
-  useEffect(() => {
-    const checkAndShowAlert = async () => {
-      try {
-        const hasShownAlert = await AsyncStorage.getItem('hasShownAlert');
-        if (hasShownAlert === null) {
-          // Show the alert
-          Alert.alert(
-            "Welcome",
-            "This app is currently limited to the Bay Area, California. If you're outside this area, please sign up for our waitlist at https://farmvox.com, and we'll notify you when we expand to your location.",
-            [{ text: "OK", onPress: () => console.log("OK Pressed") }]
-          );
-
-          // Set the flag so the alert won't be shown again
-          await AsyncStorage.setItem('hasShownAlert', 'true');
-        }
-      } catch (error) {
-        console.error("Error checking or setting AsyncStorage", error);
-      }
-    };
-
-    checkAndShowAlert();
-  }, []);
-
   const handleAppStateChange = async (nextAppState) => {
+    console.log('Inside handleAppStateChange');
     if (nextAppState === 'active' && !hasRequestedPermission) {
       setHasRequestedPermission(true); 
       await AsyncStorage.setItem('hasRequestedPermission', JSON.stringify(true));
@@ -169,7 +145,7 @@ const HomeScreen = ({ navigation }) => {
 
     console.log('finalStatus for notification ', finalStatus);
     if (finalStatus !== 'granted') {
-        console.log(`Push notification access is denied for user ${user._id}`);
+        console.log(`Push notification access is denied`);
         Alert.alert('Permission Denied', 'Notifications permission was denied. Please enable it from app settings.');
         await AsyncStorage.setItem('hasRequestedPermission', JSON.stringify(true));
         setHasRequestedPermission(true); 
@@ -189,6 +165,8 @@ const HomeScreen = ({ navigation }) => {
       projectId: projectId,
     })).data;
 
+    console.log('token in homescreen is: ', token);
+
     if (Platform.OS === 'android') {
         Notifications.setNotificationChannelAsync('default', {
             name: 'default',
@@ -203,20 +181,27 @@ const HomeScreen = ({ navigation }) => {
 
     // Save the token in AsyncStorage and send it to backend
     // Check if the token is different from the one stored or if there's a new user
-    const previousToken = await AsyncStorage.getItem('pushToken');
-    const previousUser = await AsyncStorage.getItem('userId');
-
-    if (token !== previousToken || user._id !== previousUser) {
-      await AsyncStorage.setItem('pushToken', token);
-      await AsyncStorage.setItem('userId', user._id);
-      // Send the token to backend server associated with the `currentUser`
-      try {
-          await sendPushToken(user._id, token);
-      } catch (error) {
-          console.error(`Error sending push token to backend for user ${user._id}: `, error);
+    if (user) {
+      // Save the token in AsyncStorage and send it to backend
+      const previousToken = await AsyncStorage.getItem('pushToken');
+      const previousUser = await AsyncStorage.getItem('userId');
+  
+      if (token !== previousToken || user._id !== previousUser) {
+        await AsyncStorage.setItem('pushToken', token);
+        await AsyncStorage.setItem('userId', user._id);
+        try {
+            await sendPushToken(user._id, token);
+        } catch (error) {
+            console.error(`Error sending push token to backend for user ${user._id}: `, error);
+        }
       }
-    }
+    } else {
+      // Handle guest users: store token locally, but don't send to backend
+      await AsyncStorage.setItem('pushToken', token);
+      console.log('inside else');
+    } 
 }
+*/
 
 const fetchListings = async (searchKey = '') => {
 
@@ -272,8 +257,12 @@ const fetchListings = async (searchKey = '') => {
   }, [navigation]);
 
   const locationInfoPress = React.useCallback(() => {
+    if(user) {
     navigation.navigate('UserSearchPreferencesScreen')
-  }, [navigation]);
+    } else {
+      navigation.navigate('Auth', { screen: 'WelcomeScreen' });
+    }
+  }, [user, navigation]);
 
   const loadMoreListings = () => {
     if (!loading && currentPageRef.current < totalPages) {

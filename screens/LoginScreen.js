@@ -13,6 +13,12 @@ import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+import {sendPushToken} from '../api/AppService';
+import * as Device from 'expo-device';
+
 
 const LoginScreen = ({ navigation }) => {
   const isConnected = useNetworkConnectivity();
@@ -26,10 +32,6 @@ const LoginScreen = ({ navigation }) => {
   });
   const { colors, typography, spacing } = useTheme();
   const styles = getStyles(colors, typography, spacing);
-
-  if (!fontsLoaded) {
-    return null; // Or a loading indicator if you prefer
-  }
 
   const handleLogin = async () => {
     setIsCreating(true); 
@@ -48,10 +50,16 @@ const LoginScreen = ({ navigation }) => {
 
         await SecureStore.setItemAsync('refreshToken', data.refresh_token);
 
-      if (data.user) {
-        await SecureStore.setItemAsync('user', JSON.stringify(data.user));
-        setUser(data.user);
-      }
+        if (data.user) {
+          await SecureStore.setItemAsync('user', JSON.stringify(data.user));
+          setUser(data.user);
+
+          try {
+            await registerForPushNotificationsAsync(data.user);
+          } catch (error) {
+            console.error(`Error sending push token to backend for user ${data.user._id}: `, error);
+          }
+        }
 
       } else {
         console.error('Error in login data:', data);
@@ -65,6 +73,73 @@ const LoginScreen = ({ navigation }) => {
       setIsCreating(false); 
     }
   };
+
+
+  const registerForPushNotificationsAsync = async (user) => {
+    if (!Device.isDevice) {
+        console.error('Must use physical device for Push Notifications');
+        return;
+    }
+
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+    }
+
+    if (finalStatus !== 'granted') {
+        console.log(`Push notification access is denied`);
+        Alert.alert('Permission Denied', 'Notifications permission was denied. Please enable it from app settings.');
+        await AsyncStorage.setItem('hasRequestedPermission', JSON.stringify(true));
+        //setHasRequestedPermission(true); 
+        return;
+    }
+
+    const projectId =
+      Constants?.expoConfig?.extra?.eas?.projectId ??
+      Constants?.easConfig?.projectId;
+
+    if (!projectId) {
+      // TODO how to handle this
+      handleRegistrationError('Project ID not found');
+    }
+
+    const token = (await Notifications.getExpoPushTokenAsync({
+      projectId: projectId,
+    })).data;
+
+    console.log('token in homescreen is: ', token);
+
+    if (Platform.OS === 'android') {
+        Notifications.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#FF231F7C',
+        });
+    }
+
+    // Save the token in AsyncStorage and send it to backend
+    // Check if the token is different from the one stored or if there's a new user
+    const previousToken = await AsyncStorage.getItem('pushToken');
+    const previousUser = await AsyncStorage.getItem('userId');
+
+    if (token !== previousToken || user._id !== previousUser) {
+      await AsyncStorage.setItem('pushToken', token);
+      await AsyncStorage.setItem('userId', user._id);
+      try {
+          await sendPushToken(user._id, token);
+      } catch (error) {
+          console.error(`Error sending push token to backend for user ${user._id}: `, error);
+      }
+    }
+  } 
+
+  if (!fontsLoaded) {
+    return null; // Or a loading indicator if you prefer
+  }
+
 
   let buttonTitle = isCreating ? "Processing..." : "Login";
 

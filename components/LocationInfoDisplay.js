@@ -28,7 +28,7 @@ const LocationInfoDisplay = React.memo(({ onPress }) => {
   
     // Return null to render nothing if neither city nor postalCode is available
     if (locationText === '') {
-       locationText = 'Set your search location';
+       locationText = 'Set your search preferences';
     }
   
     return (

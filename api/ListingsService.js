@@ -57,7 +57,6 @@ export const getListings = async (searchKey, locationParams, page = 1, limit = 5
 };
 
 export const getListingsByUser = async (userId) => {
-  const token = await SecureStore.getItemAsync('token');
 
   try {
     const response = await fetch(`${BASE_URL}/listings/user/${userId}`, {
