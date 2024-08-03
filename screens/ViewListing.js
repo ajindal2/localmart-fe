@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator, Modal, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../AuthContext';
 import { getSellerRatings } from '../api/RatingsService';
@@ -8,11 +8,13 @@ import Toast from 'react-native-toast-message';
 import { createSavedListing, deleteSavedListing, checkSavedStatus } from '../api/SavedListingService';
 import { getListingFromId } from '../api/ListingsService';
 import {createOrGetChat} from '../api/ChatRestService';
+import { sendReportListing } from '../api/AuthService';
 import shareListing from '../utils/ShareListing';
 import FullScreenImageModal from '../components/FullScreenImageModal'; 
 import useHideBottomTab from '../utils/HideBottomTab'; 
 import { useTheme } from '../components/ThemeContext';
 import ButtonComponent from '../components/ButtonComponent';
+import InputComponent from '../components/InputComponent';
 import ExpandingTextComponent from '../components/ExpandingTextComponent';
 import ListingMap from '../components/ListingMap';
 import { DEFAULT_IMAGE_URI } from '../constants/AppConstants'
@@ -33,11 +35,14 @@ const ViewListing = ({ route, navigation }) => {
     const [averageRating, setAverageRating] = useState(0); 
     const [isSaved, setIsSaved] = useState(false);
     const [savedListingId, setSavedListingId] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [reportReason, setReportReason] = useState('');  
     const [item, setItem] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [sellerImageLoadError, setSellerImageLoadError] = useState(false);
     const { colors, typography, spacing } = useTheme();
     const styles = getStyles(colors, typography, spacing);
+    const [isSubmitting, setIsSubmitting] = useState(false); // to disable submit report button
 
     // Hide the bottom tab 
     useHideBottomTab(navigation, true);
@@ -248,13 +253,42 @@ const ViewListing = ({ route, navigation }) => {
       return null;
     };
 
-  if (!isConnected) {
-    return (
-      <View style={styles.container}>
-        <NoInternetComponent/>
-      </View>
-    );
-  }
+    const handleReportListing = async (listingId) => {
+      setIsSubmitting(true);
+      if (!reportReason || reportReason.trim() === '') {
+        Alert.alert('Error', 'Please provide a reason for reporting.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      try {
+        const reportData = {
+          listingId: listingId,
+          reason: reportReason,
+        };
+  
+        await sendReportListing(reportData);
+        Alert.alert('Report Submitted', 'Thank you for reporting this listing, we will contact you on your registered email');
+        setModalVisible(false);
+        setReportReason(''); // Clear the input after submission
+      } catch (error) {
+        console.error('Error reporting listing:', error);
+        Alert.alert('Error', 'There was an issue submitting your report. Please try again later.');
+      } finally {
+        setIsSubmitting(false); 
+      }
+    };
+
+   // Dynamically set the button title
+   let reportButtonTitle = isSubmitting ? "Processing..." : "Submit Report";
+   
+    if (!isConnected) {
+      return (
+        <View style={styles.container}>
+          <NoInternetComponent/>
+        </View>
+      );
+    }
 
   return (
     <View style={styles.container}>
@@ -383,7 +417,65 @@ const ViewListing = ({ route, navigation }) => {
             {item.location && item.location.coordinates && item.location.coordinates.coordinates && item.location.coordinates.coordinates.length == 2 &&(
               <ListingMap location={item.location.coordinates} />
             )}
+        </View>
+
+      {/* CTA for reporting the listing */}
+
+      <TouchableOpacity
+        style={styles.reportButton}
+        onPress={() => {
+         if (user) {
+           setModalVisible(true);
+         } else {
+           navigation.navigate('Auth', { screen: 'WelcomeScreen' });
+         }
+       }}
+      >
+        <Text style={styles.reportButtonText}>Report this listing</Text>
+      </TouchableOpacity>
+
+      {/* Report Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+          <TouchableOpacity
+              style={styles.closeIcon}
+              onPress={() => setModalVisible(false)}
+            >
+              <Ionicons name="close" size={24} color="black" />
+            </TouchableOpacity>
+            <Text style={styles.modalText}>Report Listing</Text>
+              <Text style={styles.modalDescription}>
+              Please let us know why you are reporting this listing.
+              </Text>
+            <InputComponent
+              style={styles.textInput}
+              placeholder="Enter details here"
+              value={reportReason}
+              onChangeText={setReportReason}
+              multiline
+              textAlignVertical="top"
+            />
+            <ButtonComponent 
+              title={reportButtonTitle}
+              type="secondary"
+              disabled={isSubmitting}
+              loading={isSubmitting}
+              onPress={() => {   
+                handleReportListing(item._id);              
+              }}
+              style={{ width: '100%', flexDirection: 'row' }}
+            />
           </View>
+        </View>
+      </Modal>
       </ScrollView>
 
       <View style={styles.buttonContainer}>
@@ -578,6 +670,67 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     color: colors.secondaryText,
     //paddingLeft: spacing.size10Horizontal,
     paddingBottom: spacing.size5Vertical,
+  },
+ 
+  reportButton: {
+    marginTop: 10,
+    //paddingVertical: 12,
+    //backgroundColor: '#f44',
+   // borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  reportButtonText: {
+    fontSize: 14,
+    color: '#f44',
+    fontWeight: '600',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    //alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    position: 'relative',
+  },
+  modalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  modalDescription: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: spacing.size10Horizontal,
+    fontSize: typography.body,
+    marginBottom: spacing.sizeLarge,
+    textAlignVertical: 'top',
+    height: 100
+  },
+  closeIcon: {
+    position: 'absolute',
+    top: 10,
+    right: 10, // Aligns the icon to the right
+    zIndex: 1, // Ensures the icon stays above other elements
   },
 });
 

@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions, Alert, Modal, Switch, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { GiftedChat, Bubble, Time, Message } from 'react-native-gifted-chat';
 import { markMessagesAsRead, fetchLatestMessages } from '../api/ChatRestService';
 import ChatService from '../api/ChatService';
 import { AuthContext } from '../AuthContext';
+import { reportUser } from '../api/AuthService';
+import ButtonComponent from '../components/ButtonComponent';
+import InputComponent from '../components/InputComponent';
+import CustomActionSheet from '../components/CustomActionSheet'; 
 import useHideBottomTab from '../utils/HideBottomTab'; 
 import { useTheme } from '../components/ThemeContext';
 import NoInternetComponent from '../components/NoInternetComponent';
 import useNetworkConnectivity from '../components/useNetworkConnectivity';
+import { Ionicons } from '@expo/vector-icons';
 
 
 const ChatScreen = ({ route, navigation }) => {
@@ -18,39 +23,6 @@ const ChatScreen = ({ route, navigation }) => {
   const styles = getStyles(colors, typography, spacing);
 
   useHideBottomTab(navigation, true);
-
-  /*const transformMessages = (messages) => {
-    //console.log('messages inside transformMessages: ', messages);
-    if (!user) {
-      console.error('User is null, cannot transformMessages');
-      return; // Exit the function if there's no user
-    }
-
-    // Deduplicate messages based on _id
-    const uniqueIds = Array.from(new Set(messages.map(message => message._id)));
-    const uniqueMessages = uniqueIds.map(id => {
-      return messages.find(message => message._id === id);
-    });
-
-    //console.log('uniqueMessages inside transformMessages: ', uniqueMessages);
-  
-    // Transform messages to fit GiftedChat and handle dates
-    const transformedMessages = uniqueMessages.map(message => {
-      return {
-        _id: message._id,
-        text: message.content,
-        createdAt: message.sentAt ? new Date(message.sentAt) : new Date(),
-        user: {
-          _id: message.senderId ? (message.senderId._id || message.senderId) : 'unknown',
-          name: message.senderId ? (message.senderId.displayName || (message.senderId === user._id || message.senderId._id === user._id ? 'You' : 'Unknown')) : 'Unknown',
-        },
-      };
-    });
-  
-    // Sort messages by createdAt in ascending order (oldest first)
-    transformedMessages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    return transformedMessages;
-  };*/
 
   const transformMessages = (messages) => {
     if (!user) {
@@ -90,7 +62,13 @@ const ChatScreen = ({ route, navigation }) => {
   const [messages, setMessages] = useState(initialMessages);
 
   const ChatHeader = ({ listing }) => {  
-    if (!listing) return null; // Return null if listing details aren't provided
+    const [actionSheetVisible, setActionSheetVisible] = useState(false);
+    const [reportModalVisible, setReportModalVisible] = useState(false);
+    const [reportReason, setReportReason] = useState('');
+    const [blockUser, setBlockUser] = useState(false); // State to track the toggle switch
+    const [isSubmitting, setIsSubmitting] = useState(false); // to disable submit report button
+
+    if (!listing || !user) return null; // Return null if listing details aren't provided
   
     const navigateToListing = () => {
       navigation.navigate('ViewListingStack', { 
@@ -98,22 +76,146 @@ const ChatScreen = ({ route, navigation }) => {
         params: { item: listing }
       });
     };
+
+    const handleReportUser = () => {
+      setActionSheetVisible(false);
+      setReportModalVisible(true); // Open the report modal
+    };
+
+    const submitReport = async () => {
+      setIsSubmitting(true);
+      if (!reportReason || reportReason.trim() === '') {
+        Alert.alert('Error', 'Please provide a reason for reporting.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      try {
+         // Determine the reported user based on the current user's role
+        const currentUserId = user._id;
+        const reportedUser = currentUserId === chat.sellerId._id ? chat.buyerId._id : chat.sellerId._id;
+
+        const data = {
+          reporterId: user._id, 
+          reportedUserId: reportedUser, 
+          reason: reportReason,
+          blockUser: blockUser,
+        };
+    
+        // Call the service to report the user
+        await reportUser(data);
+    
+        Alert.alert('Report Submitted', 'Thank you for reporting this user, we will contact you on your registered email');
+        setReportModalVisible(false);
+        setReportReason(''); // Clear the input after submission
+      } catch (error) {
+        console.error('Error reporting user:', error);
+        Alert.alert('Error', 'An error occurred while submitting the report. Please try again later.');
+      } finally {
+        setIsSubmitting(false); 
+      }
+    };
+  
+    // Define the options for the action sheet
+    const actionSheetOptions = [
+      {
+        text: 'Report User',
+        icon: 'flag-outline',
+        onPress: () => {
+          handleReportUser();
+        },
+      },
+      {
+        text: 'Cancel',
+        icon: 'close-outline',
+        onPress: () => {
+          setActionSheetVisible(false);
+        },
+      },
+    ];
+
+    // Dynamically set the button title
+   let reportButtonTitle = isSubmitting ? "Processing..." : "Submit Report";
   
     return (
-      <TouchableOpacity onPress={navigateToListing}>
       <View style={styles.headerContainer}>
-        <Image source={{ uri: listing.imageUrls[0] }} style={styles.listingImage} />
-        <View style={styles.listingDetails}>
-          <Text style={styles.listingTitle} numberOfLines={1} ellipsizeMode="tail">
-            {listing.title}
-            {listing.state && listing.state.toLowerCase() === 'sold' ? ' (Sold)' : ''}
-          </Text>
-          <Text style={styles.listingPrice}> 
-            {listing.price === 0 ? 'FREE' : `$${listing.price.toFixed(2)}`}
-          </Text>
-        </View>
+        <TouchableOpacity onPress={navigateToListing}>
+          <View style={styles.listingInfo}>
+            <Image source={{ uri: listing.imageUrls[0] }} style={styles.listingImage} />
+            <View style={styles.listingDetails}>
+                <Text style={[styles.listingTitle, { maxWidth: '80%' }]} numberOfLines={1} ellipsizeMode="tail">
+                {listing.title}
+                {listing.state && listing.state.toLowerCase() === 'sold' ? ' (Sold)' : ''}
+              </Text>
+              <Text style={styles.listingPrice}> 
+                {listing.price === 0 ? 'FREE' : `$${listing.price.toFixed(2)}`}
+              </Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      
+        <TouchableOpacity onPress={() => setActionSheetVisible(true)} style={styles.ellipsisButton}>
+          <Ionicons name="ellipsis-horizontal" size={typography.iconSize} color={colors.darkGrey} />
+        </TouchableOpacity>
+
+        <CustomActionSheet
+          isVisible={actionSheetVisible}
+          onClose={() => setActionSheetVisible(false)}
+          options={actionSheetOptions}
+        />
+
+        {/* Report User Modal */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={reportModalVisible}
+          onRequestClose={() => setReportModalVisible(false)}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalView}>
+              <TouchableOpacity onPress={() => setReportModalVisible(false)} style={styles.closeIcon}>
+                <Ionicons name="close" size={24} color="#000" />
+              </TouchableOpacity>
+              <Text style={styles.modalText}>Report User</Text>
+              <Text style={styles.modalDescription}>
+                Please let us know why you are reporting this user.
+              </Text>
+              <InputComponent
+                style={styles.textInput}
+                placeholder="Enter your reason"
+                value={reportReason}
+                onChangeText={setReportReason}
+                multiline
+                textAlignVertical="top"
+              />
+              <View style={styles.toggleContainer}>
+                <View style={styles.toggleTextContainer}>
+                  <Text style={styles.toggleLabel}>Block this user?</Text>
+                  <Switch
+                    value={blockUser}
+                    onValueChange={setBlockUser}
+                    thumbColor={blockUser ? '#f77979' : '#ccc'}
+                    trackColor={{ false: '#767577', true: '#f77979' }}
+                  />
+                </View>
+                <Text style={styles.toggleDescription}>You won't be able to receive message from this user</Text>
+              </View>
+              <ButtonComponent 
+                title={reportButtonTitle}
+                type="secondary"
+                disabled={isSubmitting}
+                loading={isSubmitting}
+                onPress={() => {
+                  submitReport();
+                }}
+                style={{ width: '100%', flexDirection: 'row' }}
+              />
+            </View>
+          </View>
+          </TouchableWithoutFeedback>
+        </Modal>
       </View>
-    </TouchableOpacity>
     );
   };
 
@@ -284,13 +386,19 @@ const { width } = Dimensions.get('window');
 const imageSize = width * 0.12; 
 
 const getStyles = (colors, typography, spacing) => StyleSheet.create({
+
   headerContainer: {
     flexDirection: 'row',
-    padding: spacing.size10Horizontal,
     alignItems: 'center',
-    //backgroundColor: colors.mediumGrey , 
+    justifyContent: 'space-between', // Space out the ellipsis icon
+    paddingHorizontal: spacing.size10Horizontal, // Only apply padding horizontally
+    paddingVertical: spacing.size10Vertical,    // Adjust vertical padding to reduce space
     borderBottomWidth: 2, // This sets the thickness of the bottom border
     borderBottomColor: colors.separatorColor, 
+  },
+  listingInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   listingImage: {
     width: imageSize,
@@ -299,15 +407,92 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
     marginRight: spacing.size10Horizontal,
   },
   listingDetails: {
-    flex: 1,
+    marginLeft: 10,
+    flexShrink: 1, 
   },
   listingTitle: {
     fontWeight: 'bold',
+    fontSize: 16,
+    overflow: 'hidden',
+    whiteSpace: 'nowrap', // Ensure text does not wrap to a new line
+    textOverflow: 'ellipsis',
   },
   listingPrice: {
     fontSize: typography.body,
     color: colors.secondaryText,
   },
+  ellipsisButton: {
+    justifyContent: 'flex-end',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    position: 'relative',
+  },
+  modalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  modalDescription: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: spacing.size10Horizontal,
+    fontSize: typography.body,
+    marginBottom: spacing.size20Vertical, 
+    textAlignVertical: 'top',
+    height: 100
+  },
+  closeIcon: {
+    position: 'absolute',
+    top: spacing.size10Vertical,
+    right: 10,
+    zIndex: 1,
+  },
+  toggleContainer: {
+    flexDirection: 'column',  // Change to column to stack label and description
+    alignItems: 'flex-start', // Align items to the start
+    width: '100%',
+    marginBottom: spacing.sizeLarge, 
+  },
+  toggleTextContainer: {
+    flexDirection: 'row', // Arrange label and switch in a row
+    alignItems: 'center', // Align vertically centered
+    justifyContent: 'space-between', // Space between label and switch
+    width: '100%', // Ensure full width
+  },
+  toggleLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    flex: 1, // Allow label to take remaining space
+  },
+  toggleDescription: {
+    fontSize: 12,
+    color: '#888',
+  },
+
   senderName: {
     paddingHorizontal: spacing.size10Horizontal,
     paddingBottom: spacing.xxs,
@@ -337,6 +522,7 @@ const getStyles = (colors, typography, spacing) => StyleSheet.create({
       color: colors.white,
     },
   },
+
 });
 
 

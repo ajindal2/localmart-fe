@@ -70,6 +70,78 @@ export const sendContactUsForm = async (data, file) => {
   }
 }
 
+export const sendReportListing = async (data) => {
+  const token = await SecureStore.getItemAsync('token');
+
+  const formData = new FormData();
+  formData.append('listingId', data.listingId);
+  formData.append('reason', data.reason);
+
+  try {
+
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/auth/report-listing`, {
+      method: 'POST',
+      body: JSON.stringify({
+        listingId: data.listingId,
+        reason: data.reason,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error(`Failed to report listing ${data.listingId}`, errorData);
+      throw new Error(errorData.message || 'Error reporting listing');
+    }
+
+    const result = await response.text();
+    return result;
+  } catch (error) {
+    console.error(`Failed to report listing ${data.listingId}`, error);
+    throw error;
+  }
+}
+
+export const reportUser = async (data) => {
+  try {
+    const token = await SecureStore.getItemAsync('token');
+    
+    // Construct the request payload
+    const payload = {
+      reporterId: data.reporterId,
+      reportedUserId: data.reportedUserId,
+      reason: data.reason,
+      blockUser: data.blockUser,
+    };
+
+    // Send the POST request to the backend
+    const response = await fetchWithTokenRefresh(`${BASE_URL}/auth/report-user`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`, // Pass the authentication token
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    // Handle non-200 responses
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error(`Failed to report user: ${errorData.message}`);
+      throw new Error(errorData.message || 'Error reporting user');
+    }
+    // Parse and return the response
+    const result = await response.text();
+    return result;
+  } catch (error) {
+    console.error('Error reporting user:', error);
+    throw error;
+  }
+}
+
 export const invalidateRefreshToken = async() => {
   try {
     const token = await SecureStore.getItemAsync('token');

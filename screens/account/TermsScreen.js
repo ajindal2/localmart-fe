@@ -62,12 +62,12 @@ const TermsScreen = () => {
       <Text style={styles.subBulletPoint}> - Use our services if you are unable to form legally binding contracts, are under 18, or are prohibited from using our services by law.</Text>
       <Text style={styles.subBulletPoint}> - Manipulate item prices or interfere with other users' listings.</Text>
       <Text style={styles.subBulletPoint}> - Transfer your FarmVox account without our consent or sharing your login credentials.</Text>
-      <Text style={styles.subBulletPoint}> - Post inappropriate, false, misleading, or defamatory content.</Text>
+      <Text style={styles.subBulletPoint}> - Post inappropriate, false, misleading, abusive or defamatory content.</Text>
       <Text style={styles.subBulletPoint}> - Distribute spam, viruses, or harmful technologies.</Text>
       <Text style={styles.subBulletPoint}> - Use automated tools to utilize the FarmVox Services or to collect or extract data from FarmVox, such as a harvesting bot, robot, spider, script, crawler, or scraper, not provided by FarmVox. </Text>
       <Text style={styles.subBulletPoint}> - Harvest or use information about users without their consent.</Text>
       <Text style={styles.subBulletPoint}> - Use our Services other than for their intended purpose and in any manner that could interfere with, disrupt, negatively affect or inhibit other users from fully enjoying our Services or that could damage, disable, overburden or impair the functioning of our Services or any infrastructure of our Services in any manner.</Text>
-      <Text style={styles.subBulletPoint}> - Engage in any harassing, threatening, intimidating, predatory or stalking conduct.</Text>
+      <Text style={styles.subBulletPoint}> - Engage in any objectionable, harassing, threatening, intimidating, predatory or stalking conduct.</Text>
       <Text style={styles.subBulletPoint}> - Copy, reproduce, distribute, publicly perform or publicly display all or portions of our Services, including our underlying content and source code.</Text>
       <Text style={styles.subBulletPoint}> - Use the FarmVox Services to infringe or violate the intellectual property rights or any other rights of anyone else (including FarmVox).</Text>
       <Text style={styles.subBulletPoint}> - Modify, adapt, translate, decompile, or reverse-engineer the App, nor remove any proprietary notices.</Text>

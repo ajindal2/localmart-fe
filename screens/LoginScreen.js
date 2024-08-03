@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Image, Text, StyleSheet, Alert, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Image, Text, StyleSheet, Alert, TouchableOpacity, Dimensions, Platform } from 'react-native';
 import { AuthContext } from '../AuthContext';
 import * as SecureStore from 'expo-secure-store';
 import ButtonComponent from '../components/ButtonComponent';
@@ -102,14 +102,12 @@ const LoginScreen = ({ navigation }) => {
 
     if (!projectId) {
       // TODO how to handle this
-      handleRegistrationError('Project ID not found');
+      console.error('Project ID not found for user: ', user);
     }
 
     const token = (await Notifications.getExpoPushTokenAsync({
       projectId: projectId,
     })).data;
-
-    console.log('token in homescreen is: ', token);
 
     if (Platform.OS === 'android') {
         Notifications.setNotificationChannelAsync('default', {
