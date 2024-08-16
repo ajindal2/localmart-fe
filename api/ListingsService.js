@@ -3,6 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import { fetchWithTokenRefresh } from '../api/FetchService';
 
 export const getListings = async (searchKey, locationParams, page = 1, limit = 50) => {
+
   try {
     let url = `${BASE_URL}/listings`;
     const queryParams = new URLSearchParams();
@@ -133,10 +134,10 @@ export const createListing = async (userId, listingDetails) => {
       let mimeType = 'image/jpeg'; // Default to JPEG
       let fileName = `photo${index}.jpg`;
     
-      if (fileExtension === 'png') {
+      /*if (fileExtension === 'png') {
         mimeType = 'image/png';
         fileName = `photo${index}.png`; // Adjust the file extension for PNG
-      }
+      }*/
     
       // Append the image file to the FormData object
       formData.append('images', {

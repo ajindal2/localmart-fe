@@ -116,10 +116,10 @@ export const getUserProfile = async (userId) => {
   
     let file = { uri: imageUri, type: 'image/jpeg', name: 'profile-image.jpg' }; // Default to JPEG
 
-    if (imageUri.endsWith('.png')) {
+   /* if (imageUri.endsWith('.png')) {
       file.type = 'image/png'; // Change mime type for PNG files
       file.name = 'profile-image.png'; // Change file extension for PNG files
-    }
+    }*/
     // Create the form data to send to the server
     let formData = new FormData();
     /*formData.append('file', {
